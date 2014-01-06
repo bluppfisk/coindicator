@@ -1,6 +1,9 @@
 
 # Coin Price indicator
-This is a crypto curency price indicator applet for Ubuntu Linux. It shows latest 24 hour price and also bid, high low, ask prices from the menu.
+
+![Coin Price logo](https://raw.github.com/nilgradisnik/coinprice-indicator/master/resources/logo_124px.png)
+
+Coin Price indicator is a crypto curency(Bitcoin etc) price indicator applet for Ubuntu Linux. It shows latest 24 hour price and also bid, high low, ask prices from the indicator menu.
 
 Right now it supports the following exchanges
 
