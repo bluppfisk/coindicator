@@ -4,7 +4,7 @@
 
 __author__ = "nil.gradisnik@gmail.com"
 
-import pynotify
+import notify2 as notify
 
 class Alarm():
 
@@ -26,8 +26,8 @@ class Alarm():
       self.__notify('Low Bitcoin price alert: $' + str(price), 'Current bitcoin price fell below your alarm threshold: $' + str(self.floor))
 
   def __notify(self, title, message):
-    if pynotify.init(self.app_name):
-      n = pynotify.Notification(title, message)
-      n.set_urgency(pynotify.URGENCY_CRITICAL)
-      n.set_timeout(pynotify.EXPIRES_NEVER)
+    if notify.init(self.app_name):
+      n = notify.Notification(title, message)
+      n.set_urgency(notify.URGENCY_CRITICAL)
+      n.set_timeout(notify.EXPIRES_NEVER)
       n.show()

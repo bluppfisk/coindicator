@@ -1,3 +1,3 @@
 
 all:
-	python coin/coin.py
+	python3 coin/coin.py

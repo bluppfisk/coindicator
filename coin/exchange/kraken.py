@@ -5,7 +5,8 @@
 
 __author__ = "nil.gradisnik@gmail.com"
 
-import gobject
+from gi.repository import GObject
+
 import requests
 
 import utils
@@ -51,11 +52,11 @@ class Kraken:
     self.asset_pair = self.indicator.active_asset_pair
 
     self._check_price()
-    self.timeout_id = gobject.timeout_add(self.refresh_frequency * 1000, self._check_price)
+    self.timeout_id = GObject.timeout_add(self.refresh_frequency * 1000, self._check_price)
 
   def stop(self):
     if self.timeout_id:
-      gobject.source_remove(self.timeout_id)
+      GObject.source_remove(self.timeout_id)
 
   def _check_price(self):
     try:
@@ -68,7 +69,7 @@ class Kraken:
         self._parse_result(data['result'])
 
     except Exception as e:
-      print e
+      print(e)
 
   def _parse_result(self, data):
     asset = data[self.asset_pair]
@@ -87,4 +88,4 @@ class Kraken:
     self.indicator.set_data(label, bid, high, low, ask)
 
   def _handle_error(self, error):
-    print "Kraken API error: " + error[0]
+    print("Kraken API error: " + error[0])

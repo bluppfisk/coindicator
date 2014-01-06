@@ -7,8 +7,8 @@
 
 __author__ = "nil.gradisnik@gmail.com"
 
+import signal
 import yaml
-import gtk
 
 from indicator import Indicator
 
@@ -16,9 +16,10 @@ from exchange.kraken import Kraken
 from exchange.bitstamp import Bitstamp
 
 if __name__ == "__main__":
-  config = yaml.load(open('config.yaml', 'r'))
+  signal.signal(signal.SIGINT, signal.SIG_DFL) # ctr+c exit
 
-  print "Starting Coin Price indicator v" + str(config['app']['version'])
+  config = yaml.load(open('config.yaml', 'r'))
+  print("Starting Coin Price indicator v" + str(config['app']['version']))
 
   # indicator applet
   indicator = Indicator(config)
@@ -39,5 +40,3 @@ if __name__ == "__main__":
 
   # init
   indicator.init(exchanges)
-
-  gtk.main()

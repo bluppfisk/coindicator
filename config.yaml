@@ -3,13 +3,15 @@
 app:
   name: Coin Price indicator
   description: Coin Price is a crypto curency price indicator applet for Ubuntu
-  url: https://github.com
-  version: 0.1
+  url: https://github.com/nilgradisnik/coinprice-indicator
+  version: 0.2
 
 author:
   name: Nil Gradisnik
   email: nil.gradisnik@gmail.com
   copyright: Copyright (C) 2014 Nil Gradisnik
 
-default:
-  refresh: 30 # seconds
+artist:
+  name: Alicen Maniscalco
+  email: alicenfm@gmail.com
+

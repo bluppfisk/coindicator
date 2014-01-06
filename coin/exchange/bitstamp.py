@@ -5,7 +5,8 @@
 
 __author__ = "nil.gradisnik@gmail.com"
 
-import gobject
+from gi.repository import GObject
+
 import requests
 
 import utils
@@ -27,11 +28,11 @@ class Bitstamp:
     self.refresh_frequency = self.indicator.refresh_frequency
 
     self._check_price()
-    self.timeout_id = gobject.timeout_add(self.refresh_frequency * 1000, self._check_price)
+    self.timeout_id = GObject.timeout_add(self.refresh_frequency * 1000, self._check_price)
 
   def stop(self):
     if self.timeout_id:
-      gobject.source_remove(self.timeout_id)
+      GObject.source_remove(self.timeout_id)
 
   def _check_price(self):
     try:
@@ -42,7 +43,7 @@ class Bitstamp:
         self._parse_result(data)
 
     except Exception as e:
-      print e
+      print(e)
 
   def _parse_result(self, data):
     currency = utils.currency['usd']
@@ -61,4 +62,4 @@ class Bitstamp:
     self.indicator.set_data(label, bid, high, low, ask, volume)
 
   def _handle_error(self, error):
-    print "Bitstamp API error: " + error[0]
+    print("Bitstamp API error: " + error[0])
