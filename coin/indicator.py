@@ -21,7 +21,11 @@ class Indicator:
 
   def __init__(self, config):
     self.config = config
+
     self.settings = Settings()
+    self.refresh_frequency = self.settings.refresh()
+    self.active_exchange = self.settings.exchange()
+    self.active_asset_pair = self.settings.assetpair()
 
     self.indicator = AppIndicator.Indicator.new(self.config['app']['name'], ICON_NAME, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
     self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
@@ -34,10 +38,6 @@ class Indicator:
 
   def init(self, exchanges):
     self.exchanges = exchanges
-
-    self.refresh_frequency = self.settings.refresh()
-    self.active_exchange = self.settings.exchange()
-    self.active_asset_pair = self.settings.assetpair()
 
     self._start_exchange()
     # self._preferences(None)
@@ -66,6 +66,7 @@ class Indicator:
 
     exchange = [e['instance'] for e in self.exchanges if self.active_exchange == e['code']]
     if len(exchange) == 1:
+      exchange[0].check_price()
       exchange[0].start()
     else:
       print("Error starting instance [" + self.active_exchange + "]")
