@@ -29,7 +29,7 @@ class Indicator:
 
     self.indicator.set_menu(self._menu())
 
-    self.logo_124px = GdkPixbuf.Pixbuf.new_from_file('resources/logo_124px.png')
+    self.logo_124px = GdkPixbuf.Pixbuf.new_from_file(self.config['project_root'] + '/resources/logo_124px.png')
     # self.logo_124px.saturate_and_pixelate(self.logo_124px, 1, True)
 
   def init(self, exchanges):
@@ -207,6 +207,7 @@ class Indicator:
     if (self.active_exchange == 'kraken'):
       self.p_kraken_extra.show()
 
+  # kraken asset paris
   def _p_kraken_extra(self):
     label = Gtk.Label("Currency")
     label.set_alignment(.9, .5)

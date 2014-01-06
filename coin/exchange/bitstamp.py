@@ -25,10 +25,8 @@ class Bitstamp:
     self.alarm = Alarm(config['app']['name'])
 
   def start(self):
-    self.refresh_frequency = self.indicator.refresh_frequency
-
     self._check_price()
-    self.timeout_id = GObject.timeout_add(self.refresh_frequency * 1000, self._check_price)
+    self.timeout_id = GObject.timeout_add(self.indicator.refresh_frequency * 1000, self._check_price)
 
   def stop(self):
     if self.timeout_id:
