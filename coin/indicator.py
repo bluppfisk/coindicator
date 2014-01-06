@@ -5,7 +5,7 @@
 
 __author__ = "nil.gradisnik@gmail.com"
 
-from gi.repository import Gtk
+from gi.repository import Gtk, GdkPixbuf
 try:
   from gi.repository import AppIndicator3 as AppIndicator
 except:
@@ -21,17 +21,19 @@ class Indicator:
 
   def __init__(self, config):
     self.config = config
+    self.settings = Settings()
 
-    self.ind = AppIndicator.Indicator.new(self.config['app']['name'], ICON_NAME, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
-    self.ind.set_status(AppIndicator.IndicatorStatus.ACTIVE)
-    self.ind.set_label("syncing", "$888.88")
+    self.indicator = AppIndicator.Indicator.new(self.config['app']['name'], ICON_NAME, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
+    self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
+    self.indicator.set_label("syncing", "$888.88")
 
-    self._menu_setup()
-    self.ind.set_menu(self.menu)
+    self.indicator.set_menu(self._menu())
+
+    self.logo_124px = GdkPixbuf.Pixbuf.new_from_file('resources/logo_124px.png')
+    # self.logo_124px.saturate_and_pixelate(self.logo_124px, 1, True)
 
   def init(self, exchanges):
     self.exchanges = exchanges
-    self.settings = Settings(exchanges)
 
     self.refresh_frequency = self.settings.refresh()
     self.active_exchange = self.settings.exchange()
@@ -43,7 +45,7 @@ class Indicator:
     Gtk.main()
 
   def set_data(self, label, bid, high, low, ask, volume=None):
-    self.ind.set_label(label, "$888.88")
+    self.indicator.set_label(label, "$888.88")
 
     self.bid_item.get_child().set_text(bid)
     self.high_item.get_child().set_text(high)
@@ -72,8 +74,8 @@ class Indicator:
     for exchange in self.exchanges:
       exchange['instance'].stop()
 
-  def _menu_setup(self):
-    self.menu = Gtk.Menu()
+  def _menu(self):
+    menu = Gtk.Menu()
 
     self.bid_item = Gtk.MenuItem(utils.category['bid'])
     self.bid_item.show()
@@ -105,15 +107,17 @@ class Indicator:
     quit_item.connect("activate", self._quit)
     quit_item.show()
 
-    self.menu.append(self.bid_item)
-    self.menu.append(self.high_item)
-    self.menu.append(self.low_item)
-    self.menu.append(self.ask_item)
-    self.menu.append(self.volume_item)
-    self.menu.append(separator_item)
-    self.menu.append(preferences_item)
-    self.menu.append(about_item)
-    self.menu.append(quit_item)
+    menu.append(self.bid_item)
+    menu.append(self.high_item)
+    menu.append(self.low_item)
+    menu.append(self.ask_item)
+    menu.append(self.volume_item)
+    menu.append(separator_item)
+    menu.append(preferences_item)
+    menu.append(about_item)
+    menu.append(quit_item)
+
+    return menu
 
   def _about(self, widget):
     about = Gtk.AboutDialog()
@@ -125,7 +129,7 @@ class Indicator:
     about.set_authors([self.config['author']['name'] + ' <' + self.config['author']['email'] + '>'])
     about.set_artists([self.config['artist']['name'] + ' <' + self.config['artist']['email'] + '>'])
     about.set_license_type(Gtk.License.MIT_X11)
-    about.set_logo_icon_name(ICON_NAME)
+    about.set_logo(self.logo_124px)
     res = about.run()
     if res == -4 or -6:  # close events
       about.destroy()
@@ -159,7 +163,7 @@ class Indicator:
 
     spin = Gtk.SpinButton()
     spin.set_increments(1, 1)
-    spin.set_range(3, 120)
+    spin.set_range(5, 120)
     spin.set_value(self.refresh_frequency)
     spin.connect('value-changed', self._refresh_change)
 

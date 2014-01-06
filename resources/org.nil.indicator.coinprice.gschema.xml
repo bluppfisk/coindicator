@@ -3,7 +3,7 @@
   <schema id="org.nil.indicator.coinprice" path="/org/nil/coinprice/">
  
     <key type="i" name="refresh">
-        <range min="3" max="120"/>
+        <range min="5" max="120"/>
         <default>30</default>
         <summary>Refresh interval</summary>
     </key>

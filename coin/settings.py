@@ -16,9 +16,8 @@ DEFAULTS = {
 
 class Settings():
 
-  def __init__(self, exchanges):
+  def __init__(self):
     self.settings = None
-    self.exchanges = exchanges
 
     source = Gio.SettingsSchemaSource.get_default()
     if (source.lookup(SCHEMA_ID, True)):
