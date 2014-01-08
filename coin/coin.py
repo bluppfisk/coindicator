@@ -22,7 +22,7 @@ if __name__ == "__main__":
   config = yaml.load(open(PROJECT_ROOT + '/config.yaml', 'r'))
   config['project_root'] = PROJECT_ROOT
 
-  print("Starting Coin Price indicator v" + str(config['app']['version']))
+  print("Starting Coin Price indicator v" + config['app']['version'])
 
   # indicator applet
   indicator = Indicator(config)

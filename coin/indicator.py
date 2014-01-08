@@ -125,7 +125,7 @@ class Indicator:
     about.set_program_name(self.config['app']['name'])
     about.set_comments(self.config['app']['description'])
     about.set_copyright(self.config['author']['copyright'])
-    about.set_version(str(self.config['app']['version']))
+    about.set_version(self.config['app']['version'])
     about.set_website(self.config['app']['url'])
     about.set_authors([self.config['author']['name'] + ' <' + self.config['author']['email'] + '>'])
     about.set_artists([self.config['artist']['name'] + ' <' + self.config['artist']['email'] + '>'])
