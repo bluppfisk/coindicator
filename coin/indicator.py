@@ -17,6 +17,14 @@ from exchange.kraken import CONFIG as KrakenConfig
 
 ICON_NAME = "gtk-info"
 
+REFRESH_TIMES = [ # seconds
+  '3',
+  '5',
+  '10',
+  '30',
+  '60'
+]
+
 class Indicator:
 
   def __init__(self, config):
@@ -31,16 +39,14 @@ class Indicator:
     self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
     self.indicator.set_label("syncing", "$888.88")
 
-    self.indicator.set_menu(self._menu())
-
     self.logo_124px = GdkPixbuf.Pixbuf.new_from_file(self.config['project_root'] + '/resources/logo_124px.png')
     # self.logo_124px.saturate_and_pixelate(self.logo_124px, 1, True)
 
   def init(self, exchanges):
     self.exchanges = exchanges
 
+    self.indicator.set_menu(self._menu())
     self._start_exchange()
-    # self._preferences(None)
 
     Gtk.main()
 
@@ -75,50 +81,135 @@ class Indicator:
     for exchange in self.exchanges:
       exchange['instance'].stop()
 
+  # UI stuff
   def _menu(self):
     menu = Gtk.Menu()
 
     self.bid_item = Gtk.MenuItem(utils.category['bid'])
-    self.bid_item.show()
-
     self.high_item = Gtk.MenuItem(utils.category['high'])
-    self.high_item.show()
-
     self.low_item = Gtk.MenuItem(utils.category['low'])
-    self.low_item.show()
-
     self.ask_item = Gtk.MenuItem(utils.category['ask'])
-    self.ask_item.show()
-
     self.volume_item = Gtk.MenuItem(utils.category['volume'])
-    self.volume_item.show()
-
-    separator_item = Gtk.SeparatorMenuItem()
-    separator_item.show()
-
-    preferences_item = Gtk.MenuItem("Preferences")
-    preferences_item.connect("activate", self._preferences)
-    preferences_item.show()
 
     about_item = Gtk.MenuItem("About")
     about_item.connect("activate", self._about)
-    about_item.show()
 
     quit_item = Gtk.MenuItem("Quit")
     quit_item.connect("activate", self._quit)
-    quit_item.show()
+
+    refresh_item = Gtk.MenuItem("Refresh")
+    refresh_item.set_submenu(self._menu_refresh())
+
+    exchange_item = Gtk.MenuItem("Exchange")
+    exchange_item.set_submenu(self._menu_exchange())
 
     menu.append(self.bid_item)
     menu.append(self.high_item)
     menu.append(self.low_item)
     menu.append(self.ask_item)
     menu.append(self.volume_item)
-    menu.append(separator_item)
-    menu.append(preferences_item)
+    menu.append(Gtk.SeparatorMenuItem())
+    menu.append(refresh_item)
+    menu.append(exchange_item)
+    menu.append(Gtk.SeparatorMenuItem())
     menu.append(about_item)
     menu.append(quit_item)
 
+    menu.show_all()
+
+    self._menu_currency_visible()
+
     return menu
+
+  def _menu_refresh(self):
+    refresh = Gtk.Menu()
+
+    group = []
+    for ri in REFRESH_TIMES:
+      item = Gtk.RadioMenuItem.new_with_label(group, ri + 's')
+      group.append(item)
+      refresh.append(item)
+
+      if (self.refresh_frequency == int(ri)):
+        item.set_active(True)
+      item.connect('activate', self._menu_refresh_change)
+
+    return refresh
+
+  def _menu_refresh_change(self, widget):
+    if (widget.get_active() is True):
+      self.refresh_frequency = int(widget.get_label()[:-1])
+      self.settings.refresh(self.refresh_frequency)
+      self._start_exchange()
+
+  def _menu_exchange(self):
+    exchange = Gtk.Menu()
+
+    group = []
+    for e in self.exchanges:
+      item = Gtk.RadioMenuItem.new_with_label(group, e['name'])
+      item.set_name(e['code'])
+      group.append(item)
+      exchange.append(item)
+
+      if (self.active_exchange == e['code']):
+        item.set_active(True)
+
+      item.connect('activate', self._menu_exchange_change)
+
+    self._menu_currency(exchange)
+
+    return exchange
+
+  def _menu_exchange_change(self, widget):
+    if (widget.get_active() is True):
+      self.active_exchange = widget.get_name()
+      self.settings.exchange(self.active_exchange)
+
+      self._menu_currency_visible()
+
+      self._start_exchange()
+
+  def _menu_currency(self, exchange_menu):
+      self.currenct_separator = Gtk.SeparatorMenuItem()
+      self.currency_menu = Gtk.MenuItem("Currency")
+
+      exchange_menu.append(self.currenct_separator)
+      exchange_menu.append(self.currency_menu)
+
+      self.currency_menu.set_submenu(self._menu_asset_pairs())
+
+  def _menu_asset_pairs(self):
+      asset_pairs = Gtk.Menu()
+
+      group = []
+      for asset in KrakenConfig['asset_pairs']:
+        item = Gtk.RadioMenuItem.new_with_label(group, asset['name'])
+        item.set_name(asset['code'])
+        group.append(item)
+        asset_pairs.append(item)
+
+        if (self.active_asset_pair == asset['code']):
+          item.set_active(True)
+
+        item.connect('activate', self._menu_asset_pairs_change)
+
+      return asset_pairs
+
+  def _menu_asset_pairs_change(self, widget):
+    if (widget.get_active() is True):
+      self.active_asset_pair = widget.get_name()
+      self.settings.assetpair(self.active_asset_pair)
+
+      self._start_exchange()
+
+  def _menu_currency_visible(self):
+    if (self.active_exchange == 'kraken'):
+      self.currenct_separator.show()
+      self.currency_menu.show()
+    else:
+      self.currenct_separator.hide()
+      self.currency_menu.hide()
 
   def _about(self, widget):
     about = Gtk.AboutDialog()
@@ -134,107 +225,6 @@ class Indicator:
     res = about.run()
     if res == -4 or -6:  # close events
       about.destroy()
-
-  def _preferences(self, widget):
-    p_dialog = Gtk.Dialog(self.config['app']['name'] + " - Preferences")
-    p_dialog.add_button("Close", 1)
-
-    p_dialog.vbox.add(self._p_refresh())
-    p_dialog.vbox.add(Gtk.HSeparator())
-    p_dialog.vbox.add(self._p_exchange())
-    p_dialog.vbox.add(self._p_kraken_extra())
-
-    p_dialog.set_border_width(10)
-    p_dialog.vbox.set_spacing(10)
-    p_dialog.show_all()
-
-    if (self.active_exchange != 'kraken'):
-      self.p_kraken_extra.hide()
-
-    res = p_dialog.run()
-    if res == 1:
-      p_dialog.destroy()
-      self._start_exchange()
-
-  # refresh section
-  def _p_refresh(self):
-    label_refresh = Gtk.Label("Refresh every")
-    label_refresh.set_alignment(.9, .5)
-    label_seconds = Gtk.Label("seconds")
-
-    spin = Gtk.SpinButton()
-    spin.set_increments(1, 1)
-    spin.set_range(5, 120)
-    spin.set_value(self.refresh_frequency)
-    spin.connect('value-changed', self._refresh_change)
-
-    hbox = Gtk.HBox()
-    hbox.add(label_refresh)
-    hbox.add(spin)
-    hbox.add(label_seconds)
-    hbox.set_spacing(10)
-    hbox.set_border_width(20)
-
-    return hbox
-
-  def _refresh_change(self, widget):
-    self.refresh_frequency = widget.get_value_as_int()
-    self.settings.refresh(self.refresh_frequency)
-
-  # exchange section
-  def _p_exchange(self):
-    label = Gtk.Label("Exchange")
-    label.set_alignment(.9, .5)
-
-    combo = Gtk.ComboBoxText()
-    for exchange in self.exchanges:
-      combo.append(exchange['code'], exchange['name'])
-    combo.set_entry_text_column(1)
-    combo.set_active_id(self.active_exchange)
-    combo.connect('changed', self._change_exchange)
-
-    hbox = Gtk.HBox()
-    hbox.add(label)
-    hbox.add(combo)
-    hbox.set_border_width(10)
-
-    return hbox
-
-  def _change_exchange(self, combo):
-    self.active_exchange = combo.get_active_id()
-    self.settings.exchange(self.active_exchange)
-
-    self.p_kraken_extra.hide()
-    if (self.active_exchange == 'kraken'):
-      self.p_kraken_extra.show()
-
-  # kraken asset paris
-  def _p_kraken_extra(self):
-    label = Gtk.Label("Currency")
-    label.set_alignment(.9, .5)
-    label.set_size_request(76, 20)
-
-    combo = Gtk.ComboBoxText()
-    for asset in KrakenConfig['asset_pairs']:
-      combo.append(asset['code'], asset['name'])
-    combo.set_entry_text_column(1)
-    combo.set_active_id(self.active_asset_pair)
-    combo.connect('changed', self._change_assetpair)
-
-    self.p_kraken_extra = Gtk.HBox()
-    self.p_kraken_extra.add(label)
-    self.p_kraken_extra.add(combo)
-    self.p_kraken_extra.set_border_width(10)
-
-    alignment = Gtk.Alignment()
-    alignment.set_size_request(200, 50)
-    alignment.add(self.p_kraken_extra)
-
-    return alignment
-
-  def _change_assetpair(self, combo):
-    self.active_asset_pair = combo.get_active_id()
-    self.settings.assetpair(self.active_asset_pair)
 
   def _quit(self, widget):
     Gtk.main_quit()

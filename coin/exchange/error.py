@@ -13,8 +13,6 @@ class Error:
     self.exchange = exchange
 
     self.count = 0
-    self.max = MAX_ERRORS
-
     self.chill = False
 
   def increment(self):
@@ -30,7 +28,7 @@ class Error:
       self.chill = False
 
   def is_ok(self):
-    max = self.count < self.max
+    max = self.count < MAX_ERRORS
 
     if (max is False):
       print("Warning: maximum error count reached [" + str(MAX_ERRORS) + "]. Cooling down (" + str(REFRESH_INTERVAL) + "s refresh)")

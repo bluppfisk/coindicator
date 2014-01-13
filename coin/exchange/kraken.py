@@ -47,8 +47,6 @@ class Kraken:
     self.timeout_id = 0
     self.alarm = Alarm(config['app']['name'])
 
-    self.asset_pair = self.indicator.active_asset_pair
-
     self.error = Error(self)
 
   def start(self, error_refresh=None):
@@ -60,6 +58,8 @@ class Kraken:
       GLib.source_remove(self.timeout_id)
 
   def check_price(self):
+    self.asset_pair = self.indicator.active_asset_pair
+
     try:
       res = requests.get(CONFIG['ticker'] + '?pair=' + self.asset_pair)
       data = res.json()
