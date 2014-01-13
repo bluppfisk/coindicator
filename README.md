@@ -1,4 +1,3 @@
-
 # Coin Price indicator
 
 ![Coin Price logo](https://raw.github.com/nilgradisnik/coinprice-indicator/master/resources/logo_124px.png)
@@ -22,6 +21,8 @@ Install python dependencies and install [GSettings schema](https://developer.gno
 
 ## Running
 Type `make` to run and the indicator should appear in the notification area.
+
+![Screenshot](https://raw2.github.com/nilgradisnik/coinprice-indicator/master/resources/screenshot.png)
 
 ### Donations
 BTC `1BVVuiix3kWsRs8qvYq8rBnDojAwdYDSJA`
