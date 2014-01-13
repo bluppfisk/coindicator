@@ -13,17 +13,32 @@ except:
 
 import utils
 from settings import Settings
+
 from exchange.kraken import CONFIG as KrakenConfig
+from exchange.mtgox import CONFIG as MtGoxConfig
+from exchange.btce import CONFIG as BtcEConfig
 
 ICON_NAME = "gtk-info"
 
-REFRESH_TIMES = [ # seconds
+REFRESH_TIMES = [  # seconds
   '3',
   '5',
   '10',
   '30',
   '60'
 ]
+
+CURRENCY_SHOW = [
+  'kraken',
+  'mtgox',
+  'btce'
+]
+
+CURRENCIES = {
+  'kraken': KrakenConfig['asset_pairs'],
+  'mtgox': MtGoxConfig['asset_pairs'],
+  'btce': BtcEConfig['asset_pairs']
+}
 
 class Indicator:
 
@@ -32,8 +47,7 @@ class Indicator:
 
     self.settings = Settings()
     self.refresh_frequency = self.settings.refresh()
-    self.active_exchange = self.settings.exchange()
-    self.active_asset_pair = self.settings.assetpair()
+    self.active_exchange = self.settings.exchange()      
 
     self.indicator = AppIndicator.Indicator.new(self.config['app']['name'], ICON_NAME, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
     self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
@@ -65,7 +79,11 @@ class Indicator:
       self.volume_item.hide()
 
   def _start_exchange(self):
-    ap = "Asset pair: " + self.active_asset_pair if self.active_exchange == 'kraken' else ''
+    ap = ''
+    if self.active_exchange in CURRENCY_SHOW:
+      self.active_asset_pair = self.settings.assetpair(self.active_exchange)
+      ap = "Asset pair: " + self.active_asset_pair
+
     print("Using [" + self.active_exchange + "] exchange. (" + str(self.refresh_frequency) + "s refresh) " + ap)
 
     self._stop_exchanges()
@@ -177,13 +195,15 @@ class Indicator:
       exchange_menu.append(self.currenct_separator)
       exchange_menu.append(self.currency_menu)
 
-      self.currency_menu.set_submenu(self._menu_asset_pairs())
+      if self.active_exchange in CURRENCIES:
+        self.currency_menu.set_submenu(self._menu_asset_pairs())
 
   def _menu_asset_pairs(self):
       asset_pairs = Gtk.Menu()
+      self.active_asset_pair = self.settings.assetpair(self.active_exchange)
 
       group = []
-      for asset in KrakenConfig['asset_pairs']:
+      for asset in CURRENCIES[self.active_exchange]:
         item = Gtk.RadioMenuItem.new_with_label(group, asset['name'])
         item.set_name(asset['code'])
         group.append(item)
@@ -199,14 +219,15 @@ class Indicator:
   def _menu_asset_pairs_change(self, widget):
     if (widget.get_active() is True):
       self.active_asset_pair = widget.get_name()
-      self.settings.assetpair(self.active_asset_pair)
+      self.settings.assetpair(self.active_exchange, self.active_asset_pair)
 
       self._start_exchange()
 
   def _menu_currency_visible(self):
-    if (self.active_exchange == 'kraken'):
+    if self.active_exchange in CURRENCY_SHOW:
       self.currenct_separator.show()
-      self.currency_menu.show()
+      self.currency_menu.set_submenu(self._menu_asset_pairs())
+      self.currency_menu.show_all()
     else:
       self.currenct_separator.hide()
       self.currency_menu.hide()

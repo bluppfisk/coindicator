@@ -11,7 +11,9 @@ SCHEMA_ID = 'org.nil.indicator.coinprice'
 DEFAULTS = {
   'refresh': 30,
   'exchange': 'kraken',
-  'assetpair': 'XXBTZUSD'
+  'assetpair-kraken': 'XXBTZUSD',
+  'assetpair-mtgox': 'BTCUSD',
+  'assetpair-btce': 'btc_usd'
 }
 
 class Settings():
@@ -37,8 +39,8 @@ class Settings():
     else:
       return DEFAULTS['exchange']
 
-  def assetpair(self, val=None):
+  def assetpair(self, exchange, val=None):
     if (self.settings):
-      return self.settings.get_string('assetpair') if val is None else self.settings.set_string('assetpair', val)
+      return self.settings.get_string('assetpair-' + exchange) if val is None else self.settings.set_string('assetpair-' + exchange, val)
     else:
-      return DEFAULTS['assetpair']
+      return DEFAULTS['assetpair' + exchange]
