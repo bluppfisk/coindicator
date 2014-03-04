@@ -27,6 +27,6 @@ Type `make` to run and the indicator should appear in the notification area.
 ![Screenshot](https://raw2.github.com/nilgradisnik/coinprice-indicator/master/resources/screenshot.png)
 
 ### Donations
-BTC `1BVVuiix3kWsRs8qvYq8rBnDojAwdYDSJA`
+BTC `1KoPG1Jhar2Xm3Z9dtwKQ539yL3WWsbGqx`
 
 LTC `LZo6VE64mBtVJ6NAJqwwjteQr9sA1688gr`
