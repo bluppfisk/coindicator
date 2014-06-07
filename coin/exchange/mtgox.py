@@ -3,6 +3,8 @@
 # MtGox
 # https://en.bitcoin.it/wiki/MtGox/API/HTTP/v2
 
+# Legacy code
+
 __author__ = "nil.gradisnik@gmail.com"
 
 from gi.repository import GLib

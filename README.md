@@ -8,7 +8,6 @@ Right now it supports the following exchanges
 
 * [Kraken](https://www.kraken.com)
 * [Bitstamp](https://www.bitstamp.net)
-* [MtGox](https://www.mtgox.com)
 * [BTC-E](https://btc-e.com)
 
 Exchanges can be switched from the menu. Feel free to [contact me](mailto:nil.gradisnik@gmail.com) to implement your favorite bitcoin echange.

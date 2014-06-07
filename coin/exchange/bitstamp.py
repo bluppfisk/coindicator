@@ -14,7 +14,7 @@ from exchange.error import Error
 from alarm import Alarm
 
 CONFIG = {
-  'ticker': 'https://www.bitstamp.net/api/ticker'
+  'ticker': 'https://www.bitstamp.net/api/ticker/'
 }
 
 class Bitstamp:

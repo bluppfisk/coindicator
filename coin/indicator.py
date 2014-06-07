@@ -15,7 +15,6 @@ import utils
 from settings import Settings
 
 from exchange.kraken import CONFIG as KrakenConfig
-from exchange.mtgox import CONFIG as MtGoxConfig
 from exchange.btce import CONFIG as BtcEConfig
 
 ICON_NAME = "gtk-info"
@@ -30,13 +29,11 @@ REFRESH_TIMES = [  # seconds
 
 CURRENCY_SHOW = [
   'kraken',
-  'mtgox',
   'btce'
 ]
 
 CURRENCIES = {
   'kraken': KrakenConfig['asset_pairs'],
-  'mtgox': MtGoxConfig['asset_pairs'],
   'btce': BtcEConfig['asset_pairs']
 }
 
@@ -47,7 +44,7 @@ class Indicator:
 
     self.settings = Settings()
     self.refresh_frequency = self.settings.refresh()
-    self.active_exchange = self.settings.exchange()      
+    self.active_exchange = self.settings.exchange()
 
     self.indicator = AppIndicator.Indicator.new(self.config['app']['name'], ICON_NAME, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
     self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)

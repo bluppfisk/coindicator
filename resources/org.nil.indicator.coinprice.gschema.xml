@@ -17,10 +17,6 @@
         <default>'XXBTZUSD'</default>
         <summary>Kraken asset pairs</summary>
     </key>
-    <key type="s" name="assetpair-mtgox">
-        <default>'BTCUSD'</default>
-        <summary>MtGox asset pairs</summary>
-    </key>
     <key type="s" name="assetpair-btce">
         <default>'btc_usd'</default>
         <summary>BTC-E asset pairs</summary>

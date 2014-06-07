@@ -13,7 +13,6 @@ from indicator import Indicator
 
 from exchange.kraken import Kraken
 from exchange.bitstamp import Bitstamp
-from exchange.mtgox import MtGox
 from exchange.btce import BtcE
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
@@ -40,11 +39,6 @@ if __name__ == "__main__":
       'code': 'bitstamp',
       'name': 'Bitstamp',
       'instance': Bitstamp(config, indicator)
-    },
-    {
-      'code': 'mtgox',
-      'name': 'MtGox',
-      'instance': MtGox(config, indicator)
     },
     {
       'code': 'btce',
