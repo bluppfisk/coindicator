@@ -190,10 +190,10 @@ class Indicator(object):
             self._start_exchange()
 
     def _menu_currency(self, exchange_menu):
-        self.currenct_separator = Gtk.SeparatorMenuItem()
+        self.currency_separator = Gtk.SeparatorMenuItem()
         self.currency_menu = Gtk.MenuItem("Currency")
 
-        exchange_menu.append(self.currenct_separator)
+        exchange_menu.append(self.currency_separator)
         exchange_menu.append(self.currency_menu)
 
         if self.active_exchange in CURRENCIES:
@@ -226,11 +226,11 @@ class Indicator(object):
 
     def _menu_currency_visible(self):
         if self.active_exchange in CURRENCY_SHOW:
-            self.currenct_separator.show()
+            self.currency_separator.show()
             self.currency_menu.set_submenu(self._menu_asset_pairs())
             self.currency_menu.show_all()
         else:
-            self.currenct_separator.hide()
+            self.currency_separator.hide()
             self.currency_menu.hide()
 
     def _about(self, widget):
