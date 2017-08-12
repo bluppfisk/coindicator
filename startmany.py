@@ -6,7 +6,8 @@ import subprocess
 import os
 import yaml
 
-PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 cp_instances = yaml.load(open(PROJECT_ROOT + '/startmany.yaml', 'r'))
 
