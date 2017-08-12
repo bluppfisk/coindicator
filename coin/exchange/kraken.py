@@ -55,6 +55,11 @@ CONFIG = {
       'code': 'XXLMZEUR',
       'name': 'XLM to EUR',
       'currency': utils.currency['eur']
+    },
+    {
+      'code': 'BCHEUR',
+      'name': 'BCH to EUR',
+      'currency': utils.currency['eur']
     }
   ]
 }
@@ -100,7 +105,7 @@ class Kraken:
     asset = data[self.asset_pair]
     currency = [item['currency'] for item in CONFIG['asset_pairs'] if item['code'] == self.asset_pair][0]
 
-    label = currency + asset['c'][0]
+    label = currency + utils.decimal_round(asset['c'][0])
 
     bid = utils.category['bid'] + currency + utils.decimal_round(asset['b'][0])
     high = utils.category['high'] + currency + utils.decimal_round(asset['h'][0])
