@@ -24,7 +24,7 @@ class Settings(object):
         if source.lookup(SCHEMA_ID, True):
             self.settings = Gio.Settings(SCHEMA_ID)
         else:
-            print("GSettings: schama [" + SCHEMA_ID + "] not installed. Using defaults.")
+            print("GSettings: schema [" + SCHEMA_ID + "] not installed. Using defaults.")
 
     def refresh(self, val=None):
         if self.settings:
