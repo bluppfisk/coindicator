@@ -104,8 +104,9 @@ class Kraken:
 
     asset = data[self.asset_pair]
     currency = [item['currency'] for item in CONFIG['asset_pairs'] if item['code'] == self.asset_pair][0]
+    coin = [item['name'] for item in CONFIG['asset_pairs'] if item['code'] == self.asset_pair][0]
 
-    label = currency + utils.decimal_round(asset['c'][0])
+    label = coin[0:3] + ' = ' + currency + utils.decimal_round(asset['c'][0])
 
     bid = utils.category['bid'] + currency + utils.decimal_round(asset['b'][0])
     high = utils.category['high'] + currency + utils.decimal_round(asset['h'][0])

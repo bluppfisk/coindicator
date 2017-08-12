@@ -78,8 +78,9 @@ class BtcE:
 
     # currency = CONFIG['asset_pairs'][0]['currency']
     currency = [item['currency'] for item in CONFIG['asset_pairs'] if item['code'] == self.asset_pair][0]
+    coin = [item['name'] for item in CONFIG['asset_pairs'] if item['code'] == self.asset_pair][0]
 
-    label = currency + utils.decimal_round(data['last'])
+    label = coin[0:3] + ' = ' + currency + utils.decimal_round(data['last'])
 
     bid = utils.category['bid'] + currency + utils.decimal_round(data['buy'])
     high = utils.category['high'] + currency + utils.decimal_round(data['high'])

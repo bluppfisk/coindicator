@@ -26,7 +26,10 @@ if __name__ == "__main__":
     print("Starting Coin Price indicator v" + config['app']['version'])
 
     # indicator applet
-    indicator = Indicator(config)
+    if len(sys.argv) > 1:
+        indicator = Indicator(config, sys.argv[1])
+    else:
+        indicator = Indicator(config)
 
     # exchanges
     exchanges = [
@@ -40,11 +43,13 @@ if __name__ == "__main__":
             'name': 'Bitstamp',
             'instance': Bitstamp(config, indicator)
         },
-        {
-            'code': 'btce',
-            'name': 'BTC-E',
-            'instance': BtcE(config, indicator)
-        }
+
+        ## seized
+        #{
+        #    'code': 'btce',
+        #    'name': 'BTC-E',
+        #    'instance': BtcE(config, indicator)
+        #}
     ]
 
     # init

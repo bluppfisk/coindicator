@@ -22,8 +22,6 @@ from exchange.btce import CONFIG as BtcEConfig
 
 __author__ = "nil.gradisnik@gmail.com"
 
-ICON_NAME = '/resources/icon_32px.png'
-
 REFRESH_TIMES = [  # seconds
     '3',
     '5',
@@ -44,16 +42,16 @@ CURRENCIES = {
 
 
 class Indicator(object):
-    def __init__(self, config):
+    def __init__(self, config, settings=None):
         self.config = config
 
-        self.settings = Settings()
+        self.settings = Settings(settings)
         self.refresh_frequency = self.settings.refresh()
         self.active_exchange = self.settings.exchange()
 
-        self.indicator = AppIndicator.Indicator.new(self.config['app']['name'], '',
+        icon = self.config['project_root'] + '/resources/icon_32px.png'
+        self.indicator = AppIndicator.Indicator.new(self.config['app']['name'], icon,
                                                     AppIndicator.IndicatorCategory.APPLICATION_STATUS)
-        self.indicator.set_icon_full(self.config['project_root'] + ICON_NAME, ICON_NAME)
         self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.indicator.set_label("syncing", "$888.88")
 
