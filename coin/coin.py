@@ -5,6 +5,7 @@
 import os
 import signal
 import yaml
+import sys
 
 from indicator import Indicator
 

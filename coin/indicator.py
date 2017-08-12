@@ -3,6 +3,10 @@
 # Ubuntu App indicator
 # https://unity.ubuntu.com/projects/appindicators/
 
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('AppIndicator3', '0.1')
+
 from gi.repository import Gtk, GdkPixbuf
 
 try:
@@ -18,7 +22,7 @@ from exchange.btce import CONFIG as BtcEConfig
 
 __author__ = "nil.gradisnik@gmail.com"
 
-ICON_NAME = "gtk-info"
+ICON_NAME = '/resources/icon_32px.png'
 
 REFRESH_TIMES = [  # seconds
     '3',
@@ -47,12 +51,13 @@ class Indicator(object):
         self.refresh_frequency = self.settings.refresh()
         self.active_exchange = self.settings.exchange()
 
-        self.indicator = AppIndicator.Indicator.new(self.config['app']['name'], ICON_NAME,
+        self.indicator = AppIndicator.Indicator.new(self.config['app']['name'], '',
                                                     AppIndicator.IndicatorCategory.APPLICATION_STATUS)
+        self.indicator.set_icon_full(self.config['project_root'] + ICON_NAME, ICON_NAME)
         self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.indicator.set_label("syncing", "$888.88")
 
-        self.logo_124px = GdkPixbuf.Pixbuf.new_from_file(self.config['project_root'] + '/resources/logo_124px.png')
+        self.logo_124px = GdkPixbuf.Pixbuf.new_from_file(self.config['project_root'] + '/resources/icon_32px.png')
         # self.logo_124px.saturate_and_pixelate(self.logo_124px, 1, True)
 
         self.exchanges = None
