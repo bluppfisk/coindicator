@@ -11,7 +11,7 @@ from indicator import Indicator
 
 from exchange.kraken import Kraken
 from exchange.bitstamp import Bitstamp
-from exchange.btce import BtcE
+
 
 __author__ = "nil.gradisnik@gmail.com"
 
@@ -43,13 +43,6 @@ if __name__ == "__main__":
             'name': 'Bitstamp',
             'instance': Bitstamp(config, indicator)
         },
-
-        ## seized
-        #{
-        #    'code': 'btce',
-        #    'name': 'BTC-E',
-        #    'instance': BtcE(config, indicator)
-        #}
     ]
 
     # init
