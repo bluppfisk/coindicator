@@ -3,6 +3,10 @@
 # Ubuntu App indicator
 # https://unity.ubuntu.com/projects/appindicators/
 
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('AppIndicator3', '0.1')
+
 from gi.repository import Gtk, GdkPixbuf
 
 try:
@@ -14,11 +18,8 @@ import utils
 from settings import Settings
 
 from exchange.kraken import CONFIG as KrakenConfig
-from exchange.btce import CONFIG as BtcEConfig
 
 __author__ = "nil.gradisnik@gmail.com"
-
-ICON_NAME = "gtk-info"
 
 REFRESH_TIMES = [  # seconds
     '3',
@@ -29,30 +30,29 @@ REFRESH_TIMES = [  # seconds
 ]
 
 CURRENCY_SHOW = [
-    'kraken',
-    'btce'
+    'kraken'
 ]
 
 CURRENCIES = {
-    'kraken': KrakenConfig['asset_pairs'],
-    'btce': BtcEConfig['asset_pairs']
+    'kraken': KrakenConfig['asset_pairs']
 }
 
 
 class Indicator(object):
-    def __init__(self, config):
+    def __init__(self, config, settings=None):
         self.config = config
 
-        self.settings = Settings()
+        self.settings = Settings(settings)
         self.refresh_frequency = self.settings.refresh()
         self.active_exchange = self.settings.exchange()
 
-        self.indicator = AppIndicator.Indicator.new(self.config['app']['name'], ICON_NAME,
+        icon = self.config['project_root'] + '/resources/icon_32px.png'
+        self.indicator = AppIndicator.Indicator.new(self.config['app']['name'], icon,
                                                     AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.indicator.set_label("syncing", "$888.88")
 
-        self.logo_124px = GdkPixbuf.Pixbuf.new_from_file(self.config['project_root'] + '/resources/logo_124px.png')
+        self.logo_124px = GdkPixbuf.Pixbuf.new_from_file(self.config['project_root'] + '/resources/icon_32px.png')
         # self.logo_124px.saturate_and_pixelate(self.logo_124px, 1, True)
 
         self.exchanges = None
@@ -190,10 +190,10 @@ class Indicator(object):
             self._start_exchange()
 
     def _menu_currency(self, exchange_menu):
-        self.currenct_separator = Gtk.SeparatorMenuItem()
+        self.currency_separator = Gtk.SeparatorMenuItem()
         self.currency_menu = Gtk.MenuItem("Currency")
 
-        exchange_menu.append(self.currenct_separator)
+        exchange_menu.append(self.currency_separator)
         exchange_menu.append(self.currency_menu)
 
         if self.active_exchange in CURRENCIES:
@@ -226,11 +226,11 @@ class Indicator(object):
 
     def _menu_currency_visible(self):
         if self.active_exchange in CURRENCY_SHOW:
-            self.currenct_separator.show()
+            self.currency_separator.show()
             self.currency_menu.set_submenu(self._menu_asset_pairs())
             self.currency_menu.show_all()
         else:
-            self.currenct_separator.hide()
+            self.currency_separator.hide()
             self.currency_menu.hide()
 
     def _about(self, widget):

@@ -5,12 +5,13 @@
 import os
 import signal
 import yaml
+import sys
 
 from indicator import Indicator
 
 from exchange.kraken import Kraken
 from exchange.bitstamp import Bitstamp
-from exchange.btce import BtcE
+
 
 __author__ = "nil.gradisnik@gmail.com"
 
@@ -25,7 +26,10 @@ if __name__ == "__main__":
     print("Starting Coin Price indicator v" + config['app']['version'])
 
     # indicator applet
-    indicator = Indicator(config)
+    if len(sys.argv) > 1:
+        indicator = Indicator(config, sys.argv[1])
+    else:
+        indicator = Indicator(config)
 
     # exchanges
     exchanges = [
@@ -39,11 +43,6 @@ if __name__ == "__main__":
             'name': 'Bitstamp',
             'instance': Bitstamp(config, indicator)
         },
-        {
-            'code': 'btce',
-            'name': 'BTC-E',
-            'instance': BtcE(config, indicator)
-        }
     ]
 
     # init
