@@ -12,3 +12,8 @@
   exchange: kraken
   asset_pair: BCHEUR
   refresh: 30
+
+-
+  exchange: kraken
+  asset_pair: XXRPZEUR
+  refresh: 30

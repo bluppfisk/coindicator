@@ -60,6 +60,11 @@ CONFIG = {
       'code': 'BCHEUR',
       'name': 'BCH to EUR',
       'currency': utils.currency['eur']
+    },
+    {
+      'code': 'XXRPZEUR',
+      'name': 'XRP to EUR',
+      'currency': utils.currency['eur']
     }
   ]
 }
