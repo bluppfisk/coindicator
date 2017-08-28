@@ -18,7 +18,6 @@ import utils
 from settings import Settings
 
 from exchange.kraken import CONFIG as KrakenConfig
-from exchange.btce import CONFIG as BtcEConfig
 
 __author__ = "nil.gradisnik@gmail.com"
 
@@ -31,13 +30,11 @@ REFRESH_TIMES = [  # seconds
 ]
 
 CURRENCY_SHOW = [
-    'kraken',
-    'btce'
+    'kraken'
 ]
 
 CURRENCIES = {
-    'kraken': KrakenConfig['asset_pairs'],
-    'btce': BtcEConfig['asset_pairs']
+    'kraken': KrakenConfig['asset_pairs']
 }
 
 
