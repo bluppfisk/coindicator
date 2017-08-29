@@ -24,7 +24,7 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)  # ctrl+c exit
 config = yaml.load(open(PROJECT_ROOT + '/config.yaml', 'r'))
 config['project_root'] = PROJECT_ROOT
 
-print("Starting Coin Price indicator v" + config['app']['version'])
+print("Coin Price indicator v" + config['app']['version'])
 
 cp_instances = yaml.load(open(PROJECT_ROOT + '/startmany.yaml', 'r'))
 
@@ -33,7 +33,7 @@ indicators = []
 counter = 0
 
 for cp_instance in cp_instances:
-    counter = counter + 1
+    counter = counter + 1;
     settings = cp_instance['exchange'] + ':' + cp_instance['asset_pair'] + ':' + str(cp_instance['refresh'])
     indicator = Indicator(counter, config, settings)
     exchanges = [

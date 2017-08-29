@@ -15,7 +15,6 @@ except ImportError:
     from gi.repository import AppIndicator
 
 import utils
-import threading
 
 from settings import Settings
 from exchange.kraken import CONFIG as KrakenConfig
@@ -39,11 +38,8 @@ CURRENCIES = {
 }
 
 
-class Indicator(threading.Thread):
+class Indicator(object):
     def __init__(self, counter, config, settings=None):
-        threading.Thread.__init__(self)
-        # self.threadID = threadID
-        # self.name = name
         self.counter = counter
 
         self.config = config
@@ -58,14 +54,13 @@ class Indicator(threading.Thread):
         self.indicator.set_label("syncing", "$888.88")
 
         self.logo_124px = GdkPixbuf.Pixbuf.new_from_file(self.config['project_root'] + '/resources/icon_32px.png')
-        # self.logo_124px.saturate_and_pixelate(self.logo_124px, 1, True)
 
         self.exchanges = None
 
     def set_exchanges(self, exchanges):
         self.exchanges = exchanges
 
-    def run(self):
+    def start(self):
         self.indicator.set_menu(self._menu())
         self._start_exchange()
 
@@ -87,9 +82,9 @@ class Indicator(threading.Thread):
         ap = ''
         if self.active_exchange in CURRENCY_SHOW:
             self.active_asset_pair = self.settings.assetpair(self.active_exchange)
-            ap = "Asset pair: " + self.active_asset_pair
+            ap = self.active_asset_pair
 
-        print("Using [" + self.active_exchange + "] exchange. (" + str(self.refresh_frequency) + "s refresh) " + ap)
+        print("loading " + ap + " from " + self.active_exchange + " (" + str(self.refresh_frequency) + "s)")
 
         self._stop_exchanges()
 
@@ -98,7 +93,7 @@ class Indicator(threading.Thread):
             exchange[0].check_price()
             exchange[0].start()
         else:
-            print("Error starting instance [" + self.active_exchange + "]")
+            print("Error loading [" + self.active_exchange + "]")
 
     def _stop_exchanges(self):
         for exchange in self.exchanges:
