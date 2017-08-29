@@ -3,6 +3,7 @@
 # Ubuntu App indicator
 # https://unity.ubuntu.com/projects/appindicators/
 
+import weakref
 import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
@@ -39,7 +40,10 @@ CURRENCIES = {
 
 
 class Indicator(object):
+    instances = []
+
     def __init__(self, counter, config, settings=None):
+        Indicator.instances.append(self)
         self.counter = counter
 
         self.config = config
@@ -112,8 +116,11 @@ class Indicator(object):
         about_item = Gtk.MenuItem("About")
         about_item.connect("activate", self._about)
 
-        quit_item = Gtk.MenuItem("Quit")
+        quit_item = Gtk.MenuItem("Remove")
         quit_item.connect("activate", self._quit)
+
+        quit_all_item = Gtk.MenuItem("Quit All")
+        quit_all_item.connect("activate", self._quit_all)
 
         refresh_item = Gtk.MenuItem("Refresh")
         refresh_item.set_submenu(self._menu_refresh())
@@ -132,6 +139,7 @@ class Indicator(object):
         menu.append(Gtk.SeparatorMenuItem())
         menu.append(about_item)
         menu.append(quit_item)
+        menu.append(quit_all_item)
 
         menu.show_all()
 
@@ -248,4 +256,15 @@ class Indicator(object):
             about.destroy()
 
     def _quit(self, widget):
+        if len(self.instances) == 1:
+            self._quit_all(widget)
+        else:
+            self.instances.remove(self)
+            self._stop_exchanges()
+            del self.indicator
+            print("Indicator removed")
+            
+
+    def _quit_all(self, widget):
+        print("Exiting")
         Gtk.main_quit()

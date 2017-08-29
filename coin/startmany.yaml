@@ -1,19 +1,19 @@
 -
   exchange: kraken
   asset_pair: XETHZEUR
-  refresh: 30
+  refresh: 10
 
 -
   exchange: kraken
   asset_pair: XXBTZEUR
-  refresh: 30
+  refresh: 10
 
 -
   exchange: kraken
   asset_pair: BCHEUR
-  refresh: 30
+  refresh: 10
 
 -
   exchange: kraken
   asset_pair: XXRPZEUR
-  refresh: 30
+  refresh: 10

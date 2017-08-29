@@ -21,11 +21,13 @@ Install python dependencies and install [GSettings schema](https://developer.gno
 ```
 
 ## Running
-Type `make` to run and the indicator should appear in the notification area.
+To run the indicator with the default settings or with the previous settings, type `make` to run and the indicator should appear in the notification area. Alternatively, you can run `python3 coin/coin.py`.
 
-Run `python3 ./coin/coin.py exchange:asset_pair:refresh_rate` to customise the instance from the commandline.
+## Configuration
+Coin.py takes two parameters to configure the instance(s).
 
-## Running multiple instances
-Run multiple instances using `python3 ./startmany.py`. Edit the `startmany.yml` file to configure the exchanges, currency pairs and refresh rates for each instance.
+`python3 coin/coin.py asset=kraken:XXBTZEUR:30` will launch a single indicator for the asset pair XBT/EUR on the Kraken exchange with a refresh rate of 30 seconds.
+
+`python3 coin/coin.py file=startmany.yaml` will read startmany.yaml from the `coin` directory and start an indicator for each configuration it finds in there. Edit `startmany.yaml` to configure the exchanges, currency pairs and refresh rates for each instance.
 
 ![Screenshot](https://raw.githubusercontent.com/nilgradisnik/coinprice-indicator/master/resources/screenshot.png)

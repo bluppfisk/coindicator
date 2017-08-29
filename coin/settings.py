@@ -46,8 +46,11 @@ class Settings(object):
             return DEFAULTS['exchange']
 
     def assetpair(self, exchange, val=None):
+        if val:
+            val.upper()
+
         if self.manual_settings:
-            return self.manual_settings[1]
+            return self.manual_settings[1].upper()
         elif self.settings:
             return self.settings.get_string('assetpair-' + exchange) if not val else self.settings.set_string(
                 'assetpair-' + exchange, val)
