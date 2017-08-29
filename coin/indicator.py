@@ -40,10 +40,10 @@ CURRENCIES = {
 
 
 class Indicator(threading.Thread):
-    def __init__(self, threadID, name, counter, config, settings=None):
+    def __init__(self, counter, config, settings=None):
         threading.Thread.__init__(self)
-        self.threadID = threadID
-        self.name = name
+        # self.threadID = threadID
+        # self.name = name
         self.counter = counter
 
         self.config = config
@@ -52,7 +52,7 @@ class Indicator(threading.Thread):
         self.active_exchange = self.settings.exchange()
 
         icon = self.config['project_root'] + '/resources/icon_32px.png'
-        self.indicator = AppIndicator.Indicator.new(self.config['app']['name'], icon,
+        self.indicator = AppIndicator.Indicator.new(self.config['app']['name'] + "_" + str(counter), icon,
                                                     AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.indicator.set_label("syncing", "$888.88")

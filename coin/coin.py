@@ -33,9 +33,9 @@ indicators = []
 counter = 0
 
 for cp_instance in cp_instances:
-    ++counter
+    counter = counter + 1
     settings = cp_instance['exchange'] + ':' + cp_instance['asset_pair'] + ':' + str(cp_instance['refresh'])
-    indicator = Indicator(config, 'indicator' + str(counter), counter, config, settings)
+    indicator = Indicator(counter, config, settings)
     exchanges = [
         {
             'code': 'kraken',
@@ -53,6 +53,5 @@ for cp_instance in cp_instances:
 
 for indicator in indicators:
     indicator.start()
-    indicator.join()
 
 Gtk.main()
