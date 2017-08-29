@@ -15,8 +15,9 @@ except ImportError:
     from gi.repository import AppIndicator
 
 import utils
-from settings import Settings
+import threading
 
+from settings import Settings
 from exchange.kraken import CONFIG as KrakenConfig
 
 __author__ = "nil.gradisnik@gmail.com"
@@ -38,10 +39,14 @@ CURRENCIES = {
 }
 
 
-class Indicator(object):
-    def __init__(self, config, settings=None):
-        self.config = config
+class Indicator(threading.Thread):
+    def __init__(self, threadID, name, counter, config, settings=None):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.counter = counter
 
+        self.config = config
         self.settings = Settings(settings)
         self.refresh_frequency = self.settings.refresh()
         self.active_exchange = self.settings.exchange()
@@ -57,13 +62,12 @@ class Indicator(object):
 
         self.exchanges = None
 
-    def init(self, exchanges):
+    def set_exchanges(self, exchanges):
         self.exchanges = exchanges
 
+    def run(self):
         self.indicator.set_menu(self._menu())
         self._start_exchange()
-
-        Gtk.main()
 
     def set_data(self, label, bid, high, low, ask, volume=None):
         self.indicator.set_label(label, "$888.88")

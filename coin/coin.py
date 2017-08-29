@@ -6,32 +6,36 @@ import os
 import signal
 import yaml
 import sys
+import gi
+gi.require_version('Gtk', '3.0')
+
+from gi.repository import Gtk, GdkPixbuf
 
 from indicator import Indicator
-
 from exchange.kraken import Kraken
 from exchange.bitstamp import Bitstamp
-
 
 __author__ = "nil.gradisnik@gmail.com"
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
-if __name__ == "__main__":
-    signal.signal(signal.SIGINT, signal.SIG_DFL)  # ctr+c exit
+signal.signal(signal.SIGINT, signal.SIG_DFL)  # ctrl+c exit
 
-    config = yaml.load(open(PROJECT_ROOT + '/config.yaml', 'r'))
-    config['project_root'] = PROJECT_ROOT
+config = yaml.load(open(PROJECT_ROOT + '/config.yaml', 'r'))
+config['project_root'] = PROJECT_ROOT
 
-    print("Starting Coin Price indicator v" + config['app']['version'])
+print("Starting Coin Price indicator v" + config['app']['version'])
 
-    # indicator applet
-    if len(sys.argv) > 1:
-        indicator = Indicator(config, sys.argv[1])
-    else:
-        indicator = Indicator(config)
+cp_instances = yaml.load(open(PROJECT_ROOT + '/startmany.yaml', 'r'))
 
-    # exchanges
+threads = []
+indicators = []
+counter = 0
+
+for cp_instance in cp_instances:
+    ++counter
+    settings = cp_instance['exchange'] + ':' + cp_instance['asset_pair'] + ':' + str(cp_instance['refresh'])
+    indicator = Indicator(config, 'indicator' + str(counter), counter, config, settings)
     exchanges = [
         {
             'code': 'kraken',
@@ -44,6 +48,11 @@ if __name__ == "__main__":
             'instance': Bitstamp(config, indicator)
         },
     ]
+    indicator.set_exchanges(exchanges)
+    indicators.append(indicator)
 
-    # init
-    indicator.init(exchanges)
+for indicator in indicators:
+    indicator.start()
+    indicator.join()
+
+Gtk.main()
