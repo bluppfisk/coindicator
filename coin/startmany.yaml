@@ -10,7 +10,7 @@
 
 -
   exchange: kraken
-  asset_pair: BCHEUR
+  asset_pair: XXBCZEUR
   refresh: 10
 
 -
