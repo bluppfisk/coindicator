@@ -189,9 +189,19 @@ class Indicator(object):
         return exchange
 
     def _menu_exchange_change(self, widget):
+
         if widget.get_active():
             self.active_exchange = widget.get_name()
-            self.settings.exchange(self.active_exchange)
+
+            for assetpair in CURRENCIES[self.active_exchange]:
+                if assetpair['isocode'] == self.active_asset_pair:
+                    active_asset_pair = self.active_asset_pair
+                    break
+                else:
+                    active_asset_pair = CURRENCIES[self.active_exchange][0]['isocode']
+
+            self.settings = Settings(self.active_exchange + ':' + active_asset_pair + ':' + str(self.refresh_frequency))
+            # self.settings.exchange(self.active_exchange)
 
             self._menu_currency_visible()
 
@@ -209,6 +219,7 @@ class Indicator(object):
 
     def _menu_asset_pairs(self):
         asset_pairs = Gtk.Menu()
+
         self.active_asset_pair = self.settings.assetpair(self.active_exchange)
 
         group = []
@@ -228,7 +239,8 @@ class Indicator(object):
     def _menu_asset_pairs_change(self, widget):
         if widget.get_active():
             self.active_asset_pair = widget.get_name()
-            self.settings.assetpair(self.active_exchange, self.active_asset_pair)
+            self.settings = Settings(self.active_exchange + ':' + self.active_asset_pair + ':' + str(self.refresh_frequency))
+            # self.settings.assetpair(self.active_exchange, self.active_asset_pair)
 
             self._start_exchange()
 
