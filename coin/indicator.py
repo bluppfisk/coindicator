@@ -3,7 +3,6 @@
 # Ubuntu App indicator
 # https://unity.ubuntu.com/projects/appindicators/
 
-import weakref
 import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
@@ -19,6 +18,7 @@ import utils
 
 from settings import Settings
 from exchange.kraken import CONFIG as KrakenConfig
+from exchange.bityep import CONFIG as BitYepConfig
 
 __author__ = "nil.gradisnik@gmail.com"
 
@@ -31,11 +31,13 @@ REFRESH_TIMES = [  # seconds
 ]
 
 CURRENCY_SHOW = [
-    'kraken'
+    'kraken',
+    'bityep'
 ]
 
 CURRENCIES = {
-    'kraken': KrakenConfig['asset_pairs']
+    'kraken': KrakenConfig['asset_pairs'],
+    'bityep': BitYepConfig['asset_pairs']
 }
 
 
@@ -52,8 +54,7 @@ class Indicator(object):
         self.active_exchange = self.settings.exchange()
 
         icon = self.config['project_root'] + '/resources/icon_32px.png'
-        self.indicator = AppIndicator.Indicator.new(self.config['app']['name'] + "_" + str(counter), icon,
-                                                    AppIndicator.IndicatorCategory.APPLICATION_STATUS)
+        self.indicator = AppIndicator.Indicator.new(self.config['app']['name'] + "_" + str(counter), icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.indicator.set_label("syncing", "$888.88")
 
@@ -213,11 +214,11 @@ class Indicator(object):
         group = []
         for asset in CURRENCIES[self.active_exchange]:
             item = Gtk.RadioMenuItem.new_with_label(group, asset['name'])
-            item.set_name(asset['code'])
+            item.set_name(asset['isocode'])
             group.append(item)
             asset_pairs.append(item)
 
-            if self.active_asset_pair == asset['code']:
+            if self.active_asset_pair == asset['isocode']:
                 item.set_active(True)
 
             item.connect('activate', self._menu_asset_pairs_change)

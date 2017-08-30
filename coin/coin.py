@@ -9,11 +9,12 @@ import sys
 import gi
 gi.require_version('Gtk', '3.0')
 
-from gi.repository import Gtk, GdkPixbuf
+from gi.repository import Gtk
 
 from indicator import Indicator
 from exchange.kraken import Kraken
 from exchange.bitstamp import Bitstamp
+from exchange.bityep import BitYep
 
 __author__ = "nil.gradisnik@gmail.com"
 
@@ -68,6 +69,11 @@ class Coin(object):
                 'name': 'Bitstamp',
                 'instance': Bitstamp(config, indicator)
             },
+            {
+                'code': 'bityep',
+                'name': 'BitYep',
+                'instance': BitYep(config, indicator)
+            }
         ]
         indicator.set_exchanges(exchanges)
         indicator.start()
