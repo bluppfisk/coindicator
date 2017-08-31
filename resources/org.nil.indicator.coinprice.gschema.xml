@@ -17,7 +17,7 @@
         <default>'XXBTZUSD'</default>
         <summary>Kraken asset pairs</summary>
     </key>
-
+    
     <key type="s" name="assetpair-bityep">
         <default>'XXBTZUSD'</default>
         <summary>BitYep asset pairs</summary>

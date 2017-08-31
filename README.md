@@ -34,4 +34,9 @@ Coin.py takes two parameters to configure the instance(s):
 
 * App freezes after suspending and resuming the computer. Kill the app manually or exit it before resuming.
 
+Run `python3 ./coin/coin.py exchange:asset_pair:refresh_rate` to customise the instance from the commandline.
+
+## Running multiple instances
+Run multiple instances using `python3 ./startmany.py`. Edit the `startmany.yml` file to configure the exchanges, currency pairs and refresh rates for each instance.
+
 ![Screenshot](https://raw.githubusercontent.com/nilgradisnik/coinprice-indicator/master/resources/screenshot.png)

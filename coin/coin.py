@@ -16,6 +16,7 @@ from exchange.kraken import Kraken
 from exchange.bitstamp import Bitstamp
 from exchange.bityep import BitYep
 
+
 __author__ = "nil.gradisnik@gmail.com"
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
