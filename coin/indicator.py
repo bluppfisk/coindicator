@@ -4,6 +4,7 @@
 # https://unity.ubuntu.com/projects/appindicators/
 
 import gi
+import logging
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
 
@@ -92,7 +93,7 @@ class Indicator(object):
             self.active_asset_pair = self.settings.assetpair(self.active_exchange)
             ap = self.active_asset_pair
 
-        print("loading " + ap + " from " + self.active_exchange + " (" + str(self.refresh_frequency) + "s)")
+        logging.info("loading " + ap + " from " + self.active_exchange + " (" + str(self.refresh_frequency) + "s)")
 
         self._stop_exchanges()
 
@@ -101,13 +102,12 @@ class Indicator(object):
             exchange[0].check_price()
             exchange[0].start()
         else:
-            print("Error loading [" + self.active_exchange + "]")
+            logging.info("Error loading [" + self.active_exchange + "]")
 
     def _stop_exchanges(self):
         for exchange in self.exchanges:
             exchange['instance'].stop()
 
-    # UI stuff
     def _menu(self):
         menu = Gtk.Menu()
 
@@ -204,7 +204,6 @@ class Indicator(object):
                     active_asset_pair = CURRENCIES[self.active_exchange][0]['isocode']
 
             self.settings = Settings(self.active_exchange + ':' + active_asset_pair + ':' + str(self.refresh_frequency))
-            # self.settings.exchange(self.active_exchange)
 
             self._menu_currency_visible()
 
@@ -243,7 +242,6 @@ class Indicator(object):
         if widget.get_active():
             self.active_asset_pair = widget.get_name()
             self.settings = Settings(self.active_exchange + ':' + self.active_asset_pair + ':' + str(self.refresh_frequency))
-            # self.settings.assetpair(self.active_exchange, self.active_asset_pair)
 
             self._start_exchange()
 
@@ -278,9 +276,9 @@ class Indicator(object):
             self.instances.remove(self)
             self._stop_exchanges()
             del self.indicator
-            print("Indicator removed")
+            logging.info("Indicator removed")
             
 
     def _quit_all(self, widget):
-        print("Exiting")
+        logging.info("Exiting")
         Gtk.main_quit()

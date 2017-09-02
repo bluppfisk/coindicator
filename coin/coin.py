@@ -6,6 +6,7 @@ import os
 import signal
 import yaml
 import sys
+import logging
 import gi
 gi.require_version('Gtk', '3.0')
 
@@ -27,7 +28,7 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)  # ctrl+c exit
 config = yaml.load(open(PROJECT_ROOT + '/config.yaml', 'r'))
 config['project_root'] = PROJECT_ROOT
 
-print("Coin Price indicator v" + config['app']['version'])
+logging.info("Coin Price indicator v" + config['app']['version'])
 
 class Coin(object):
     def __init__(self):

@@ -2,6 +2,8 @@
 
 # Echange error handling
 
+import logging
+
 __author__ = "nil.gradisnik@gmail.com"
 
 MAX_ERRORS = 5  # maximum number of errors before chilling
@@ -22,7 +24,7 @@ class Error:
     self.count = 0
 
     if (self.chill):
-      print("All ok. Restoring normal refresh frequency.")
+      logging.info("All ok. Restoring normal refresh frequency.")
       self.exchange.stop()
       self.exchange.start()
       self.chill = False
@@ -31,7 +33,7 @@ class Error:
     max = self.count < MAX_ERRORS
 
     if (max is False):
-      print("Warning: maximum error count reached [" + str(MAX_ERRORS) + "]. Cooling down (" + str(REFRESH_INTERVAL) + "s refresh)")
+      logging.info("Warning: maximum error count reached [" + str(MAX_ERRORS) + "]. Cooling down (" + str(REFRESH_INTERVAL) + "s refresh)")
       self.exchange.stop()
       self.exchange.start(REFRESH_INTERVAL)
       self.chill = True

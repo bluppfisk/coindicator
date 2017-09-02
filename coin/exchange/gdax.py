@@ -8,6 +8,7 @@ __author__ = "sander.vandemoortel@gmail.com"
 from gi.repository import GLib
 
 import requests
+import logging
 
 import utils
 from exchange.error import Error
@@ -112,4 +113,4 @@ class Gdax:
     self.indicator.set_data(label, bid, ask, volume, 'no further data')
 
   def _handle_error(self, error):
-    print("Gdax API error: " + str(error))
+    logging.info("Gdax API error: " + str(error))

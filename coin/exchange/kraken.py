@@ -8,6 +8,7 @@ __author__ = "nil.gradisnik@gmail.com"
 from gi.repository import GLib
 
 import requests
+import logging
 
 import utils
 from exchange.error import Error
@@ -111,7 +112,7 @@ class Kraken:
         self._parse_result(data['result'])
 
     except Exception as e:
-      print('Error: ' + str(e))
+      logging.info('Error: ' + str(e))
       self.error.increment()
 
     return self.error.is_ok()
@@ -136,4 +137,4 @@ class Kraken:
     self.indicator.set_data(label, bid, high, low, ask)
 
   def _handle_error(self, error):
-    print("Kraken API error: " + error[0])
+    logging.info("Kraken API error: " + error[0])

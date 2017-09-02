@@ -8,6 +8,7 @@ __author__ = "nil.gradisnik@gmail.com"
 from gi.repository import GLib
 
 import requests
+import logging
 
 import utils as utils
 from exchange.error import Error
@@ -43,7 +44,7 @@ class Bitstamp:
         self._parse_result(data)
 
     except Exception as e:
-      print(e)
+      logging.info(e)
       self.error.increment()
 
     return self.error.is_ok()
@@ -67,4 +68,4 @@ class Bitstamp:
     self.indicator.set_data(label, bid, high, low, ask, volume)
 
   def _handle_error(self, error):
-    print("Bitstamp API error: " + error[0])
+    logging.info("Bitstamp API error: " + error[0])

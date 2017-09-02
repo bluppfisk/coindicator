@@ -3,6 +3,7 @@
 # GSettings
 
 from gi.repository import Gio
+import logging
 
 __author__ = "nil.gradisnik@gmail.com"
 
@@ -27,7 +28,7 @@ class Settings(object):
             if source.lookup(SCHEMA_ID, True):
                 self.settings = Gio.Settings(SCHEMA_ID)
             else:
-                print("GSettings: schema [" + SCHEMA_ID + "] not installed. Using defaults.")
+                logging.info("GSettings: schema [" + SCHEMA_ID + "] not installed. Using defaults.")
 
     def refresh(self, val=None):
         if self.manual_settings:

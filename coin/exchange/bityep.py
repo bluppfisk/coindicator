@@ -8,6 +8,7 @@ __author__ = "sander.vandemoortel@gmail.com"
 from gi.repository import GLib
 
 import requests
+import logging
 
 import utils
 from exchange.error import Error
@@ -82,4 +83,4 @@ class BitYep:
     self.indicator.set_data(label, first, high, low, volume)
 
   def _handle_error(self, error):
-    print("BitYep API error: " + str(error))
+    logging.info("BitYep API error: " + str(error))
