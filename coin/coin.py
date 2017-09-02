@@ -15,6 +15,7 @@ from indicator import Indicator
 from exchange.kraken import Kraken
 from exchange.bitstamp import Bitstamp
 from exchange.bityep import BitYep
+from exchange.gdax import Gdax
 
 
 __author__ = "nil.gradisnik@gmail.com"
@@ -74,6 +75,11 @@ class Coin(object):
                 'code': 'bityep',
                 'name': 'BitYep',
                 'instance': BitYep(config, indicator)
+            },
+            {
+                'code': 'gdax',
+                'name': 'Gdax',
+                'instance': Gdax(config, indicator)
             }
         ]
         indicator.set_exchanges(exchanges)

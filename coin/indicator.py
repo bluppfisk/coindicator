@@ -19,6 +19,7 @@ import utils
 from settings import Settings
 from exchange.kraken import CONFIG as KrakenConfig
 from exchange.bityep import CONFIG as BitYepConfig
+from exchange.gdax import CONFIG as GdaxConfig
 
 __author__ = "nil.gradisnik@gmail.com"
 
@@ -32,12 +33,14 @@ REFRESH_TIMES = [  # seconds
 
 CURRENCY_SHOW = [
     'kraken',
-    'bityep'
+    'bityep',
+    'gdax'
 ]
 
 CURRENCIES = {
     'kraken': KrakenConfig['asset_pairs'],
-    'bityep': BitYepConfig['asset_pairs']
+    'bityep': BitYepConfig['asset_pairs'],
+    'gdax': GdaxConfig['asset_pairs']
 }
 
 
