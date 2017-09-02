@@ -36,4 +36,4 @@ Coin.py takes two parameters to configure the instance(s):
 
 ## Known Issues
 
-* [Issue #10](https://github.com/nilgradisnik/coinprice-indicator/issues/10)App sometimes freezes after suspending and resuming the computer. Kill the app manually or exit it before resuming.
+* [#10](https://github.com/nilgradisnik/coinprice-indicator/issues/10) App sometimes freezes after suspending and resuming the computer. Workaround: Kill the app manually or exit it before resuming.
