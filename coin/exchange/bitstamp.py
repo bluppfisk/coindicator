@@ -9,7 +9,7 @@ from gi.repository import GLib
 
 import requests
 
-import utils
+import utils as utils
 from exchange.error import Error
 from alarm import Alarm
 

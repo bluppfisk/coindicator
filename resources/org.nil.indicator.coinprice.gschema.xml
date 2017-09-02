@@ -10,12 +10,17 @@
  
     <key type="s" name="exchange">
         <default>'bitstamp'</default>
-        <summary>Crypto currency exchange</summary>
+        <summary>Bitstamp exchange</summary>
     </key>
 
     <key type="s" name="assetpair-kraken">
         <default>'XXBTZUSD'</default>
         <summary>Kraken asset pairs</summary>
+    </key>
+    
+    <key type="s" name="assetpair-bityep">
+        <default>'XXBTZUSD'</default>
+        <summary>BitYep asset pairs</summary>
     </key>
  
   </schema>
