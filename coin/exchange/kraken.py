@@ -47,7 +47,7 @@ CONFIG = {
       'currency': utils.currency['usd']
     },
     {
-      'isocode': 'XETHZEUR',
+      'isocode': 'XXETZEUR',
       'pair': 'XETHZEUR',
       'name': 'ETH to EUR',
       'currency': utils.currency['eur']
@@ -100,10 +100,10 @@ class Kraken:
   def check_price(self):
     self.asset_pair = self.indicator.active_asset_pair
 
-    pair = [item['pair'] for item in CONFIG['asset_pairs'] if item['isocode'] == self.asset_pair][0]
+    self.pair = [item['pair'] for item in CONFIG['asset_pairs'] if item['isocode'] == self.asset_pair][0]
 
     try:
-      res = requests.get(CONFIG['ticker'] + '?pair=' + pair)
+      res = requests.get(CONFIG['ticker'] + '?pair=' + self.pair)
       data = res.json()
       if data['error']:
         self._handle_error(data['error'])
@@ -119,7 +119,7 @@ class Kraken:
   def _parse_result(self, data):
     self.error.clear()
 
-    asset = data[[item['pair'] for item in CONFIG['asset_pairs'] if item['isocode'] == self.asset_pair][0]]
+    asset = data[self.pair]
     currency = [item['currency'] for item in CONFIG['asset_pairs'] if item['isocode'] == self.asset_pair][0]
     coin = [item['name'] for item in CONFIG['asset_pairs'] if item['isocode'] == self.asset_pair][0]
 
