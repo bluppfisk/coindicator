@@ -47,12 +47,6 @@ CONFIG = {
       'currency': utils.currency['eur']
     },
     {
-      'isocode': 'XXETZGBP',
-      'pair': 'ETH-GBP',
-      'name': 'ETH to GBP',
-      'currency': utils.currency['gbp']
-    },
-    {
       'isocode': 'XXLTZUSD',
       'pair': 'LTC-USD',
       'name': 'LTC to USD',
@@ -63,12 +57,6 @@ CONFIG = {
       'pair': 'LTC-EUR',
       'name': 'LTC to EUR',
       'currency': utils.currency['eur']
-    },
-    {
-      'isocode': 'XXLTZGBP',
-      'pair': 'LTC-GBP',
-      'name': 'LTC to GBP',
-      'currency': utils.currency['gbp']
     }
   ]
 }
@@ -121,7 +109,7 @@ class Gdax:
     ask = utils.category['ask'] + currency + utils.decimal_round(asset['ask'])
     volume = utils.category['volume'] + utils.decimal_round(asset['volume'])
 
-    self.indicator.set_data(label, bid, ask, '', volume)
+    self.indicator.set_data(label, bid, ask, volume, 'no further data')
 
   def _handle_error(self, error):
     print("Gdax API error: " + str(error))

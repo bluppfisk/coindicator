@@ -9,10 +9,14 @@ Right now it supports the following exchanges:
 * [Kraken](https://www.kraken.com)
 * [Bitstamp](https://www.bitstamp.net)
 * [BitYep](https://bityep.com)
+* [Gdax](https://www.gdax.com)
 
 Exchanges can be switched from the menu. Feel free to [contact me](mailto:nil.gradisnik@gmail.com) to implement your favorite cryptocurrency exchange.
 
-## Requirements
+![Screenshot](https://raw.githubusercontent.com/nilgradisnik/coinprice-indicator/master/resources/screenshot.png)
+
+
+## Installation
 Should work on a standard Ubuntu Linux installation with python3 installed. Tested on Ubuntu 16.04). Using python3-gi, python3-requests, python3-yaml, python3-notify2 libraries.
 
 Install python dependencies and install [GSettings schema](https://developer.gnome.org/gio/2.32/glib-compile-schemas.html) by running the following command
@@ -32,11 +36,4 @@ Coin.py takes two parameters to configure the instance(s):
 
 ## Known Issues
 
-* App freezes after suspending and resuming the computer. Kill the app manually or exit it before resuming.
-
-Run `python3 ./coin/coin.py exchange:asset_pair:refresh_rate` to customise the instance from the commandline.
-
-## Running multiple instances
-Run multiple instances using `python3 ./startmany.py`. Edit the `startmany.yml` file to configure the exchanges, currency pairs and refresh rates for each instance.
-
-![Screenshot](https://raw.githubusercontent.com/nilgradisnik/coinprice-indicator/master/resources/screenshot.png)
+* [Issue #10](https://github.com/nilgradisnik/coinprice-indicator/issues/10)App sometimes freezes after suspending and resuming the computer. Kill the app manually or exit it before resuming.
