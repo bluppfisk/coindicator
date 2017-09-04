@@ -38,6 +38,7 @@ class Coin(object):
         if len(sys.argv) > 2:
             quit('Too many parameters\n' + usage_error)
 
+        self.start_main()
         if len(sys.argv) == 2:
             if '=' in sys.argv[1]:
                 args = sys.argv[1].split('=')
@@ -47,11 +48,9 @@ class Coin(object):
                     except:
                         quit('Error opening assets file')
 
-                    self.start_main()
                     self.add_many_indicators(cp_instances)
 
                 elif args[0] == 'asset':
-                    self.start_main()
                     self.add_indicator(args[1])
 
                 else:
@@ -61,10 +60,9 @@ class Coin(object):
                 quit('Invalid parameter\n' + usage_error)
 
         else:
-            self.start_main()
             self.add_indicator()
 
-        # Gtk.main()
+        self.gui_ready.set()
 
     # Start the main indicator icon and its menu
     def start_main(self):
@@ -72,15 +70,13 @@ class Coin(object):
         self.logo_124px = GdkPixbuf.Pixbuf.new_from_file(self.config['project_root'] + '/resources/icon_32px.png')
         self.main_item = AppIndicator.Indicator.new(self.config['app']['name'], icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.main_item.set_status(AppIndicator.IndicatorStatus.ACTIVE)
-        self.main_item.set_label("", "")
         self.main_item.set_menu(self._menu())
         self.gui_thread = threading.Thread(target=self.start_gui_thread)
         self.gui_thread.start()
-        self.gui_ready.wait()
 
     def start_gui_thread(self):
         GObject.threads_init()
-        self.gui_ready.set()
+        self.gui_ready.wait()
         Gtk.main()
 
     # Program main menu
