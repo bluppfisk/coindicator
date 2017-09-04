@@ -131,9 +131,6 @@ class Kraken:
     low = utils.category['low'] + currency + utils.decimal_round(asset['l'][0])
     ask = utils.category['ask'] + currency + utils.decimal_round(asset['a'][0])
 
-    # if self.alarm:
-    #   self.alarm.check(float(data["last"]))
-
     self.indicator.set_data(label, bid, high, low, ask)
 
   def _handle_error(self, error):
