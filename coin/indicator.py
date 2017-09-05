@@ -83,7 +83,6 @@ class Indicator():
 
     def start(self):
         icon = self.config['project_root'] + '/resources/icon_32px.png'
-        # icon = self.config['project_root'] + '/resources/' + self.active_asset_pair.lower()[1:4]
         self.indicator = AppIndicator.Indicator.new(self.config['app']['name'] + "_" + str(len(self.instances)), icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.indicator.set_label('loading', 'loading')

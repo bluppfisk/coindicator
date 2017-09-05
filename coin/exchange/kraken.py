@@ -30,13 +30,13 @@ CONFIG = {
       'currency': utils.currency['eur']
     },
     {
-      'isocode': 'XLTCZUSD',
+      'isocode': 'XXLTZUSD',
       'pair': 'XLTCZUSD',
       'name': 'LTC to USD',
       'currency': utils.currency['usd']
     },
     {
-      'isocode': 'XLTCZEUR',
+      'isocode': 'XXLTZEUR',
       'pair': 'XLTCZEUR',
       'name': 'LTC to EUR',
       'currency': utils.currency['eur']
@@ -54,15 +54,15 @@ CONFIG = {
       'currency': utils.currency['eur']
     },
     {
-      'isocode': 'XXLMZUSD',
-      'pair': 'XXLMZUSD',
-      'name': 'XLM to USD',
+      'isocode': 'XXLTZUSD',
+      'pair': 'XLTCZUSD',
+      'name': 'LTC to USD',
       'currency': utils.currency['usd']
     },
     {
-      'isocode': 'XXLMZEUR',
-      'pair': 'XXLMZEUR',
-      'name': 'XLM to EUR',
+      'isocode': 'XXLTZEUR',
+      'pair': 'XLTCZEUR',
+      'name': 'LTC to EUR',
       'currency': utils.currency['eur']
     },
     {

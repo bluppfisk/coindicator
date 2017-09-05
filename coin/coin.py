@@ -6,7 +6,7 @@ import os, signal, yaml, sys, logging, gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
 
-from gi.repository import Gtk, GdkPixbuf, GObject
+from gi.repository import Gtk, GdkPixbuf, GObject, GLib
 
 try:
     from gi.repository import AppIndicator3 as AppIndicator
@@ -32,6 +32,8 @@ class Coin(object):
 
     def __init__(self):
         self.gui_ready = threading.Event()
+        self.start_main()
+
         self.instances = []
         logging.info("Coin Price indicator v" + self.config['app']['version'])
         usage_error = 'Usage: coin.py [flags]\nasset\texchange:asset_pair:refresh_rate\nfile\tLoads various asset pairs from YAML file in ./coin directory'
@@ -62,8 +64,6 @@ class Coin(object):
         else:
             self.add_indicator()
 
-        self.gui_ready.set()
-
     # Start the main indicator icon and its menu
     def start_main(self):
         icon = self.config['project_root'] + '/resources/icon_32px.png'
@@ -71,13 +71,14 @@ class Coin(object):
         self.main_item = AppIndicator.Indicator.new(self.config['app']['name'], icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.main_item.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.main_item.set_menu(self._menu())
-        self.gui_thread = threading.Thread(target=self.start_gui_thread)
+        
+        def start_gui_thread():
+            self.gui_ready.wait()
+            Gtk.main()
+
+        self.gui_thread = threading.Thread(target=start_gui_thread)
         self.gui_thread.start()
 
-    def start_gui_thread(self):
-        GObject.threads_init()
-        self.gui_ready.wait()
-        Gtk.main()
 
     # Program main menu
     def _menu(self):
@@ -104,12 +105,13 @@ class Coin(object):
         indicator = Indicator(self, len(self.instances), self.config, settings)
         self.instances.append(indicator)
         indicator.start()
+        self.gui_ready.set()
 
     # adds many tickers
     def add_many_indicators(self, cp_instances):
         for cp_instance in cp_instances:
             settings = cp_instance['exchange'] + ':' + cp_instance['asset_pair'] + ':' + str(cp_instance['refresh'])
-            self.add_indicator(settings)
+            nt = threading.Thread(target=self.add_indicator(settings))
 
     # Menu item to add a ticker
     def _add_ticker(self, widget):
