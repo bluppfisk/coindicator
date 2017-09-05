@@ -83,6 +83,7 @@ class Indicator():
 
     def start(self):
         icon = self.config['project_root'] + '/resources/icon_32px.png'
+        # icon = self.config['project_root'] + '/resources/' + self.active_asset_pair.lower()[1:4]
         self.indicator = AppIndicator.Indicator.new(self.config['app']['name'] + "_" + str(len(self.instances)), icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.indicator.set_label('loading', 'loading')
@@ -109,6 +110,8 @@ class Indicator():
             self.active_asset_pair = self.settings.assetpair(self.active_exchange)
             ap = self.active_asset_pair
 
+        home_currency = self.active_asset_pair.lower()[1:4]
+        self.indicator.set_icon(self.config['project_root'] + '/resources/' + home_currency + '.png')
         logging.info("loading " + ap + " from " + self.active_exchange + " (" + str(self.refresh_frequency) + "s)")
 
         self._stop_exchanges()
