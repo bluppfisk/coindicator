@@ -17,7 +17,7 @@ category = {
     'low': 'Low:\t\t',
     'ask': 'Ask:\t\t',
     'volume': 'Volume:\t',
-    'first': 'First:\t'
+    'first': 'First:\t\t'
 }
 
 

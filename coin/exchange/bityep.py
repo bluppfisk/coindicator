@@ -73,7 +73,7 @@ class BitYep:
     currency = [item['currency'] for item in CONFIG['asset_pairs'] if item['isocode'] == self.asset_pair][0]
     coin = [item['name'] for item in CONFIG['asset_pairs'] if item['isocode'] == self.asset_pair][0]
 
-    label = coin[0:3] + ' = ' + currency + utils.decimal_round(asset['last'])
+    label = currency + utils.decimal_round(asset['last'])
 
     first = utils.category['first'] + currency + utils.decimal_round(asset['first'])
     high = utils.category['high'] + currency + utils.decimal_round(asset['high'])

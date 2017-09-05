@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
-
 # Ubuntu App indicator
 # https://unity.ubuntu.com/projects/appindicators/
 
-import gi
-import logging
-gi.require_version('Gtk', '3.0')
-gi.require_version('AppIndicator3', '0.1')
+import gi, logging, threading
+logging.basicConfig(level=logging.INFO)
 
-from gi.repository import Gtk, GdkPixbuf
+from gi.repository import Gtk, GdkPixbuf, GObject
 
 try:
     from gi.repository import AppIndicator3 as AppIndicator
@@ -17,12 +14,14 @@ except ImportError:
 
 import utils
 
+from exchange.kraken import Kraken
+from exchange.bitstamp import Bitstamp
+from exchange.bityep import BitYep
+from exchange.gdax import Gdax
 from settings import Settings
 from exchange.kraken import CONFIG as KrakenConfig
 from exchange.bityep import CONFIG as BitYepConfig
 from exchange.gdax import CONFIG as GdaxConfig
-
-__author__ = "nil.gradisnik@gmail.com"
 
 REFRESH_TIMES = [  # seconds
     '3',
@@ -45,31 +44,49 @@ CURRENCIES = {
 }
 
 
-class Indicator(object):
+class Indicator():
     instances = []
 
-    def __init__(self, counter, config, settings=None):
+    def __init__(self, coin, counter, config, settings=None):
         Indicator.instances.append(self)
         self.counter = counter
+
+        self.coin = coin
 
         self.config = config
         self.settings = Settings(settings)
         self.refresh_frequency = self.settings.refresh()
         self.active_exchange = self.settings.exchange()
-
-        icon = self.config['project_root'] + '/resources/icon_32px.png'
-        self.indicator = AppIndicator.Indicator.new(self.config['app']['name'] + "_" + str(counter), icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
-        self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
-        self.indicator.set_label("syncing", "$888.88")
-
-        self.logo_124px = GdkPixbuf.Pixbuf.new_from_file(self.config['project_root'] + '/resources/icon_32px.png')
-
-        self.exchanges = None
-
-    def set_exchanges(self, exchanges):
-        self.exchanges = exchanges
+        
+        self.exchanges = [
+            {
+                'code': 'kraken',
+                'name': 'Kraken',
+                'instance': Kraken(self.config, self)
+            },
+            {
+                'code': 'bitstamp',
+                'name': 'Bitstamp',
+                'instance': Bitstamp(self.config, self)
+            },
+            {
+                'code': 'bityep',
+                'name': 'BitYep',
+                'instance': BitYep(self.config, self)
+            },
+            {
+                'code': 'gdax',
+                'name': 'Gdax',
+                'instance': Gdax(self.config, self)
+            }
+        ]
 
     def start(self):
+        icon = self.config['project_root'] + '/resources/icon_32px.png'
+        # icon = self.config['project_root'] + '/resources/' + self.active_asset_pair.lower()[1:4]
+        self.indicator = AppIndicator.Indicator.new(self.config['app']['name'] + "_" + str(len(self.instances)), icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
+        self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
+        self.indicator.set_label('loading', 'loading')
         self.indicator.set_menu(self._menu())
         self._start_exchange()
 
@@ -93,6 +110,8 @@ class Indicator(object):
             self.active_asset_pair = self.settings.assetpair(self.active_exchange)
             ap = self.active_asset_pair
 
+        home_currency = self.active_asset_pair.lower()[1:4]
+        self.indicator.set_icon(self.config['project_root'] + '/resources/' + home_currency + '.png')
         logging.info("loading " + ap + " from " + self.active_exchange + " (" + str(self.refresh_frequency) + "s)")
 
         self._stop_exchanges()
@@ -117,14 +136,8 @@ class Indicator(object):
         self.ask_item = Gtk.MenuItem(utils.category['ask'])
         self.volume_item = Gtk.MenuItem(utils.category['volume'])
 
-        about_item = Gtk.MenuItem("About")
-        about_item.connect("activate", self._about)
-
-        quit_item = Gtk.MenuItem("Remove")
-        quit_item.connect("activate", self._quit)
-
-        quit_all_item = Gtk.MenuItem("Quit All")
-        quit_all_item.connect("activate", self._quit_all)
+        remove_item = Gtk.MenuItem("Remove Ticker")
+        remove_item.connect("activate", self._remove)
 
         refresh_item = Gtk.MenuItem("Refresh")
         refresh_item.set_submenu(self._menu_refresh())
@@ -141,9 +154,7 @@ class Indicator(object):
         menu.append(refresh_item)
         menu.append(exchange_item)
         menu.append(Gtk.SeparatorMenuItem())
-        menu.append(about_item)
-        menu.append(quit_item)
-        menu.append(quit_all_item)
+        menu.append(remove_item)
 
         menu.show_all()
 
@@ -254,31 +265,11 @@ class Indicator(object):
             self.currency_separator.hide()
             self.currency_menu.hide()
 
-    def _about(self, widget):
-        about = Gtk.AboutDialog()
-        about.set_program_name(self.config['app']['name'])
-        about.set_comments(self.config['app']['description'])
-        about.set_copyright(self.config['author']['copyright'])
-        about.set_version(self.config['app']['version'])
-        about.set_website(self.config['app']['url'])
-        about.set_authors([self.config['author']['name'] + ' <' + self.config['author']['email'] + '>'])
-        about.set_artists([self.config['artist']['name'] + ' <' + self.config['artist']['email'] + '>'])
-        about.set_license_type(Gtk.License.MIT_X11)
-        about.set_logo(self.logo_124px)
-        res = about.run()
-        if res == -4 or -6:  # close events
-            about.destroy()
-
-    def _quit(self, widget):
+    def _remove(self, widget):
         if len(self.instances) == 1:
-            self._quit_all(widget)
+            Gtk.main_quit()
         else:
             self.instances.remove(self)
             self._stop_exchanges()
             del self.indicator
             logging.info("Indicator removed")
-            
-
-    def _quit_all(self, widget):
-        logging.info("Exiting")
-        Gtk.main_quit()

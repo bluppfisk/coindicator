@@ -104,7 +104,7 @@ class Gdax:
     currency = [item['currency'] for item in CONFIG['asset_pairs'] if item['isocode'] == self.asset_pair][0]
     coin = [item['name'] for item in CONFIG['asset_pairs'] if item['isocode'] == self.asset_pair][0]
 
-    label = coin[0:3] + ' = ' + currency + utils.decimal_round(asset['price'])
+    label = currency + utils.decimal_round(asset['price'])
 
     bid = utils.category['bid'] + currency + utils.decimal_round(asset['bid'])
     ask = utils.category['ask'] + currency + utils.decimal_round(asset['ask'])

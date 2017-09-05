@@ -124,15 +124,12 @@ class Kraken:
     currency = [item['currency'] for item in CONFIG['asset_pairs'] if item['isocode'] == self.asset_pair][0]
     coin = [item['name'] for item in CONFIG['asset_pairs'] if item['isocode'] == self.asset_pair][0]
 
-    label = coin[0:3] + ' = ' + currency + utils.decimal_round(asset['c'][0])
+    label = currency + utils.decimal_round(asset['c'][0])
 
     bid = utils.category['bid'] + currency + utils.decimal_round(asset['b'][0])
     high = utils.category['high'] + currency + utils.decimal_round(asset['h'][0])
     low = utils.category['low'] + currency + utils.decimal_round(asset['l'][0])
     ask = utils.category['ask'] + currency + utils.decimal_round(asset['a'][0])
-
-    # if self.alarm:
-    #   self.alarm.check(float(data["last"]))
 
     self.indicator.set_data(label, bid, high, low, ask)
 
