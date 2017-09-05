@@ -33,12 +33,14 @@ class Coin(object):
     def __init__(self):
         self.gui_ready = threading.Event()
         self.start_main()
+
         self.instances = []
         logging.info("Coin Price indicator v" + self.config['app']['version'])
         usage_error = 'Usage: coin.py [flags]\nasset\texchange:asset_pair:refresh_rate\nfile\tLoads various asset pairs from YAML file in ./coin directory'
         if len(sys.argv) > 2:
             quit('Too many parameters\n' + usage_error)
 
+        self.start_main()
         if len(sys.argv) == 2:
             if '=' in sys.argv[1]:
                 args = sys.argv[1].split('=')
@@ -47,7 +49,7 @@ class Coin(object):
                         cp_instances = yaml.load(open(PROJECT_ROOT + '/coin/' + args[1], 'r'))
                     except:
                         quit('Error opening assets file')
-                    
+
                     self.add_many_indicators(cp_instances)
 
                 elif args[0] == 'asset':
@@ -69,7 +71,7 @@ class Coin(object):
         self.main_item = AppIndicator.Indicator.new(self.config['app']['name'], icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.main_item.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.main_item.set_menu(self._menu())
-
+        
         def start_gui_thread():
             self.gui_ready.wait()
             Gtk.main()
