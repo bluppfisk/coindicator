@@ -39,7 +39,6 @@ class Coin(object):
         if len(sys.argv) > 2:
             quit('Too many parameters\n' + usage_error)
 
-        self.start_main()
         if len(sys.argv) == 2:
             if '=' in sys.argv[1]:
                 args = sys.argv[1].split('=')
