@@ -23,3 +23,12 @@ category = {
 
 def decimal_round(number):
     return "%.2f" % float(number)
+
+def decimal_precision(number):
+    return "%.5f" % float(number)
+
+def decimal_auto(number):
+    if(number < 1):
+        return decimal_precision(number)
+    else:
+        return decimal_round(number)
