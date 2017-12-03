@@ -32,7 +32,7 @@ CONFIG = {
        'volumelabel' : 'USD'
     },
     {
-      'isocode': 'XXETZBT',
+      'isocode': 'XXETZXBT',
       'pair': 'ethbtc',
       'name': 'ETH to BTC',
       'currency': utils.currency['btc'],
