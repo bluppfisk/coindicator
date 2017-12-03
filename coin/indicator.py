@@ -18,10 +18,12 @@ from exchange.kraken import Kraken
 from exchange.bitstamp import Bitstamp
 from exchange.bityep import BitYep
 from exchange.gdax import Gdax
+from exchange.gemini import Gemini
 from settings import Settings
 from exchange.kraken import CONFIG as KrakenConfig
 from exchange.bityep import CONFIG as BitYepConfig
 from exchange.gdax import CONFIG as GdaxConfig
+from exchange.gemini import CONFIG as GeminiConfig
 
 REFRESH_TIMES = [  # seconds
     '3',
@@ -34,13 +36,15 @@ REFRESH_TIMES = [  # seconds
 CURRENCY_SHOW = [
     'kraken',
     'bityep',
-    'gdax'
+    'gdax',
+    'gemini'
 ]
 
 CURRENCIES = {
     'kraken': KrakenConfig['asset_pairs'],
     'bityep': BitYepConfig['asset_pairs'],
-    'gdax': GdaxConfig['asset_pairs']
+    'gdax': GdaxConfig['asset_pairs'],
+    'gemini': GeminiConfig['asset_pairs']
 }
 
 
@@ -78,6 +82,11 @@ class Indicator():
                 'code': 'gdax',
                 'name': 'Gdax',
                 'instance': Gdax(self.config, self)
+            },
+            {
+                'code': 'gemini',
+                'name': 'Gemini',
+                'instance': Gemini(self.config, self)
             }
         ]
 

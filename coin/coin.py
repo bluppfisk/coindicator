@@ -18,6 +18,7 @@ from exchange.kraken import Kraken
 from exchange.bitstamp import Bitstamp
 from exchange.bityep import BitYep
 from exchange.gdax import Gdax
+from exchange.gemini import Gemini
 
 import threading
 
