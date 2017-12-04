@@ -18,9 +18,13 @@ DEFAULTS = {
 
 class Settings(object):
     def __init__(self, manual_settings=None):
+        if manual_settings == 'DEFAULTS':
+            self.manual_settings = [DEFAULTS['exchange'], DEFAULTS['assetpair-kraken'], DEFAULTS['refresh']]
+            return
+        
         self.settings = None
         self.manual_settings = None
-        
+
         if manual_settings:
             self.manual_settings = manual_settings.split(':')
         else:
@@ -28,6 +32,7 @@ class Settings(object):
             if source.lookup(SCHEMA_ID, True):
                 self.settings = Gio.Settings(SCHEMA_ID)
             else:
+                self.settings = None
                 logging.info("GSettings: schema [" + SCHEMA_ID + "] not installed. Using defaults.")
 
     def refresh(self, val=None):
