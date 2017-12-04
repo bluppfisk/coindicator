@@ -21,6 +21,11 @@ category = {
     'first': 'First:\t\t'
 }
 
+def decimal_auto(number):
+    if(number < 1):
+        return decimal_round(number, 2)
+    else:
+        return decimal_round(number, 5)
 
 def decimal_round(number, decimals=2):
     return str(round(float(number), decimals))
