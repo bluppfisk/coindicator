@@ -114,7 +114,7 @@ class Coin(object):
 
     # Menu item to add a ticker
     def _add_ticker(self, widget):
-        self.add_indicator()
+        self.add_indicator('DEFAULTS')
 
     # Shows an About dialog
     def _about(self, widget):
