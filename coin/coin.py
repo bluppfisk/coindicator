@@ -18,6 +18,7 @@ from exchange.kraken import Kraken
 from exchange.bitstamp import Bitstamp
 from exchange.bityep import BitYep
 from exchange.gdax import Gdax
+from exchange.gemini import Gemini
 
 import threading
 
@@ -39,7 +40,6 @@ class Coin(object):
         if len(sys.argv) > 2:
             quit('Too many parameters\n' + usage_error)
 
-        self.start_main()
         if len(sys.argv) == 2:
             if '=' in sys.argv[1]:
                 args = sys.argv[1].split('=')
