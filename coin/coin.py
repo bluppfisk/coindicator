@@ -16,9 +16,9 @@ except ImportError:
 from indicator import Indicator
 from exchange.kraken import Kraken
 from exchange.bitstamp import Bitstamp
-from exchange.bityep import BitYep
 from exchange.gdax import Gdax
 from exchange.gemini import Gemini
+from exchange.bittrex import Bittrex
 
 import threading
 
@@ -71,13 +71,12 @@ class Coin(object):
         self.main_item.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.main_item.set_menu(self._menu())
 
-        def start_gui_thread():
-            self.gui_ready.wait()
-            Gtk.main()
-
-        self.gui_thread = threading.Thread(target=start_gui_thread)
+        self.gui_thread = threading.Thread(target=self.start_gui_thread)
         self.gui_thread.start()
 
+    def start_gui_thread(self):
+        self.gui_ready.wait()
+        Gtk.main()
 
     # Program main menu
     def _menu(self):
@@ -103,14 +102,15 @@ class Coin(object):
     def add_indicator(self, settings=None):
         indicator = Indicator(self, len(self.instances), self.config, settings)
         self.instances.append(indicator)
-        indicator.start()
+        nt = threading.Thread(target=indicator.start())
+        nt.start()
         self.gui_ready.set()
 
     # adds many tickers
     def add_many_indicators(self, cp_instances):
         for cp_instance in cp_instances:
             settings = cp_instance['exchange'] + ':' + cp_instance['asset_pair'] + ':' + str(cp_instance['refresh'])
-            nt = threading.Thread(target=self.add_indicator(settings))
+            self.add_indicator(settings)
 
     # Menu item to add a ticker
     def _add_ticker(self, widget):
@@ -131,6 +131,8 @@ class Coin(object):
         res = about.run()
         if res == -4 or -6:  # close events
             about.destroy()
+
+        self.gui_ready.set()
 
     # Menu item to remove all tickers and quits the application
     def _quit_all(self, widget):

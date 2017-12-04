@@ -7,7 +7,7 @@ __author__ = "rick@anteaterllc.com"
 
 from gi.repository import GLib
 
-import requests
+import grequests
 import logging
 
 import utils
