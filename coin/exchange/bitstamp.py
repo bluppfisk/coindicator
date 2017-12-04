@@ -19,11 +19,7 @@ CONFIG = {
   'asset_pairs': [
     {
       'isocode': 'XXBTZUSD',
-<<<<<<< HEAD
-      'pair': '0',
-=======
       'pair': 'XXBTZUSD',
->>>>>>> wizzard94-master
       'name': 'BTC to USD',
       'currency': utils.currency['usd']
     }
