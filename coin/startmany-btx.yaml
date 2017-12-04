@@ -1,0 +1,19 @@
+-
+  exchange: bittrex
+  asset_pair: XXBTZUSD
+  refresh: 10
+
+-
+  exchange: bittrex
+  asset_pair: XXETZUSD
+  refresh: 10
+
+-
+  exchange: bittrex
+  asset_pair: XXETZBTC
+  refresh: 10
+
+-
+  exchange: bittrex
+  asset_pair: XXRPZBTC
+  refresh: 10
