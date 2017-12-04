@@ -8,7 +8,8 @@ currency = {
     'usd': '$',
     'eur': '€',
     'btc': '฿',
-    'gbp': '£'
+    'gbp': '£',
+    'eth': 'Ξ'
 }
 
 category = {
@@ -20,15 +21,11 @@ category = {
     'first': 'First:\t\t'
 }
 
-
-def decimal_round(number):
-    return "%.2f" % float(number)
-
-def decimal_precision(number):
-    return "%.5f" % float(number)
-
 def decimal_auto(number):
     if(number < 1):
-        return decimal_precision(number)
+        return decimal_precision(number, 2)
     else:
-        return decimal_round(number)
+        return decimal_round(number, 5)
+
+def decimal_round(number, decimals=2):
+    return str(round(float(number), decimals))
