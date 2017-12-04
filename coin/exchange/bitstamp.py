@@ -15,7 +15,15 @@ from exchange.error import Error
 from alarm import Alarm
 
 CONFIG = {
-  'ticker': 'https://www.bitstamp.net/api/ticker/'
+  'ticker': 'https://www.bitstamp.net/api/ticker/',
+  'asset_pairs': [
+    {
+      'isocode': 'XXBTZUSD',
+      'pair': 'XXBTZUSD',
+      'name': 'BTC to USD',
+      'currency': utils.currency['usd']
+    }
+  ]
 }
 
 class Bitstamp:

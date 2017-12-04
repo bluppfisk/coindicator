@@ -23,7 +23,7 @@ class Settings(object):
         
         if manual_settings:
             self.manual_settings = manual_settings.split(':')
-        else:        
+        else:
             source = Gio.SettingsSchemaSource.get_default()
             if source.lookup(SCHEMA_ID, True):
                 self.settings = Gio.Settings(SCHEMA_ID)
@@ -40,7 +40,7 @@ class Settings(object):
 
     def exchange(self, val=None):
         if self.manual_settings:
-            return self.manual_settings[0]
+            return self.manual_settings[0].lower()
         elif self.settings:
             return self.settings.get_string('exchange') if not val else self.settings.set_string('exchange', val)
         else:
@@ -49,7 +49,7 @@ class Settings(object):
     def assetpair(self, exchange, val=None):
         if val:
             val.upper()
-
+        
         if self.manual_settings:
             return self.manual_settings[1].upper()
         elif self.settings:

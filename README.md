@@ -10,6 +10,7 @@ Right now it supports the following exchanges:
 * [Bitstamp](https://www.bitstamp.net)
 * [BitYep](https://bityep.com)
 * [Gdax](https://www.gdax.com)
+* [Gemini](https://www.gemini.com)
 
 Exchanges can be switched from the menu. Feel free to [contact me](mailto:nil.gradisnik@gmail.com) to implement your favorite cryptocurrency exchange.
 
