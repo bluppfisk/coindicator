@@ -8,7 +8,8 @@ currency = {
     'usd': '$',
     'eur': '€',
     'btc': '฿',
-    'gbp': '£'
+    'gbp': '£',
+    'eth': 'Ξ'
 }
 
 category = {
@@ -21,5 +22,5 @@ category = {
 }
 
 
-def decimal_round(number):
-    return "%.2f" % float(number)
+def decimal_round(number, decimals=2):
+    return str(round(float(number), decimals))

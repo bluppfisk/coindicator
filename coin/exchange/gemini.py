@@ -22,21 +22,27 @@ CONFIG = {
       'pair': 'btcusd',
       'name': 'BTC to USD',
       'currency': utils.currency['usd'],
-      'volumelabel' : 'USD'
+      'srccurrency' : utils.currency['btc'],
+      'volumelabel' : 'BTC',
+      'precision' : 2
     },
     {
       'isocode': 'XXETZUSD',
       'pair': 'ethusd',
       'name': 'ETH to USD',
       'currency': utils.currency['usd'],
-       'volumelabel' : 'USD'
+      'srccurrency' : utils.currency['eth'],
+      'volumelabel' : 'ETH', 
+      'precision' : 2
     },
     {
       'isocode': 'XXETZXBT',
       'pair': 'ethbtc',
       'name': 'ETH to BTC',
       'currency': utils.currency['btc'],
-      'volumelabel' : 'BTC'
+      'srccurrency' : utils.currency['eth'],
+      'volumelabel' : 'ETH',
+      'precision' : 8
     },
 
   ]
@@ -62,7 +68,8 @@ class Gemini:
   def check_price(self):
     self.asset_pair = self.indicator.active_asset_pair
 
-    pair = [item['pair'] for item in CONFIG['asset_pairs'] if item['isocode'] == self.asset_pair][0]
+    config = [i for i in CONFIG['asset_pairs'] if i['isocode'] == self.asset_pair][0]
+    pair = config['pair']
 
     try:
       res = requests.get(CONFIG['ticker'] + pair)
@@ -70,7 +77,7 @@ class Gemini:
       if res.status_code != 200:
         self._handle_error('HTTP error code ' + res.status_code)
       else:
-        self._parse_result(data)
+        self._parse_result(data, config)
 
     except Exception as e:
       self._handle_error(e)
@@ -78,18 +85,20 @@ class Gemini:
 
     return self.error.is_ok()
 
-  def _parse_result(self, asset):
+  def _parse_result(self, asset, config):
     self.error.clear()
  
-    item = [i for i in CONFIG['asset_pairs'] if i['isocode'] == self.asset_pair][0]
-    currency = item['currency']
-    coin = item['name']
+    currency = config['currency']
+    srccurrency = config['srccurrency']
+    coin = config['name']
+    volumelabel = config['volumelabel']
+    precision = config['precision']
 
-    label = currency + utils.decimal_round(asset['last'])
+    label = currency + utils.decimal_round(asset['last'], precision)
+    bid = utils.category['bid'] + currency + utils.decimal_round(asset['bid'], precision)
+    ask = utils.category['ask'] + currency + utils.decimal_round(asset['ask'], precision)
 
-    bid = utils.category['bid'] + currency + utils.decimal_round(asset['bid'])
-    ask = utils.category['ask'] + currency + utils.decimal_round(asset['ask'])
-    volume = utils.category['volume'] + currency + utils.decimal_round(asset['volume'][ item['volumelabel'] ])
+    volume = utils.category['volume'] + srccurrency + utils.decimal_round(asset['volume'][volumelabel], 2)
 
     self.indicator.set_data(label, bid, ask, volume, 'no further data')
 
