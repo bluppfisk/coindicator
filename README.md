@@ -12,6 +12,7 @@ Right now it supports the following exchanges:
 * [Gdax](https://www.gdax.com)
 * [Gemini](https://www.gemini.com)
 * [Bittrex](https://bittrex.com)
+* [Bitfinex](https://www.bitfinex.com/)
 
 Exchanges can be switched from the menu. Feel free to [contact me](mailto:nil.gradisnik@gmail.com) to implement your favorite cryptocurrency exchange.
 
