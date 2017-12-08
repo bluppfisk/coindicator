@@ -32,6 +32,11 @@
         <default>'XXBTZUSD'</default>
         <summary>Bittrex asset pairs</summary>
     </key>
+
+     <key type="s" name="assetpair-bitfinex">
+        <default>'XXBTZUSD'</default>
+        <summary>Bitfinex asset pairs</summary>
+    </key>
  
   </schema>
 </schemalist>
