@@ -11,6 +11,7 @@ Right now it supports the following exchanges:
 * [BitYep](https://bityep.com)
 * [Gdax](https://www.gdax.com)
 * [Gemini](https://www.gemini.com)
+* [Bittrex](https://bittrex.com)
 
 Exchanges can be switched from the menu. Feel free to [contact me](mailto:nil.gradisnik@gmail.com) to implement your favorite cryptocurrency exchange.
 
