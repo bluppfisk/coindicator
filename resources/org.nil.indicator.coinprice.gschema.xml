@@ -22,6 +22,16 @@
         <default>'XXBTZUSD'</default>
         <summary>BitYep asset pairs</summary>
     </key>
+    
+    <key type="s" name="assetpair-bitstamp">
+        <default>'XXBTZUSD'</default>
+        <summary>Bitstamp asset pairs</summary>
+    </key>
+    
+    <key type="s" name="assetpair-bittrex">
+        <default>'XXBTZUSD'</default>
+        <summary>Bittrex asset pairs</summary>
+    </key>
  
   </schema>
 </schemalist>
