@@ -16,6 +16,7 @@ import utils
 
 from exchange.kraken import Kraken
 from exchange.bitstamp import Bitstamp
+from exchange.bitfinex import Bitfinex
 from exchange.gdax import Gdax
 from exchange.gemini import Gemini
 from exchange.bittrex import Bittrex
@@ -23,7 +24,7 @@ from exchange.bittrex import Bittrex
 from settings import Settings
 
 from exchange.kraken import CONFIG as KrakenConfig
-from exchange.bitstamp import CONFIG as BitstampConfig
+from exchange.bitfinex import CONFIG as BitfinexConfig
 from exchange.gdax import CONFIG as GdaxConfig
 from exchange.gemini import CONFIG as GeminiConfig
 from exchange.bitstamp import CONFIG as BitstampConfig
@@ -42,7 +43,8 @@ CURRENCY_SHOW = [
     'gdax',
     'gemini',
     'bitstamp',
-    'bittrex'
+    'bittrex',
+    'bitfinex'
 ]
 
 CURRENCIES = {
@@ -50,7 +52,8 @@ CURRENCIES = {
     'gdax': GdaxConfig['asset_pairs'],
     'gemini': GeminiConfig['asset_pairs'],
     'bitstamp': BitstampConfig['asset_pairs'],
-    'bittrex': BittrexConfig['asset_pairs']
+    'bittrex': BittrexConfig['asset_pairs'],
+    'bitfinex': BitfinexConfig['asset_pairs'],
 }
 
 
@@ -77,6 +80,11 @@ class Indicator():
                 'code': 'bitstamp',
                 'name': 'Bitstamp',
                 'instance': Bitstamp(self.config, self)
+            },
+            {
+                'code': 'bitfinex',
+                'name': 'Bitfinex',
+                'instance': Bitfinex(self.config, self)
             },
             {
                 'code': 'gdax',
@@ -123,7 +131,9 @@ class Indicator():
             self.active_asset_pair = self.settings.assetpair(self.active_exchange)
             ap = self.active_asset_pair
 
+        
         home_currency = self.active_asset_pair.lower()[1:4]
+        logging.info('home_currency'+home_currency)
         self.indicator.set_icon(self.config['project_root'] + '/resources/' + home_currency + '.png')
         logging.info("loading " + ap + " from " + self.active_exchange + " (" + str(self.refresh_frequency) + "s)")
 
