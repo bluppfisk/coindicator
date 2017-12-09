@@ -22,6 +22,12 @@ CONFIG = {
       'pair': 'btcusd',
       'name': 'BTC to USD',
       'currency': utils.currency['usd']
+    },
+    {
+      'isocode': 'XIOTZUSD',
+      'pair': 'iotusd',
+      'name': 'IOTA to USD',
+      'currency': utils.currency['usd']
     }
   ]
 }
@@ -48,7 +54,10 @@ class Bitfinex:
     self.asset_pair = self.indicator.active_asset_pair
 
     config = CONFIG['asset_pairs'][0]
-    pair = config['pair']
+
+    pair = [item['pair'] for item in CONFIG['asset_pairs'] if item['isocode'] == self.asset_pair][0]
+
+    #pair = config['pair']
     
     try:
       res = requests.get(CONFIG['ticker'] + pair)
@@ -69,6 +78,7 @@ class Bitfinex:
     self.error.clear()
     currency = utils.currency['usd']
 
+    #currency = [item['currency'] for item in CONFIG['asset_pairs'] if item['isocode'] == self.asset_pair][0]
     
 
     label = currency + utils.decimal_round(data['last_price'])
