@@ -15,7 +15,6 @@ DEFAULTS = {
     'assetpair-kraken': 'XXBTZUSD',
 }
 
-
 class Settings(object):
     def __init__(self, manual_settings=None):
         if manual_settings == 'DEFAULTS':
