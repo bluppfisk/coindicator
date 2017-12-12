@@ -6,10 +6,10 @@
 __author__ = "nil.gradisnik@gmail.com"
 
 from gi.repository import GLib
+
 import logging, utils
 from exchange.error import Error
 from exchange.exchange import Exchange
-
 
 CONFIG = {
   'ticker': 'https://www.bitstamp.net/api/ticker/',
