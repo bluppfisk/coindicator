@@ -73,32 +73,32 @@ class Indicator():
             {
                 'code': 'kraken',
                 'name': 'Kraken',
-                'instance': Kraken(self.config, self)
+                'instance': Kraken(KrakenConfig, self)
             },
             {
                 'code': 'bitstamp',
                 'name': 'Bitstamp',
-                'instance': Bitstamp(self.config, self)
+                'instance': Bitstamp(BitstampConfig, self)
             },
             {
                 'code': 'bitfinex',
                 'name': 'Bitfinex',
-                'instance': Bitfinex(self.config, self)
+                'instance': Bitfinex(BitfinexConfig, self)
             },
             {
                 'code': 'gdax',
                 'name': 'Gdax',
-                'instance': Gdax(self.config, self)
+                'instance': Gdax(GdaxConfig, self)
             },
             {
                 'code': 'gemini',
                 'name': 'Gemini',
-                'instance': Gemini(self.config, self)
+                'instance': Gemini(GeminiConfig, self)
             },
             {
                 'code': 'bittrex',
                 'name': 'Bittrex',
-                'instance': Bittrex(self.config, self)
+                'instance': Bittrex(BittrexConfig, self)
             }
         ]
 
@@ -109,7 +109,6 @@ class Indicator():
         icon = self.config['project_root'] + '/resources/icon_32px.png'
         self.indicator = AppIndicator.Indicator.new(self.config['app']['name'] + "_" + str(len(self.instances)), icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
-        # self.indicator.set_label('loading', 'loading')
         self.indicator.set_menu(self._menu())
         self._start_exchange()
 

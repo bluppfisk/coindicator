@@ -8,6 +8,7 @@ __author__ = "sander.vandemoortel@gmail.com"
 from gi.repository import GLib
 import logging, utils
 from exchange.error import Error
+from exchange.exchange import Exchange
 
 CONFIG = {
   'ticker': 'https://api.gdax.com/products/',
@@ -57,26 +58,11 @@ CONFIG = {
   ]
 }
 
-class Gdax:
-  def __init__(self, config, indicator):
-    self.indicator = indicator
-    self.timeout_id = 0
-    self.error = Error(self)
+class Gdax(Exchange):
+  pass
 
-  def start(self, error_refresh=None):
-    refresh = error_refresh if error_refresh else self.indicator.refresh_frequency
-    self.timeout_id = GLib.timeout_add_seconds(refresh, self.check_price)
-
-  def stop(self):
-    if self.timeout_id is not 0:
-      GLib.source_remove(self.timeout_id)
-
-  def check_price(self):
-    self.asset_pair = self.indicator.active_asset_pair
-    pair = [item['pair'] for item in CONFIG['asset_pairs'] if item['isocode'] == self.asset_pair][0]
-    utils.async_get(CONFIG['ticker'] + pair + '/ticker', callback=self._parse_result)
-
-    return self.error.is_ok()
+  def get_ticker(self):
+    return self.config['ticker'] + self.pair + '/ticker'
 
   def _parse_result(self, data):
     if data.status_code == 200:
@@ -97,6 +83,3 @@ class Gdax:
     volume = utils.category['volume'] + utils.decimal_round(asset['volume'])
 
     GLib.idle_add(self.indicator.set_data, label, bid, ask, volume, 'no further data')
-
-  def _handle_error(self, error):
-    logging.info("Gdax API error: " + str(error))

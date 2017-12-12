@@ -6,11 +6,9 @@
 __author__ = "rick@anteaterllc.com"
 
 from gi.repository import GLib
-
-import logging
-import utils
-
+import logging, utils
 from exchange.error import Error
+from exchange.exchange import Exchange
 
 CONFIG = {
   'ticker': 'https://api.gemini.com/v1/pubticker/',
@@ -46,27 +44,11 @@ CONFIG = {
   ]
 }
 
-class Gemini:
-  def __init__(self, config, indicator):
-    self.indicator = indicator
-    self.timeout_id = 0
-    self.error = Error(self)
+class Gemini(Exchange):
+  pass
 
-  def start(self, error_refresh=None):
-    refresh = error_refresh if error_refresh else self.indicator.refresh_frequency
-    self.timeout_id = GLib.timeout_add_seconds(refresh, self.check_price)
-
-  def stop(self):
-    if self.timeout_id is not 0:
-      GLib.source_remove(self.timeout_id)
-
-  def check_price(self):
-    self.asset_pair = self.indicator.active_asset_pair
-    self.config = [i for i in CONFIG['asset_pairs'] if i['isocode'] == self.asset_pair][0]
-    pair = self.config['pair']
-    utils.async_get(CONFIG['ticker'] + pair, callback=self._parse_result)
-    
-    return self.error.is_ok()
+  def get_ticker(self):
+    return self.config['ticker'] + self.pair
 
   def _parse_result(self, data):
     if data.status_code == 200:
@@ -92,6 +74,3 @@ class Gemini:
     volume = utils.category['volume'] + srccurrency + utils.decimal_round(asset['volume'][volumelabel], 2)
 
     GLib.idle_add(self.indicator.set_data, label, bid, ask, volume, 'no further data')
-
-  def _handle_error(self, error):
-    logging.info("Gemini API error: " + str(error))
