@@ -45,7 +45,7 @@ class Bitfinex(Exchange):
     currency = utils.currency['usd']
 
     label = currency + utils.decimal_round(asset['last_price'])
-
+    
     bid = utils.category['bid'] + currency + utils.decimal_round(asset['bid'])
     high = utils.category['high'] + currency + utils.decimal_round(asset['high'])
     low = utils.category['low'] + currency + utils.decimal_round(asset['low'])

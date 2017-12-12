@@ -102,6 +102,9 @@ class Indicator():
             }
         ]
 
+    def safely(self, callback, *args):
+        GLib.idle_add(callback, *args)
+
     def start(self):
         icon = self.config['project_root'] + '/resources/icon_32px.png'
         self.indicator = AppIndicator.Indicator.new(self.config['app']['name'] + "_" + str(len(self.instances)), icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
