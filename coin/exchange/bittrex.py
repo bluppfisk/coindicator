@@ -8,6 +8,7 @@ __author__ = "wizzard94@github.com"
 from gi.repository import GLib
 import logging, utils
 from exchange.error import Error
+from exchange.exchange import Exchange
 
 CONFIG = {
   'ticker': 'https://bittrex.com/api/v1.1/public/getmarketsummary',
@@ -57,25 +58,11 @@ CONFIG = {
   ]
 }
 
-class Bittrex:
-  def __init__(self, config, indicator):
-    self.indicator = indicator
-    self.timeout_id = 0
-    self.error = Error(self)
+class Bittrex(Exchange):
+  pass
 
-  def start(self, error_refresh=None):
-    refresh = error_refresh if error_refresh else self.indicator.refresh_frequency
-    self.timeout_id = GLib.timeout_add_seconds(refresh, self.check_price)
-
-  def stop(self):
-    if self.timeout_id is not 0:
-      GLib.source_remove(self.timeout_id)
-
-  def check_price(self):
-    self.asset_pair = self.indicator.active_asset_pair
-    self.pair = [item['pair'] for item in CONFIG['asset_pairs'] if item['isocode'] == self.asset_pair][0]
-    utils.async_get(CONFIG['ticker'] + '?market=' + self.pair, callback=self._parse_result)
-    return self.error.is_ok()
+  def get_ticker(self):
+    return self.config['ticker'] + '?market=' + self.pair
 
   def _parse_result(self, data):
     '''
@@ -101,6 +88,3 @@ class Bittrex:
     ask = utils.category['ask'] + currency + utils.decimal_auto(asset['Ask'])
 
     GLib.idle_add(self.indicator.set_data, label, bid, high, low, ask)
-
-  def _handle_error(self, error):
-    logging.info("Bittrex API error: " + error[0])
