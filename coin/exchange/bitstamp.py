@@ -10,7 +10,6 @@ import logging, utils
 from exchange.error import Error
 from exchange.exchange import Exchange
 
-
 CONFIG = {
   'ticker': 'https://www.bitstamp.net/api/ticker/',
   'asset_pairs': [

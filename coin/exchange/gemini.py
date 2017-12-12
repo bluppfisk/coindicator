@@ -6,10 +6,7 @@
 __author__ = "rick@anteaterllc.com"
 
 from gi.repository import GLib
-
-import logging
-import utils
-
+import logging, utils
 from exchange.error import Error
 from exchange.exchange import Exchange
 
