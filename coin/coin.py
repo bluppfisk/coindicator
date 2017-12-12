@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 # Coin Price indicator
+# 
 # Nil Gradisnik <nil.gradisnik@gmail.com>
+# Sander Van de Moortel <sander.vandemoortel@gmail.com>
+# 
 
 import os, signal, yaml, sys, logging, gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
 
-from gi.repository import Gtk, GdkPixbuf, GObject, GLib
+from gi.repository import Gtk, GdkPixbuf
 
 try:
     from gi.repository import AppIndicator3 as AppIndicator
@@ -20,19 +23,16 @@ from exchange.gdax import Gdax
 from exchange.gemini import Gemini
 from exchange.bittrex import Bittrex
 
-import threading
-
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)  # ctrl+c exit
 
-class Coin(object):
+class Coin:
     config = yaml.load(open(PROJECT_ROOT + '/config.yaml', 'r'))
     config['project_root'] = PROJECT_ROOT
 
     def __init__(self):
-        # self.gui_ready = threading.Event()
         self.start_main()
         self.instances = []
         logging.info("Coin Price indicator v" + self.config['app']['version'])
@@ -71,13 +71,6 @@ class Coin(object):
         self.main_item.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.main_item.set_menu(self._menu())
 
-        # self.gui_thread = threading.Thread(target=self.start_gui_thread)
-        # self.gui_thread.start()
-
-    # def start_gui_thread(self):
-    #     self.gui_ready.wait()
-    #     Gtk.main()
-
     # Program main menu
     def _menu(self):
         menu = Gtk.Menu()
@@ -102,9 +95,7 @@ class Coin(object):
     def add_indicator(self, settings=None):
         indicator = Indicator(self, len(self.instances), self.config, settings)
         self.instances.append(indicator)
-        nt = threading.Thread(target=indicator.start())
-        nt.start()
-        # self.gui_ready.set()
+        indicator.start()
 
     # adds many tickers
     def add_many_indicators(self, cp_instances):
@@ -121,10 +112,16 @@ class Coin(object):
         about = Gtk.AboutDialog()
         about.set_program_name(self.config['app']['name'])
         about.set_comments(self.config['app']['description'])
-        about.set_copyright(self.config['author']['copyright'])
         about.set_version(self.config['app']['version'])
         about.set_website(self.config['app']['url'])
-        about.set_authors([self.config['author']['name'] + ' <' + self.config['author']['email'] + '>'])
+        authors = []
+        for author in self.config['authors']:
+            authors.append(author['name'] + ' <' + author['email'] + '>')
+        about.set_authors(authors)
+        contributors = []
+        for contributor in self.config['contributors']:
+            contributors.append(contributor['name'] + ' <' + contributor['email'] + '>')
+        about.add_credit_section('Exchange plugins', contributors)
         about.set_artists([self.config['artist']['name'] + ' <' + self.config['artist']['email'] + '>'])
         about.set_license_type(Gtk.License.MIT_X11)
         about.set_logo(self.logo_124px)
@@ -132,11 +129,8 @@ class Coin(object):
         if res == -4 or -6:  # close events
             about.destroy()
 
-        # self.gui_ready.set()
-
     # Menu item to remove all tickers and quits the application
     def _quit_all(self, widget):
-        logging.info("Exiting")
         Gtk.main_quit()
 
 coin = Coin()
