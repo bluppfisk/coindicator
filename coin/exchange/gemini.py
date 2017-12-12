@@ -77,6 +77,3 @@ class Gemini(Exchange):
     volume = utils.category['volume'] + srccurrency + utils.decimal_round(asset['volume'][volumelabel], 2)
 
     GLib.idle_add(self.indicator.set_data, label, bid, ask, volume, 'no further data')
-
-  def _handle_error(self, error):
-    logging.info("Gemini API error: " + str(error))
