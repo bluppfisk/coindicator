@@ -3,6 +3,7 @@
 # 
 # Nil Gradisnik <nil.gradisnik@gmail.com>
 # Sander Van de Moortel <sander.vandemoortel@gmail.com>
+# 
 
 import os, signal, yaml, sys, logging, gi
 gi.require_version('Gtk', '3.0')
