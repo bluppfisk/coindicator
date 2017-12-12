@@ -7,7 +7,7 @@ __author__ = "rick@anteaterllc.com"
 
 from gi.repository import GLib
 
-import requests
+import grequests
 import logging
 
 import utils
@@ -68,26 +68,39 @@ class Gemini:
   def check_price(self):
     self.asset_pair = self.indicator.active_asset_pair
 
-    config = [i for i in CONFIG['asset_pairs'] if i['isocode'] == self.asset_pair][0]
-    pair = config['pair']
+    self.config = [i for i in CONFIG['asset_pairs'] if i['isocode'] == self.asset_pair][0]
+    pair = self.config['pair']
 
-    try:
-      res = requests.get(CONFIG['ticker'] + pair)
-      data = res.json()
-      if res.status_code != 200:
-        self._handle_error('HTTP error code ' + res.status_code)
-      else:
-        self._parse_result(data, config)
+    res = grequests.get(CONFIG['ticker'] + pair, callback=self.tester)
+    responses = grequests.map([res])
+    # print(responses[0].text)
 
-    except Exception as e:
-      self._handle_error(e)
-      self.error.increment()
 
-    return self.error.is_ok()
+    # try:
+    #   res = requests.get(CONFIG['ticker'] + pair)
+    #   data = res.json()
+    #   if res.status_code != 200:
+    #     self._handle_error('HTTP error code ' + res.status_code)
+    #   else:
+    #     self._parse_result(data, config)
+
+    # except Exception as e:
+    #   self._handle_error(e)
+    #   self.error.increment()
+
+    # return self.error.is_ok()
+  
+  def tester(self, data, *args, **kwargs):
+    # config = {'srccurrency': '฿', 'isocode': 'XXBTZUSD', 'precision': 2, 'currency': '$', 'volumelabel': 'BTC', 'pair': 'btcusd', 'name': 'BTC to USD'}
+    if data.status_code == 200:
+      asset = data.json()
+      self._parse_result(asset, self.config)
+    else:
+      print(data.status_code)
 
   def _parse_result(self, asset, config):
     self.error.clear()
- 
+
     currency = config['currency']
     srccurrency = config['srccurrency']
     coin = config['name']

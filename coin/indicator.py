@@ -111,6 +111,9 @@ class Indicator():
         self.indicator.set_menu(self._menu())
         self._start_exchange()
 
+    def idle(self):
+        self.indicator.set_label('loading', 'loading')
+
     def set_data(self, label, bid, high, low, ask, volume=None):
         self.indicator.set_label(label, "$888.88")
 
@@ -133,6 +136,7 @@ class Indicator():
 
         
         home_currency = self.active_asset_pair.lower()[1:4]
+        print(home_currency)
         self.indicator.set_icon(self.config['project_root'] + '/resources/' + home_currency + '.png')
         logging.info("loading " + ap + " from " + self.active_exchange + " (" + str(self.refresh_frequency) + "s)")
 
@@ -225,7 +229,6 @@ class Indicator():
         return exchange
 
     def _menu_exchange_change(self, widget):
-
         if widget.get_active():
             self.active_exchange = widget.get_name()
 
