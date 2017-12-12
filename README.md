@@ -14,7 +14,7 @@ Right now it supports the following exchanges:
 * [Bittrex](https://bittrex.com)
 * [Bitfinex](https://www.bitfinex.com/)
 
-Exchanges can be switched from the menu. Feel free to [contact me](mailto:nil.gradisnik@gmail.com) to implement your favorite cryptocurrency exchange.
+Exchanges can be switched from the menu. Please open an issue to implement your favorite cryptocurrency exchange.
 
 ![Screenshot](https://raw.githubusercontent.com/nilgradisnik/coinprice-indicator/master/resources/screenshot.png)
 
@@ -36,7 +36,3 @@ Coin.py takes two parameters to configure the instance(s):
 * `python3 coin/coin.py asset=kraken:XXBTZEUR:30` will launch a single indicator for the asset pair XBT/EUR on the Kraken exchange with a refresh rate of 30 seconds. Asset pairs must always be in this format: `X XBT Z EUR` where `X` means `from` and `Z` means `to`. According to the ISO standard, currencies that are not bound to a country take an X as the first letter of their abbreviation, hence `XBT` for Bitcoin.
 
 * `python3 coin/coin.py file=startmany.yaml` will read startmany.yaml from the `coin` directory and start an indicator for each configuration it finds in there. Take a peek in `startmany.yaml`for examples and edit it to configure the exchanges, currency pairs and refresh rates for each instance.
-
-## Known Issues
-
-* [#10](https://github.com/nilgradisnik/coinprice-indicator/issues/10) App sometimes freezes after suspending and resuming the computer. Workaround: Kill the app manually or exit it before resuming.

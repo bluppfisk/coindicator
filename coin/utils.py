@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 # Utils
+# 
+from threading import Thread
+import requests
 
 __author__ = "nil.gradisnik@gmail.com"
 
@@ -29,3 +32,15 @@ def decimal_auto(number):
         return decimal_round(number, 5)
     else:
         return decimal_round(number, 2)
+
+def async_get(*args, callback=None, timeout=15, **kwargs):
+    """Makes request on a different thread, and optionally passes response to a
+    `callback` function when request returns.
+    """
+    if callback:
+        def callback_with_args(response, *args, **kwargs):
+            callback(response)
+        kwargs['hooks'] = {'response': callback_with_args}
+    kwargs['timeout'] = timeout
+    thread = Thread(target=requests.get, args=args, kwargs=kwargs)
+    thread.start()
