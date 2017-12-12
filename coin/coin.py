@@ -32,7 +32,7 @@ class Coin(object):
     config['project_root'] = PROJECT_ROOT
 
     def __init__(self):
-        self.gui_ready = threading.Event()
+        # self.gui_ready = threading.Event()
         self.start_main()
         self.instances = []
         logging.info("Coin Price indicator v" + self.config['app']['version'])
@@ -71,12 +71,12 @@ class Coin(object):
         self.main_item.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.main_item.set_menu(self._menu())
 
-        self.gui_thread = threading.Thread(target=self.start_gui_thread)
-        self.gui_thread.start()
+        # self.gui_thread = threading.Thread(target=self.start_gui_thread)
+        # self.gui_thread.start()
 
-    def start_gui_thread(self):
-        self.gui_ready.wait()
-        Gtk.main()
+    # def start_gui_thread(self):
+    #     self.gui_ready.wait()
+    #     Gtk.main()
 
     # Program main menu
     def _menu(self):
@@ -104,7 +104,7 @@ class Coin(object):
         self.instances.append(indicator)
         nt = threading.Thread(target=indicator.start())
         nt.start()
-        self.gui_ready.set()
+        # self.gui_ready.set()
 
     # adds many tickers
     def add_many_indicators(self, cp_instances):
@@ -132,7 +132,7 @@ class Coin(object):
         if res == -4 or -6:  # close events
             about.destroy()
 
-        self.gui_ready.set()
+        # self.gui_ready.set()
 
     # Menu item to remove all tickers and quits the application
     def _quit_all(self, widget):
@@ -140,3 +140,4 @@ class Coin(object):
         Gtk.main_quit()
 
 coin = Coin()
+Gtk.main()
