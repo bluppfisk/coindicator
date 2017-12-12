@@ -137,8 +137,9 @@ class Kraken(object):
     high = utils.category['high'] + currency + utils.decimal_round(asset['h'][0])
     low = utils.category['low'] + currency + utils.decimal_round(asset['l'][0])
     ask = utils.category['ask'] + currency + utils.decimal_round(asset['a'][0])
+    vol = utils.category['volume'] + utils.decimal_round(asset['v'][0])
 
-    self.indicator.set_data(label, bid, high, low, ask)
+    GLib.idle_add(self.indicator.set_data,label, bid, high, low, ask, vol)
 
   def _handle_error(self, error):
     logging.info("Kraken API error: " + error[0])
