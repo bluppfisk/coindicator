@@ -55,18 +55,6 @@ CONFIG = {
       'currency': utils.currency['eur']
     },
     {
-      'isocode': 'XXLTZUSD',
-      'pair': 'XLTCZUSD',
-      'name': 'LTC to USD',
-      'currency': utils.currency['usd']
-    },
-    {
-      'isocode': 'XXLTZEUR',
-      'pair': 'XLTCZEUR',
-      'name': 'LTC to EUR',
-      'currency': utils.currency['eur']
-    },
-    {
       'isocode': 'XXBCZEUR',
       'pair': 'BCHEUR',
       'name': 'BCH to EUR',
@@ -82,7 +70,6 @@ CONFIG = {
 }
 
 class Kraken(object):
-
   def __init__(self, config, indicator):
     self.indicator = indicator
 
