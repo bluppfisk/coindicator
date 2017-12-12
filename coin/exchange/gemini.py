@@ -7,12 +7,10 @@ __author__ = "rick@anteaterllc.com"
 
 from gi.repository import GLib
 
-import grequests
 import logging
-
 import utils
+
 from exchange.error import Error
-from alarm import Alarm
 
 CONFIG = {
   'ticker': 'https://api.gemini.com/v1/pubticker/',
@@ -51,10 +49,7 @@ CONFIG = {
 class Gemini:
   def __init__(self, config, indicator):
     self.indicator = indicator
-
     self.timeout_id = 0
-    self.alarm = Alarm(config['app']['name'])
-
     self.error = Error(self)
 
   def start(self, error_refresh=None):
@@ -62,44 +57,27 @@ class Gemini:
     self.timeout_id = GLib.timeout_add_seconds(refresh, self.check_price)
 
   def stop(self):
-    if self.timeout_id:
+    if self.timeout_id is not 0:
       GLib.source_remove(self.timeout_id)
 
   def check_price(self):
     self.asset_pair = self.indicator.active_asset_pair
-
     self.config = [i for i in CONFIG['asset_pairs'] if i['isocode'] == self.asset_pair][0]
     pair = self.config['pair']
+    utils.async_get(CONFIG['ticker'] + pair, callback=self._parse_result)
+    
+    return self.error.is_ok()
 
-    res = grequests.get(CONFIG['ticker'] + pair, callback=self.tester)
-    responses = grequests.map([res])
-    # print(responses[0].text)
-
-
-    # try:
-    #   res = requests.get(CONFIG['ticker'] + pair)
-    #   data = res.json()
-    #   if res.status_code != 200:
-    #     self._handle_error('HTTP error code ' + res.status_code)
-    #   else:
-    #     self._parse_result(data, config)
-
-    # except Exception as e:
-    #   self._handle_error(e)
-    #   self.error.increment()
-
-    # return self.error.is_ok()
-  
-  def tester(self, data, *args, **kwargs):
-    # config = {'srccurrency': '฿', 'isocode': 'XXBTZUSD', 'precision': 2, 'currency': '$', 'volumelabel': 'BTC', 'pair': 'btcusd', 'name': 'BTC to USD'}
+  def _parse_result(self, data):
     if data.status_code == 200:
-      asset = data.json()
-      self._parse_result(asset, self.config)
+      self.error.clear()
     else:
-      print(data.status_code)
+      self.error.increment()
+      return
+    
+    asset = data.json()
 
-  def _parse_result(self, asset, config):
-    self.error.clear()
+    config = [item for item in CONFIG['asset_pairs'] if item['isocode'] == self.asset_pair][0]
 
     currency = config['currency']
     srccurrency = config['srccurrency']
@@ -113,7 +91,7 @@ class Gemini:
 
     volume = utils.category['volume'] + srccurrency + utils.decimal_round(asset['volume'][volumelabel], 2)
 
-    self.indicator.set_data(label, bid, ask, volume, 'no further data')
+    GLib.idle_add(self.indicator.set_data, label, bid, ask, volume, 'no further data')
 
   def _handle_error(self, error):
     logging.info("Gemini API error: " + str(error))

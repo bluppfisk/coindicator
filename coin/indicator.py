@@ -2,11 +2,10 @@
 # Ubuntu App indicator
 # https://unity.ubuntu.com/projects/appindicators/
 
-import gi, logging, threading
+import gi, logging
 logging.basicConfig(level=logging.INFO)
 
-from gi.repository import Gtk, GdkPixbuf, GObject
-
+from gi.repository import Gtk, GdkPixbuf, GLib
 try:
     from gi.repository import AppIndicator3 as AppIndicator
 except ImportError:
@@ -103,16 +102,16 @@ class Indicator():
             }
         ]
 
+    def safely(self, callback, *args):
+        GLib.idle_add(callback, *args)
+
     def start(self):
         icon = self.config['project_root'] + '/resources/icon_32px.png'
         self.indicator = AppIndicator.Indicator.new(self.config['app']['name'] + "_" + str(len(self.instances)), icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
-        self.indicator.set_label('loading', 'loading')
+        # self.indicator.set_label('loading', 'loading')
         self.indicator.set_menu(self._menu())
         self._start_exchange()
-
-    def idle(self):
-        self.indicator.set_label('loading', 'loading')
 
     def set_data(self, label, bid, high, low, ask, volume=None):
         self.indicator.set_label(label, "$888.88")
@@ -129,15 +128,15 @@ class Indicator():
             self.volume_item.hide()
 
     def _start_exchange(self):
+        self.indicator.set_label('loading', 'loading')
         ap = ''
         if self.active_exchange in CURRENCY_SHOW:
             self.active_asset_pair = self.settings.assetpair(self.active_exchange)
             ap = self.active_asset_pair
 
-        
         home_currency = self.active_asset_pair.lower()[1:4]
-        print(home_currency)
         self.indicator.set_icon(self.config['project_root'] + '/resources/' + home_currency + '.png')
+
         logging.info("loading " + ap + " from " + self.active_exchange + " (" + str(self.refresh_frequency) + "s)")
 
         self._stop_exchanges()

@@ -71,13 +71,6 @@ class Coin(object):
         self.main_item.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.main_item.set_menu(self._menu())
 
-        # self.gui_thread = threading.Thread(target=self.start_gui_thread)
-        # self.gui_thread.start()
-
-    # def start_gui_thread(self):
-    #     self.gui_ready.wait()
-    #     Gtk.main()
-
     # Program main menu
     def _menu(self):
         menu = Gtk.Menu()
@@ -102,8 +95,9 @@ class Coin(object):
     def add_indicator(self, settings=None):
         indicator = Indicator(self, len(self.instances), self.config, settings)
         self.instances.append(indicator)
-        nt = threading.Thread(target=indicator.start())
-        nt.start()
+        indicator.start()
+        #nt = threading.Thread(target=indicator.start())
+        #nt.start()
         # self.gui_ready.set()
 
     # adds many tickers
