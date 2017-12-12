@@ -133,7 +133,6 @@ class Indicator():
 
         
         home_currency = self.active_asset_pair.lower()[1:4]
-        logging.info('home_currency'+home_currency)
         self.indicator.set_icon(self.config['project_root'] + '/resources/' + home_currency + '.png')
         logging.info("loading " + ap + " from " + self.active_exchange + " (" + str(self.refresh_frequency) + "s)")
 

@@ -16,7 +16,6 @@ except ImportError:
 from indicator import Indicator
 from exchange.kraken import Kraken
 from exchange.bitstamp import Bitstamp
-from exchange.bitfinex import Bitfinex
 from exchange.gdax import Gdax
 from exchange.gemini import Gemini
 from exchange.bittrex import Bittrex
