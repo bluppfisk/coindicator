@@ -67,10 +67,10 @@ class Gemini(Exchange):
     volumelabel = config['volumelabel']
     precision = config['precision']
 
-    label = currency + utils.decimal_round(asset['last'], precision)
-    bid = utils.category['bid'] + currency + utils.decimal_round(asset['bid'], precision)
-    ask = utils.category['ask'] + currency + utils.decimal_round(asset['ask'], precision)
+    label = currency + utils.decimal_auto(asset['last'], precision)
+    bid = utils.category['bid'] + currency + utils.decimal_auto(asset['bid'], precision)
+    ask = utils.category['ask'] + currency + utils.decimal_auto(asset['ask'], precision)
 
-    volume = utils.category['volume'] + srccurrency + utils.decimal_round(asset['volume'][volumelabel], 2)
+    volume = utils.category['volume'] + srccurrency + utils.decimal_auto(asset['volume'][volumelabel], 2)
 
     GLib.idle_add(self.indicator.set_data, label, bid, ask, volume, 'no further data')

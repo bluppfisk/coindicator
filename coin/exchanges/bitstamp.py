@@ -37,12 +37,12 @@ class Bitstamp(Exchange):
       return
 
     currency = utils.currency['usd']
-    label = currency + utils.decimal_round(asset['last'])
+    label = currency + utils.decimal_auto(asset['last'])
 
-    bid = utils.category['bid'] + currency + utils.decimal_round(asset['bid'])
-    high = utils.category['high'] + currency + utils.decimal_round(asset['high'])
-    low = utils.category['low'] + currency + utils.decimal_round(asset['low'])
-    ask = utils.category['ask'] + currency + utils.decimal_round(asset['ask'])
-    volume = utils.category['volume'] + utils.decimal_round(asset['volume'])
+    bid = utils.category['bid'] + currency + utils.decimal_auto(asset['bid'])
+    high = utils.category['high'] + currency + utils.decimal_auto(asset['high'])
+    low = utils.category['low'] + currency + utils.decimal_auto(asset['low'])
+    ask = utils.category['ask'] + currency + utils.decimal_auto(asset['ask'])
+    volume = utils.category['volume'] + utils.decimal_auto(asset['volume'])
 
     GLib.idle_add(self.indicator.set_data, label, bid, high, low, ask, volume)

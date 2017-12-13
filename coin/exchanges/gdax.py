@@ -76,10 +76,10 @@ class Gdax(Exchange):
     currency = config['currency']
     coin = config['name']
 
-    label = currency + utils.decimal_round(asset['price'])
+    label = currency + utils.decimal_auto(asset['price'])
 
-    bid = utils.category['bid'] + currency + utils.decimal_round(asset['bid'])
-    ask = utils.category['ask'] + currency + utils.decimal_round(asset['ask'])
-    volume = utils.category['volume'] + utils.decimal_round(asset['volume'])
+    bid = utils.category['bid'] + currency + utils.decimal_auto(asset['bid'])
+    ask = utils.category['ask'] + currency + utils.decimal_auto(asset['ask'])
+    volume = utils.category['volume'] + utils.decimal_auto(asset['volume'])
 
     GLib.idle_add(self.indicator.set_data, label, bid, ask, volume, 'no further data')
