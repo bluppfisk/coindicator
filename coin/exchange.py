@@ -1,6 +1,6 @@
 from gi.repository import GLib
 import logging, utils
-from exchange.error import Error
+from error import Error
 
 class Exchange(object):
   def __init__(self, config, indicator):

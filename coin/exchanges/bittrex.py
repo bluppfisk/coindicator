@@ -7,8 +7,8 @@ __author__ = "wizzard94@github.com"
 
 from gi.repository import GLib
 import logging, utils
-from exchange.error import Error
-from exchange.exchange import Exchange
+from error import Error
+from exchange import Exchange
 
 CONFIG = {
   'ticker': 'https://bittrex.com/api/v1.1/public/getmarketsummary',

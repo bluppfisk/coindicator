@@ -12,22 +12,21 @@ except ImportError:
     from gi.repository import AppIndicator
 
 import utils
-
-from exchange.kraken import Kraken
-from exchange.bitstamp import Bitstamp
-from exchange.bitfinex import Bitfinex
-from exchange.gdax import Gdax
-from exchange.gemini import Gemini
-from exchange.bittrex import Bittrex
-
 from settings import Settings
 
-from exchange.kraken import CONFIG as KrakenConfig
-from exchange.bitfinex import CONFIG as BitfinexConfig
-from exchange.gdax import CONFIG as GdaxConfig
-from exchange.gemini import CONFIG as GeminiConfig
-from exchange.bitstamp import CONFIG as BitstampConfig
-from exchange.bittrex import CONFIG as BittrexConfig
+from exchanges.kraken import Kraken
+from exchanges.bitstamp import Bitstamp
+from exchanges.bitfinex import Bitfinex
+from exchanges.gdax import Gdax
+from exchanges.gemini import Gemini
+from exchanges.bittrex import Bittrex
+
+from exchanges.kraken import CONFIG as KrakenConfig
+from exchanges.bitfinex import CONFIG as BitfinexConfig
+from exchanges.gdax import CONFIG as GdaxConfig
+from exchanges.gemini import CONFIG as GeminiConfig
+from exchanges.bitstamp import CONFIG as BitstampConfig
+from exchanges.bittrex import CONFIG as BittrexConfig
 
 REFRESH_TIMES = [  # seconds
     '3',
@@ -101,9 +100,6 @@ class Indicator():
                 'instance': Bittrex(BittrexConfig, self)
             }
         ]
-
-    def safely(self, callback, *args):
-        GLib.idle_add(callback, *args)
 
     def start(self):
         icon = self.config['project_root'] + '/resources/icon_32px.png'
@@ -238,9 +234,7 @@ class Indicator():
                     active_asset_pair = CURRENCIES[self.active_exchange][0]['isocode']
 
             self.settings = Settings(self.active_exchange + ':' + active_asset_pair + ':' + str(self.refresh_frequency))
-
             self._menu_currency_visible()
-
             self._start_exchange()
 
     def _menu_currency(self, exchange_menu):

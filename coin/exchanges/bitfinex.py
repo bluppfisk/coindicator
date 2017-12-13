@@ -7,8 +7,8 @@ __author__ = "eliezer.aquino@gmail.com"
 
 from gi.repository import GLib
 import logging, utils
-from exchange.error import Error
-from exchange.exchange import Exchange
+from error import Error
+from exchange import Exchange
 
 CONFIG = {
   'ticker': 'https://api.bitfinex.com/v1/pubticker/',

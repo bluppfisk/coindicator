@@ -7,8 +7,8 @@ __author__ = "sander.vandemoortel@gmail.com"
 
 from gi.repository import GLib
 import logging, utils
-from exchange.error import Error
-from exchange.exchange import Exchange
+from error import Error
+from exchange import Exchange
 
 CONFIG = {
   'ticker': 'https://api.gdax.com/products/',

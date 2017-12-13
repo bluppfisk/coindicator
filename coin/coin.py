@@ -8,21 +8,12 @@
 import os, signal, yaml, sys, logging, gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
-
 from gi.repository import Gtk, GdkPixbuf
-
 try:
     from gi.repository import AppIndicator3 as AppIndicator
 except ImportError:
     from gi.repository import AppIndicator
-
 from indicator import Indicator
-from exchange.kraken import Kraken
-from exchange.bitstamp import Bitstamp
-from exchange.gdax import Gdax
-from exchange.gemini import Gemini
-from exchange.bittrex import Bittrex
-
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
