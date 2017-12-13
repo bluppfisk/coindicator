@@ -19,8 +19,7 @@ CONFIG = {
       'name': 'BTC to USD',
       'currency': utils.currency['usd'],
       'srccurrency' : utils.currency['btc'],
-      'volumelabel' : 'BTC',
-      'precision' : 2
+      'volumelabel' : 'BTC'
     },
     {
       'isocode': 'XXETZUSD',
@@ -28,8 +27,7 @@ CONFIG = {
       'name': 'ETH to USD',
       'currency': utils.currency['usd'],
       'srccurrency' : utils.currency['eth'],
-      'volumelabel' : 'ETH', 
-      'precision' : 2
+      'volumelabel' : 'ETH'
     },
     {
       'isocode': 'XXETZXBT',
@@ -37,10 +35,8 @@ CONFIG = {
       'name': 'ETH to BTC',
       'currency': utils.currency['btc'],
       'srccurrency' : utils.currency['eth'],
-      'volumelabel' : 'ETH',
-      'precision' : 8
-    },
-
+      'volumelabel' : 'ETH'
+    }
   ]
 }
 
@@ -65,12 +61,11 @@ class Gemini(Exchange):
     srccurrency = config['srccurrency']
     coin = config['name']
     volumelabel = config['volumelabel']
-    precision = config['precision']
 
-    label = currency + utils.decimal_auto(asset['last'], precision)
-    bid = utils.category['bid'] + currency + utils.decimal_auto(asset['bid'], precision)
-    ask = utils.category['ask'] + currency + utils.decimal_auto(asset['ask'], precision)
+    label = currency + utils.decimal_auto(asset['last'])
+    bid = utils.category['bid'] + currency + utils.decimal_auto(asset['bid'])
+    ask = utils.category['ask'] + currency + utils.decimal_auto(asset['ask'])
 
-    volume = utils.category['volume'] + srccurrency + utils.decimal_auto(asset['volume'][volumelabel], 2)
+    volume = utils.category['volume'] + srccurrency + utils.decimal_auto(asset['volume'][volumelabel])
 
     GLib.idle_add(self.indicator.set_data, label, bid, ask, volume, 'no further data')

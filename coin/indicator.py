@@ -56,10 +56,10 @@ CURRENCIES = {
 
 
 class Indicator():
-    instances = []
+    # instances = []
 
     def __init__(self, coin, counter, config, settings=None):
-        Indicator.instances.append(self)
+        # Indicator.instances.append(self)
         self.counter = counter
 
         self.coin = coin
@@ -103,7 +103,7 @@ class Indicator():
 
     def start(self):
         icon = self.config['project_root'] + '/resources/icon_32px.png'
-        self.indicator = AppIndicator.Indicator.new(self.config['app']['name'] + "_" + str(len(self.instances)), icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
+        self.indicator = AppIndicator.Indicator.new(self.config['app']['name'] + "_" + str(len(self.coin.instances)), icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.indicator.set_menu(self._menu())
         self._start_exchange()
@@ -283,10 +283,10 @@ class Indicator():
             self.currency_menu.hide()
 
     def _remove(self, widget):
-        if len(self.instances) == 1:
+        if len(self.coin.instances) == 1:
             Gtk.main_quit()
         else:
-            self.instances.remove(self)
+            self.coin.instances.remove(self)
             self._stop_exchanges()
             del self.indicator
             logging.info("Indicator removed")

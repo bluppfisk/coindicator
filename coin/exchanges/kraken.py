@@ -95,6 +95,6 @@ class Kraken(Exchange):
     high = utils.category['high'] + currency + utils.decimal_auto(asset['h'][0])
     low = utils.category['low'] + currency + utils.decimal_auto(asset['l'][0])
     ask = utils.category['ask'] + currency + utils.decimal_auto(asset['a'][0])
-    vol = utils.category['volume'] + utils.decimal_auto(asset['v'][0])
+    vol = utils.category['volume'] + utils.decimal_auto(asset['v'][1])
 
     GLib.idle_add(self.indicator.set_data, label, bid, high, low, ask, vol)
