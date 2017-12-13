@@ -92,8 +92,8 @@ class Kraken(Exchange):
     label = currency + utils.decimal_auto(asset['c'][0])
 
     bid = utils.category['bid'] + currency + utils.decimal_auto(asset['b'][0])
-    high = utils.category['high'] + currency + utils.decimal_auto(asset['h'][0])
-    low = utils.category['low'] + currency + utils.decimal_auto(asset['l'][0])
+    high = utils.category['high'] + currency + utils.decimal_auto(asset['h'][1])
+    low = utils.category['low'] + currency + utils.decimal_auto(asset['l'][1])
     ask = utils.category['ask'] + currency + utils.decimal_auto(asset['a'][0])
     vol = utils.category['volume'] + utils.decimal_auto(asset['v'][1])
 
