@@ -3,7 +3,7 @@
 # Utils
 # 
 from threading import Thread
-import requests
+import logging, requests
 
 __author__ = "nil.gradisnik@gmail.com"
 
@@ -42,5 +42,12 @@ def async_get(*args, callback=None, timeout=15, **kwargs):
             callback(response)
         kwargs['hooks'] = {'response': callback_with_args}
     kwargs['timeout'] = timeout
-    thread = Thread(target=requests.get, args=args, kwargs=kwargs)
+    thread = Thread(target=get_with_exception, args=args, kwargs=kwargs)
     thread.start()
+
+def get_with_exception(*args, **kwargs):
+    try:
+        r = requests.get(*args, **kwargs)
+        return r
+    except requests.exceptions.RequestException as e:
+        logging.info('API request failed, probably just timed out')

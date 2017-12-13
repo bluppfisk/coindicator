@@ -18,7 +18,7 @@ class Exchange(object):
 
   def stop(self):
     if self.timeout_id is not 0:
-      GLib.source_remove(self.timeout_id)
+        GLib.source_remove(self.timeout_id)
 
   def check_price(self):
     self.asset_pair = self.indicator.active_asset_pair
@@ -49,4 +49,4 @@ class Exchange(object):
     GLib.idle_add(self.indicator.set_data, label, bid, high, low, ask, vol)
 
   def _handle_error(self, error):
-    logging.info("Kraken API error: " + error[0])
+    logging.info("API error: " + error[0])

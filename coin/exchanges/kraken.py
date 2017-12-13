@@ -73,7 +73,13 @@ class Kraken(Exchange):
   def _parse_result(self, data):
     if data.status_code == 200:
       self.error.clear()
-      asset = data.json()['result'][self.pair]
+      try:
+        asset = data.json()['result'][self.pair]
+      except Exception as e:
+        # Usually a KeyError happens when an asynchronous response comes in
+        # for a previously selected asset pair (see upstream issue #27)
+        logging.info('invalid response for ' + str(self.pair))
+
     else:
       self.error.increment()
       return
