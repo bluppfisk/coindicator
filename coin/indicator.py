@@ -20,13 +20,6 @@ from exchanges.gdax import Gdax
 from exchanges.gemini import Gemini
 from exchanges.bittrex import Bittrex
 
-from exchanges.kraken import CONFIG as KrakenConfig
-from exchanges.bitfinex import CONFIG as BitfinexConfig
-from exchanges.gdax import CONFIG as GdaxConfig
-from exchanges.gemini import CONFIG as GeminiConfig
-from exchanges.bitstamp import CONFIG as BitstampConfig
-from exchanges.bittrex import CONFIG as BittrexConfig
-
 REFRESH_TIMES = [  # seconds
     '3',
     '5',
@@ -45,22 +38,18 @@ CURRENCY_SHOW = [
 ]
 
 CURRENCIES = {
-    'kraken': KrakenConfig['asset_pairs'],
-    'gdax': GdaxConfig['asset_pairs'],
-    'gemini': GeminiConfig['asset_pairs'],
-    'bitstamp': BitstampConfig['asset_pairs'],
-    'bittrex': BittrexConfig['asset_pairs'],
-    'bitfinex': BitfinexConfig['asset_pairs'],
+    'kraken': Kraken.CONFIG['asset_pairs'],
+    'gdax': Gdax.CONFIG['asset_pairs'],
+    'gemini': Gemini.CONFIG['asset_pairs'],
+    'bitstamp': Bitstamp.CONFIG['asset_pairs'],
+    'bittrex': Bittrex.CONFIG['asset_pairs'],
+    'bitfinex': Bitfinex.CONFIG['asset_pairs'],
 }
 
 
 class Indicator():
-    # instances = []
-
     def __init__(self, coin, counter, config, settings=None):
-        # Indicator.instances.append(self)
         self.counter = counter
-
         self.coin = coin
         self.config = config
         self.settings = Settings(settings)
@@ -71,32 +60,32 @@ class Indicator():
             {
                 'code': 'kraken',
                 'name': 'Kraken',
-                'instance': Kraken(KrakenConfig, self)
+                'instance': Kraken(self)
             },
             {
                 'code': 'bitstamp',
                 'name': 'Bitstamp',
-                'instance': Bitstamp(BitstampConfig, self)
+                'instance': Bitstamp(self)
             },
             {
                 'code': 'bitfinex',
                 'name': 'Bitfinex',
-                'instance': Bitfinex(BitfinexConfig, self)
+                'instance': Bitfinex(self)
             },
             {
                 'code': 'gdax',
                 'name': 'Gdax',
-                'instance': Gdax(GdaxConfig, self)
+                'instance': Gdax(self)
             },
             {
                 'code': 'gemini',
                 'name': 'Gemini',
-                'instance': Gemini(GeminiConfig, self)
+                'instance': Gemini(self)
             },
             {
                 'code': 'bittrex',
                 'name': 'Bittrex',
-                'instance': Bittrex(BittrexConfig, self)
+                'instance': Bittrex(self)
             }
         ]
 

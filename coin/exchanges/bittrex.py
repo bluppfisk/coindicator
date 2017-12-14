@@ -10,83 +10,73 @@ Response example
 
 __author__ = "wizzard94@github.com"
 
-from gi.repository import GLib
-import logging
-from error import Error
-from exchange import Exchange, CURRENCY, CATEGORY
-
-
-CONFIG = {
-  'ticker': 'https://bittrex.com/api/v1.1/public/getmarketsummary',
-  'asset_pairs': [
-    {
-      'isocode': 'XXBTZUSD',
-      'pair': 'USDT-BTC',
-      'name': 'BTC to USD',
-      'currency': CURRENCY['usd']
-    },
-    {
-      'isocode': 'XXLTZUSD',
-      'pair': 'USDT-LTC',
-      'name': 'LTC to USD',
-      'currency': CURRENCY['usd']
-    },
-    {
-      'isocode': 'XXETZUSD',
-      'pair': 'USDT-ETH',
-      'name': 'ETH to USD',
-      'currency': CURRENCY['usd']
-    },
-    {
-      'isocode': 'XXBCZBTC',
-      'pair': 'BTC-BCC',
-      'name': 'BCC to BTC',
-      'currency': CURRENCY['btc']
-    },
-    {
-      'isocode': 'XXETZBTC',
-      'pair': 'BTC-ETH',
-      'name': 'ETH to BTC',
-      'currency': CURRENCY['btc']
-    },
-    {
-      'isocode': 'XXRPZBTC',
-      'pair': 'BTC-XRP',
-      'name': 'XRP to BTC',
-      'currency': CURRENCY['btc']
-    },
-    {
-      'isocode': 'XXMRZBTC',
-      'pair': 'BTC-XMR',
-      'name': 'XMR to BTC',
-      'currency': CURRENCY['btc']
-    }
-  ]
-}
+from exchange import Exchange, CURRENCY
 
 class Bittrex(Exchange):
-  pass
+  CONFIG = {
+    'ticker': 'https://bittrex.com/api/v1.1/public/getmarketsummary',
+    'asset_pairs': [
+      {
+        'isocode': 'XXBTZUSD',
+        'pair': 'USDT-BTC',
+        'name': 'BTC to USD',
+        'currency': CURRENCY['usd']
+      },
+      {
+        'isocode': 'XXLTZUSD',
+        'pair': 'USDT-LTC',
+        'name': 'LTC to USD',
+        'currency': CURRENCY['usd']
+      },
+      {
+        'isocode': 'XXETZUSD',
+        'pair': 'USDT-ETH',
+        'name': 'ETH to USD',
+        'currency': CURRENCY['usd']
+      },
+      {
+        'isocode': 'XXBCZBTC',
+        'pair': 'BTC-BCC',
+        'name': 'BCC to BTC',
+        'currency': CURRENCY['btc']
+      },
+      {
+        'isocode': 'XXETZBTC',
+        'pair': 'BTC-ETH',
+        'name': 'ETH to BTC',
+        'currency': CURRENCY['btc']
+      },
+      {
+        'isocode': 'XXRPZBTC',
+        'pair': 'BTC-XRP',
+        'name': 'XRP to BTC',
+        'currency': CURRENCY['btc']
+      },
+      {
+        'isocode': 'XXMRZBTC',
+        'pair': 'BTC-XMR',
+        'name': 'XMR to BTC',
+        'currency': CURRENCY['btc']
+      }
+    ]
+  }
 
   def get_ticker(self):
     return self.config['ticker'] + '?market=' + self.pair
 
-  def _parse_result(self, data):
-    if data.status_code == 200:
-      self.error.clear()
-      asset = data.json()['result'][0]
-    else:
-      self.error.increment()
-      return
+  def _parse_result(self, asset):
+    label = asset['Last']
+    bid = asset['Bid']
+    high = asset['High']
+    low = asset['Low']
+    ask = asset['Ask']
+    vol = None
 
-    config = [item for item in CONFIG['asset_pairs'] if item['isocode'] == self.asset_pair][0]
-    currency = config['currency']
-    coin = config['name']
-
-    label = currency + self.decimal_auto(asset['Last'])
-
-    bid = CATEGORY['bid'] + currency + self.decimal_auto(asset['Bid'])
-    high = CATEGORY['high'] + currency + self.decimal_auto(asset['High'])
-    low = CATEGORY['low'] + currency + self.decimal_auto(asset['Low'])
-    ask = CATEGORY['ask'] + currency + self.decimal_auto(asset['Ask'])
-
-    GLib.idle_add(self.indicator.set_data, label, bid, high, low, ask)
+    return {
+      'label': label,
+      'bid': bid,
+      'high': high,
+      'low': low,
+      'ask': ask,
+      'vol': vol
+    }

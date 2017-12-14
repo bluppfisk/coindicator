@@ -5,68 +5,51 @@
 
 __author__ = "rick@anteaterllc.com"
 
-from gi.repository import GLib
-import logging
-from error import Error
-from exchange import Exchange, CURRENCY, CATEGORY
-
-
-CONFIG = {
-  'ticker': 'https://api.gemini.com/v1/pubticker/',
-  'asset_pairs': [
-    {
-      'isocode': 'XXBTZUSD',
-      'pair': 'btcusd',
-      'name': 'BTC to USD',
-      'currency': CURRENCY['usd'],
-      'srccurrency' : CURRENCY['btc'],
-      'volumelabel' : 'BTC'
-    },
-    {
-      'isocode': 'XXETZUSD',
-      'pair': 'ethusd',
-      'name': 'ETH to USD',
-      'currency': CURRENCY['usd'],
-      'srccurrency' : CURRENCY['eth'],
-      'volumelabel' : 'ETH'
-    },
-    {
-      'isocode': 'XXETZXBT',
-      'pair': 'ethbtc',
-      'name': 'ETH to BTC',
-      'currency': CURRENCY['btc'],
-      'srccurrency' : CURRENCY['eth'],
-      'volumelabel' : 'ETH'
-    }
-  ]
-}
+from exchange import Exchange, CURRENCY
 
 class Gemini(Exchange):
-  pass
+  CONFIG = {
+    'ticker': 'https://api.gemini.com/v1/pubticker/',
+    'asset_pairs': [
+      {
+        'isocode': 'XXBTZUSD',
+        'pair': 'btcusd',
+        'name': 'BTC to USD',
+        'currency': CURRENCY['usd'],
+        'volumelabel' : 'BTC'
+      },
+      {
+        'isocode': 'XXETZUSD',
+        'pair': 'ethusd',
+        'name': 'ETH to USD',
+        'currency': CURRENCY['usd'],
+        'volumelabel' : 'ETH'
+      },
+      {
+        'isocode': 'XXETZXBT',
+        'pair': 'ethbtc',
+        'name': 'ETH to BTC',
+        'currency': CURRENCY['btc'],
+        'volumelabel' : 'ETH'
+      }
+    ]
+  }
 
   def get_ticker(self):
     return self.config['ticker'] + self.pair
 
-  def _parse_result(self, data):
-    if data.status_code == 200:
-      self.error.clear()
-    else:
-      self.error.increment()
-      return
-    
-    asset = data.json()
+  def _parse_result(self, asset):
+    volumelabel = [item for item in self.config['asset_pairs'] if item['pair'] == self.pair][0]['volumelabel']
+    label = asset['last']
+    bid = asset['bid']
+    ask = asset['ask']
+    vol = asset['volume'][volumelabel]
 
-    config = [item for item in CONFIG['asset_pairs'] if item['isocode'] == self.asset_pair][0]
-
-    currency = config['currency']
-    srccurrency = config['srccurrency']
-    coin = config['name']
-    volumelabel = config['volumelabel']
-
-    label = currency + self.decimal_auto(asset['last'])
-    bid = CATEGORY['bid'] + currency + self.decimal_auto(asset['bid'])
-    ask = CATEGORY['ask'] + currency + self.decimal_auto(asset['ask'])
-
-    volume = CATEGORY['volume'] + srccurrency + self.decimal_auto(asset['volume'][volumelabel])
-
-    GLib.idle_add(self.indicator.set_data, label, bid, ask, volume, 'no further data')
+    return {
+      'label': label,
+      'bid': bid,
+      'high': None,
+      'low': None,
+      'ask': ask,
+      'vol': vol
+    }
