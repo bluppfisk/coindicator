@@ -65,6 +65,8 @@ class Bittrex(Exchange):
     return self.config['ticker'] + '?market=' + self.pair
 
   def _parse_result(self, asset):
+    asset = asset['result'][0]
+
     label = asset['Last']
     bid = asset['Bid']
     high = asset['High']
