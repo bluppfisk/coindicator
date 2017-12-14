@@ -20,7 +20,7 @@ Exchanges can be switched from the menu. Please open an issue to implement your 
 
 
 ## Installation
-Should work on a standard Ubuntu Linux installation with python3 installed. Tested on Ubuntu 16.04). Using python3-gi, python3-requests, python3-yaml, python3-notify2 libraries.
+Tested and working on Ubuntu Linux 16.04 with Unity. On other systems and desktop managers (e.g. Ubuntu 17.10 with Gnome3), you can get the app working by installing Libappindicator support (see troubleshooting below).
 
 Install python dependencies and install [GSettings schema](https://developer.gnome.org/gio/2.32/glib-compile-schemas.html) by running the following command
 ```
@@ -28,11 +28,21 @@ Install python dependencies and install [GSettings schema](https://developer.gno
 ```
 
 ## Running
-To run the indicator with the default settings or with the previous settings, type `make` to run and the indicator should appear in the notification area. Alternatively, you can run `python3 coin/coin.py` to configure the app.
+To run the indicator with the default settings or with the previous settings, type `make` to run and the indicator should appear in the notification area. Alternatively, you can run `python3 coin/coin.py` to start the app.
 
 ## Configuration
-Coin.py takes two parameters to configure the instance(s):
+Coin.py takes two optional parameters to configure the instance(s):
 
 * `python3 coin/coin.py asset=kraken:XXBTZEUR:30` will launch a single indicator for the asset pair XBT/EUR on the Kraken exchange with a refresh rate of 30 seconds. Asset pairs must always be in this format: `X XBT Z EUR` where `X` means `from` and `Z` means `to`. According to the ISO standard, currencies that are not bound to a country take an X as the first letter of their abbreviation, hence `XBT` for Bitcoin.
 
 * `python3 coin/coin.py file=startmany.yaml` will read startmany.yaml from the `coin` directory and start an indicator for each configuration it finds in there. Take a peek in `startmany.yaml`for examples and edit it to configure the exchanges, currency pairs and refresh rates for each instance.
+
+## Troubleshooting
+- If you're getting a `SyntaxError: Missing parentheses in call to 'print'.`, you may be using a Python2 library in there somewhere. Look through the error to identify which package it is. If it is `gi`, you can install the correct version with `sudo apt install python3-gi`. Additionally, you may have to uninstall the python2 gi library `pip3 uninstall gi` for it to work.
+
+- If you're not on an Ubuntu Linux or if you're not running the Unity desktop manager, you can still get the app running (depending on the system). Here's how to do it for Ubuntu 17.10 with Gnome3:
+
+	* After running `make install`, run `sudo apt install gir1.2-appindicator3-0.1` to install libappindicator support.
+	* On Ubuntu, install the KStatusNotifierItem/AppIndicator support shell extension for Gnome from the Ubuntu Software Installer OR
+	* On other systems, get the [KStatusNotifierItem/AppIndicator support shell extension for Gnome](https://extensions.gnome.org/extension/615/appindicator-support/) (there's a browser extension to help you; follow the instructions on the page)
+	* The Indicators should now show. If they don't, you may have to `sudo apt install gnome-tweak-tool` to manually activate the extension.
