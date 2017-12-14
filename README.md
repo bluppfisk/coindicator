@@ -1,10 +1,10 @@
-# Coin Price indicator
+# Coin Price Indicator
 
 ![Coin Price logo](https://raw.github.com/nilgradisnik/coinprice-indicator/master/resources/logo_124px.png)
 
 Coin Price indicator is a cryptocurrency (such as Bitcoin) price indicator applet for Ubuntu Linux. It shows various price points (depending on what the exchange API provides) in the indicator menu.
 
-Right now it supports the following exchanges:
+It currently supports the following exchanges:
 
 * [Kraken](https://www.kraken.com)
 * [Bitstamp](https://www.bitstamp.net)
