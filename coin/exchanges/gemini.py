@@ -9,6 +9,7 @@ from exchange import Exchange, CURRENCY
 
 class Gemini(Exchange):
   CONFIG = {
+    'name': 'Gemini',
     'ticker': 'https://api.gemini.com/v1/pubticker/',
     'asset_pairs': [
       {

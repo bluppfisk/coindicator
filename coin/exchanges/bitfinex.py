@@ -10,6 +10,7 @@ from exchange import Exchange, CURRENCY
 
 class Bitfinex(Exchange):
   CONFIG = {
+    'name': 'Bitfinex',
     'ticker': 'https://api.bitfinex.com/v1/pubticker/',
     'asset_pairs': [
       {

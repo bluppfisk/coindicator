@@ -23,14 +23,15 @@ CATEGORY = {
 class Exchange(object):
   def __init__(self, indicator):
     self.indicator = indicator
-    self.timeout_id = 0
+    self.timeout_id = None
     self.error = Error(self)
     self.config = self.CONFIG
+    self.exchange_name = self.config['name']
 
-  def get_ticker(self): # to be overwritten by child classes
+  def get_ticker(self): # to be overwritten by child class
     pass
 
-  def _parse_result(self, data): # to be overwritten by child classes
+  def _parse_result(self, data): # to be overwritten by child class
     pass
 
   def start(self, error_refresh=None):
@@ -38,22 +39,28 @@ class Exchange(object):
     self.timeout_id = GLib.timeout_add_seconds(refresh, self.check_price)
 
   def stop(self):
-    if self.timeout_id is not 0:
+    if self.timeout_id is not None:
         GLib.source_remove(self.timeout_id)
 
   def check_price(self):
     self.asset_pair = self.indicator.active_asset_pair
     self.pair = [item['pair'] for item in self.config['asset_pairs'] if item['isocode'] == self.asset_pair][0]
-    self.async_get(self.get_ticker(), callback=self._handle_result)
-    return self.error.is_ok()
+    self.async_get(self.get_ticker(), validation=self.asset_pair, callback=self._handle_result)
+
+    return self.error.is_ok() # continues the timer if there are no errors
 
   def _handle_error(self, error):
     self.error.increment()
-    logging.info("API error: " + str(error))
+    logging.info(self.exchange_name + " API error: " + str(error))
 
-  def _handle_result(self, data):
+  def _handle_result(self, data, validation):
+    ## Check to see if the returning response is still valid
+    # (user may have changed exchanges before the request finished)
+    if validation is not self.asset_pair: # we've already moved on.
+      return
+
     if data.status_code != 200:
-      self._handle_error('No result from server')
+      self._handle_error('Server returned an error')
       return
 
     else:
@@ -63,13 +70,13 @@ class Exchange(object):
       except Exception as e:
         # Usually a KeyError happens when an asynchronous response comes in
         # for a previously selected asset pair (see upstream issue #27)
-        self._handle_error('invalid response for ' + str(self.pair))
+        self._handle_error('Invalid response for ' + str(self.pair))
         return
 
     results = self._parse_result(asset)
+
     config = [item for item in self.config['asset_pairs'] if item['isocode'] == self.asset_pair][0]
     currency = config['currency']
-    coin = config['name']
 
     label = currency + self.decimal_auto(results.get('label'))
     bid = CATEGORY['bid'] + currency + self.decimal_auto(results.get('bid'))
@@ -99,14 +106,14 @@ class Exchange(object):
 
     return ('{0:.' + str(i + 2) + 'f}').format(number)
 
-  def async_get(self, *args, callback=None, timeout=15, **kwargs):
+  def async_get(self, *args, callback=None, timeout=15, validation=None, **kwargs):
     """Makes request on a different thread, and optionally passes response to a
     `callback` function when request returns.
     """
     if callback:
-        def callback_with_args(response, *args, **kwargs):
-            callback(response)
-        kwargs['hooks'] = {'response': callback_with_args}
+      def callback_with_args(response, *args, **kwargs):
+        callback(response, validation)
+      kwargs['hooks'] = {'response': callback_with_args}
     kwargs['timeout'] = timeout
     thread = Thread(target=self.get_with_exception, args=args, kwargs=kwargs)
     thread.start()
@@ -116,4 +123,4 @@ class Exchange(object):
         r = requests.get(*args, **kwargs)
         return r
     except requests.exceptions.RequestException as e:
-        self._handle_error('API request failed, probably just timed out')
+        self._handle_error('Request timed out or failed')

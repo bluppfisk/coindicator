@@ -9,6 +9,7 @@ from exchange import Exchange, CURRENCY
 
 class Gdax(Exchange):
   CONFIG = {
+    'name': 'Gdax',
     'ticker': 'https://api.gdax.com/products/',
     'asset_pairs': [
       {

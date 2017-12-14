@@ -9,6 +9,7 @@ from exchange import Exchange, CURRENCY
 
 class Bitstamp(Exchange):
   CONFIG = {
+    'name': 'Bitstamp',
     'ticker': 'https://www.bitstamp.net/api/ticker/',
     'asset_pairs': [
       {
