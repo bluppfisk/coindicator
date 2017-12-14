@@ -6,9 +6,10 @@
 __author__ = "eliezer.aquino@gmail.com"
 
 from gi.repository import GLib
-import logging, utils
+import logging
 from error import Error
-from exchange import Exchange
+from exchange import Exchange, CURRENCY, CATEGORY
+
 
 CONFIG = {
   'ticker': 'https://api.bitfinex.com/v1/pubticker/',
@@ -17,13 +18,13 @@ CONFIG = {
        'isocode': 'XXBTZUSD',
       'pair': 'btcusd',
       'name': 'BTC to USD',
-      'currency': utils.currency['usd']
+      'currency': CURRENCY['usd']
     },
     {
       'isocode': 'XIOTZUSD',
       'pair': 'iotusd',
       'name': 'IOTA to USD',
-      'currency': utils.currency['usd']
+      'currency': CURRENCY['usd']
     }
   ]
 }
@@ -42,14 +43,14 @@ class Bitfinex(Exchange):
       self.error.increment()
       return
     
-    currency = utils.currency['usd']
+    currency = CURRENCY['usd']
 
-    label = currency + utils.decimal_auto(asset['last_price'])
+    label = currency + self.decimal_auto(asset['last_price'])
 
-    bid = utils.category['bid'] + currency + utils.decimal_auto(asset['bid'])
-    high = utils.category['high'] + currency + utils.decimal_auto(asset['high'])
-    low = utils.category['low'] + currency + utils.decimal_auto(asset['low'])
-    ask = utils.category['ask'] + currency + utils.decimal_auto(asset['ask'])
-    volume = utils.category['volume'] + utils.decimal_auto(asset['volume'])
+    bid = CATEGORY['bid'] + currency + self.decimal_auto(asset['bid'])
+    high = CATEGORY['high'] + currency + self.decimal_auto(asset['high'])
+    low = CATEGORY['low'] + currency + self.decimal_auto(asset['low'])
+    ask = CATEGORY['ask'] + currency + self.decimal_auto(asset['ask'])
+    volume = CATEGORY['volume'] + self.decimal_auto(asset['volume'])
 
     GLib.idle_add(self.indicator.set_data, label, bid, high, low, ask, volume)

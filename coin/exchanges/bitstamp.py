@@ -6,9 +6,10 @@
 __author__ = "nil.gradisnik@gmail.com"
 
 from gi.repository import GLib
-import logging, utils
+import logging
 from error import Error
-from exchange import Exchange
+from exchange import Exchange, CURRENCY, CATEGORY
+
 
 CONFIG = {
   'ticker': 'https://www.bitstamp.net/api/ticker/',
@@ -17,7 +18,7 @@ CONFIG = {
       'isocode': 'XXBTZUSD',
       'pair': 'XXBTZUSD',
       'name': 'BTC to USD',
-      'currency': utils.currency['usd']
+      'currency': CURRENCY['usd']
     }
   ]
 }
@@ -36,13 +37,13 @@ class Bitstamp(Exchange):
       self.error.increment()
       return
 
-    currency = utils.currency['usd']
-    label = currency + utils.decimal_auto(asset['last'])
+    currency = CURRENCY['usd']
+    label = currency + self.decimal_auto(asset['last'])
 
-    bid = utils.category['bid'] + currency + utils.decimal_auto(asset['bid'])
-    high = utils.category['high'] + currency + utils.decimal_auto(asset['high'])
-    low = utils.category['low'] + currency + utils.decimal_auto(asset['low'])
-    ask = utils.category['ask'] + currency + utils.decimal_auto(asset['ask'])
-    volume = utils.category['volume'] + utils.decimal_auto(asset['volume'])
+    bid = CATEGORY['bid'] + currency + self.decimal_auto(asset['bid'])
+    high = CATEGORY['high'] + currency + self.decimal_auto(asset['high'])
+    low = CATEGORY['low'] + currency + self.decimal_auto(asset['low'])
+    ask = CATEGORY['ask'] + currency + self.decimal_auto(asset['ask'])
+    volume = CATEGORY['volume'] + self.decimal_auto(asset['volume'])
 
     GLib.idle_add(self.indicator.set_data, label, bid, high, low, ask, volume)

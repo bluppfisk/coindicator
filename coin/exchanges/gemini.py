@@ -6,9 +6,10 @@
 __author__ = "rick@anteaterllc.com"
 
 from gi.repository import GLib
-import logging, utils
+import logging
 from error import Error
-from exchange import Exchange
+from exchange import Exchange, CURRENCY, CATEGORY
+
 
 CONFIG = {
   'ticker': 'https://api.gemini.com/v1/pubticker/',
@@ -17,24 +18,24 @@ CONFIG = {
       'isocode': 'XXBTZUSD',
       'pair': 'btcusd',
       'name': 'BTC to USD',
-      'currency': utils.currency['usd'],
-      'srccurrency' : utils.currency['btc'],
+      'currency': CURRENCY['usd'],
+      'srccurrency' : CURRENCY['btc'],
       'volumelabel' : 'BTC'
     },
     {
       'isocode': 'XXETZUSD',
       'pair': 'ethusd',
       'name': 'ETH to USD',
-      'currency': utils.currency['usd'],
-      'srccurrency' : utils.currency['eth'],
+      'currency': CURRENCY['usd'],
+      'srccurrency' : CURRENCY['eth'],
       'volumelabel' : 'ETH'
     },
     {
       'isocode': 'XXETZXBT',
       'pair': 'ethbtc',
       'name': 'ETH to BTC',
-      'currency': utils.currency['btc'],
-      'srccurrency' : utils.currency['eth'],
+      'currency': CURRENCY['btc'],
+      'srccurrency' : CURRENCY['eth'],
       'volumelabel' : 'ETH'
     }
   ]
@@ -62,10 +63,10 @@ class Gemini(Exchange):
     coin = config['name']
     volumelabel = config['volumelabel']
 
-    label = currency + utils.decimal_auto(asset['last'])
-    bid = utils.category['bid'] + currency + utils.decimal_auto(asset['bid'])
-    ask = utils.category['ask'] + currency + utils.decimal_auto(asset['ask'])
+    label = currency + self.decimal_auto(asset['last'])
+    bid = CATEGORY['bid'] + currency + self.decimal_auto(asset['bid'])
+    ask = CATEGORY['ask'] + currency + self.decimal_auto(asset['ask'])
 
-    volume = utils.category['volume'] + srccurrency + utils.decimal_auto(asset['volume'][volumelabel])
+    volume = CATEGORY['volume'] + srccurrency + self.decimal_auto(asset['volume'][volumelabel])
 
     GLib.idle_add(self.indicator.set_data, label, bid, ask, volume, 'no further data')

@@ -6,9 +6,10 @@
 __author__ = "sander.vandemoortel@gmail.com"
 
 from gi.repository import GLib
-import logging, utils
+import logging
 from error import Error
-from exchange import Exchange
+from exchange import Exchange, CURRENCY, CATEGORY
+
 
 CONFIG = {
   'ticker': 'https://api.gdax.com/products/',
@@ -17,43 +18,43 @@ CONFIG = {
       'isocode': 'XXBTZUSD',
       'pair': 'BTC-USD',
       'name': 'BTC to USD',
-      'currency': utils.currency['usd']
+      'currency': CURRENCY['usd']
     },
     {
       'isocode': 'XXBTZEUR',
       'pair': 'BTC-EUR',
       'name': 'BTC to EUR',
-      'currency': utils.currency['eur']
+      'currency': CURRENCY['eur']
     },
     {
       'isocode': 'XXBTZGBP',
       'pair': 'BTC-GBP',
       'name': 'BTC to GBP',
-      'currency': utils.currency['gbp']
+      'currency': CURRENCY['gbp']
     },
     {
       'isocode': 'XXETZUSD',
       'pair': 'ETH-USD',
       'name': 'ETH to USD',
-      'currency': utils.currency['usd']
+      'currency': CURRENCY['usd']
     },
     {
       'isocode': 'XXETZEUR',
       'pair': 'ETH-EUR',
       'name': 'ETH to EUR',
-      'currency': utils.currency['eur']
+      'currency': CURRENCY['eur']
     },
     {
       'isocode': 'XXLTZUSD',
       'pair': 'LTC-USD',
       'name': 'LTC to USD',
-      'currency': utils.currency['usd']
+      'currency': CURRENCY['usd']
     },
     {
       'isocode': 'XXLTZEUR',
       'pair': 'LTC-EUR',
       'name': 'LTC to EUR',
-      'currency': utils.currency['eur']
+      'currency': CURRENCY['eur']
     }
   ]
 }
@@ -76,10 +77,10 @@ class Gdax(Exchange):
     currency = config['currency']
     coin = config['name']
 
-    label = currency + utils.decimal_auto(asset['price'])
+    label = currency + self.decimal_auto(asset['price'])
 
-    bid = utils.category['bid'] + currency + utils.decimal_auto(asset['bid'])
-    ask = utils.category['ask'] + currency + utils.decimal_auto(asset['ask'])
-    volume = utils.category['volume'] + utils.decimal_auto(asset['volume'])
+    bid = CATEGORY['bid'] + currency + self.decimal_auto(asset['bid'])
+    ask = CATEGORY['ask'] + currency + self.decimal_auto(asset['ask'])
+    volume = CATEGORY['volume'] + self.decimal_auto(asset['volume'])
 
     GLib.idle_add(self.indicator.set_data, label, bid, ask, volume, 'no further data')

@@ -6,9 +6,9 @@
 __author__ = "nil.gradisnik@gmail.com"
 
 from gi.repository import GLib
-import logging, utils
+import logging
 from error import Error
-from exchange import Exchange
+from exchange import Exchange, CURRENCY, CATEGORY
 
 CONFIG = {
   'ticker': 'https://api.kraken.com/0/public/Ticker',
@@ -17,49 +17,49 @@ CONFIG = {
       'isocode': 'XXBTZUSD',
       'pair': 'XXBTZUSD',
       'name': 'BTC to USD',
-      'currency': utils.currency['usd']
+      'currency': CURRENCY['usd']
     },
     {
       'isocode': 'XXBTZEUR',
       'pair': 'XXBTZEUR',
       'name': 'BTC to EUR',
-      'currency': utils.currency['eur']
+      'currency': CURRENCY['eur']
     },
     {
       'isocode': 'XXLTZUSD',
       'pair': 'XLTCZUSD',
       'name': 'LTC to USD',
-      'currency': utils.currency['usd']
+      'currency': CURRENCY['usd']
     },
     {
       'isocode': 'XXLTZEUR',
       'pair': 'XLTCZEUR',
       'name': 'LTC to EUR',
-      'currency': utils.currency['eur']
+      'currency': CURRENCY['eur']
     },
     {
       'isocode': 'XXETZUSD',
       'pair': 'XETHZUSD',
       'name': 'ETH to USD',
-      'currency': utils.currency['usd']
+      'currency': CURRENCY['usd']
     },
     {
       'isocode': 'XXETZEUR',
       'pair': 'XETHZEUR',
       'name': 'ETH to EUR',
-      'currency': utils.currency['eur']
+      'currency': CURRENCY['eur']
     },
     {
       'isocode': 'XXBCZEUR',
       'pair': 'BCHEUR',
       'name': 'BCH to EUR',
-      'currency': utils.currency['eur']
+      'currency': CURRENCY['eur']
     },
     {
       'isocode': 'XXRPZEUR',
       'pair': 'XXRPZEUR',
       'name': 'XRP to EUR',
-      'currency': utils.currency['eur']
+      'currency': CURRENCY['eur']
     }
   ]
 }
@@ -89,12 +89,12 @@ class Kraken(Exchange):
     currency = config['currency']
     coin = config['name']
 
-    label = currency + utils.decimal_auto(asset['c'][0])
+    label = currency + self.decimal_auto(asset['c'][0])
 
-    bid = utils.category['bid'] + currency + utils.decimal_auto(asset['b'][0])
-    high = utils.category['high'] + currency + utils.decimal_auto(asset['h'][1])
-    low = utils.category['low'] + currency + utils.decimal_auto(asset['l'][1])
-    ask = utils.category['ask'] + currency + utils.decimal_auto(asset['a'][0])
-    vol = utils.category['volume'] + utils.decimal_auto(asset['v'][1])
+    bid = CATEGORY['bid'] + currency + self.decimal_auto(asset['b'][0])
+    high = CATEGORY['high'] + currency + self.decimal_auto(asset['h'][1])
+    low = CATEGORY['low'] + currency + self.decimal_auto(asset['l'][1])
+    ask = CATEGORY['ask'] + currency + self.decimal_auto(asset['a'][0])
+    vol = CATEGORY['volume'] + self.decimal_auto(asset['v'][1])
 
     GLib.idle_add(self.indicator.set_data, label, bid, high, low, ask, vol)

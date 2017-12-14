@@ -11,7 +11,6 @@ try:
 except ImportError:
     from gi.repository import AppIndicator
 
-import utils
 from settings import Settings
 
 from exchanges.kraken import Kraken
@@ -150,11 +149,11 @@ class Indicator():
     def _menu(self):
         menu = Gtk.Menu()
 
-        self.bid_item = Gtk.MenuItem(utils.category['bid'])
-        self.high_item = Gtk.MenuItem(utils.category['high'])
-        self.low_item = Gtk.MenuItem(utils.category['low'])
-        self.ask_item = Gtk.MenuItem(utils.category['ask'])
-        self.volume_item = Gtk.MenuItem(utils.category['volume'])
+        self.bid_item = Gtk.MenuItem('loading...')
+        self.high_item = Gtk.MenuItem('loading...')
+        self.low_item = Gtk.MenuItem('loading...')
+        self.ask_item = Gtk.MenuItem('loading...')
+        self.volume_item = Gtk.MenuItem('loading...')
 
         remove_item = Gtk.MenuItem("Remove Ticker")
         remove_item.connect("activate", self._remove)
