@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Coin Price indicator
 # 
@@ -26,8 +27,8 @@ class Coin:
     def __init__(self):
         self.start_main()
         self.instances = []
-        logging.info("Coin Price indicator v" + self.config['app']['version'])
-        usage_error = 'Usage: coin.py [flags]\nasset\texchange:asset_pair:refresh_rate\nfile\tLoads various asset pairs from YAML file in ./coin directory'
+        print("Coin Price indicator v" + self.config['app']['version'])
+        usage_error = '\nUsage: coin.py [arguments]\n* asset=exchange:asset_pair:refresh_rate\tLoad a specific asset\n* file=file_to_load.yaml\t\t\tLoad several tickers defined in a YAML file.\n'
         if len(sys.argv) > 2:
             quit('Too many parameters\n' + usage_error)
 

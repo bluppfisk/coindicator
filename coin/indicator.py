@@ -2,7 +2,7 @@
 # Ubuntu App indicator
 # https://unity.ubuntu.com/projects/appindicators/
 
-import gi, logging
+import logging
 logging.basicConfig(level=logging.INFO)
 
 from gi.repository import Gtk, GdkPixbuf, GLib
@@ -12,6 +12,8 @@ except ImportError:
     from gi.repository import AppIndicator
 
 from settings import Settings
+import os, sys
+import glob, importlib
 
 from exchanges.kraken import Kraken
 from exchanges.bitstamp import Bitstamp
@@ -55,7 +57,7 @@ class Indicator():
         self.settings = Settings(settings)
         self.refresh_frequency = self.settings.refresh()
         self.active_exchange = self.settings.exchange()
-        
+
         self.exchanges = [
             {
                 'code': 'kraken',
@@ -147,11 +149,14 @@ class Indicator():
         remove_item = Gtk.MenuItem("Remove Ticker")
         remove_item.connect("activate", self._remove)
 
-        refresh_item = Gtk.MenuItem("Refresh")
-        refresh_item.set_submenu(self._menu_refresh())
+        self.refresh_menu = Gtk.MenuItem("Refresh")
+        self.refresh_menu.set_submenu(self._menu_refresh())
 
-        exchange_item = Gtk.MenuItem("Exchange")
-        exchange_item.set_submenu(self._menu_exchange())
+        self.exchange_menu = Gtk.MenuItem("Exchange")
+        self.exchange_menu.set_submenu(self._menu_exchange())
+
+        self.currency_menu = Gtk.MenuItem("Currency")
+        self.currency_menu.set_submenu(self._menu_asset_pairs())
 
         menu.append(self.bid_item)
         menu.append(self.high_item)
@@ -159,8 +164,9 @@ class Indicator():
         menu.append(self.ask_item)
         menu.append(self.volume_item)
         menu.append(Gtk.SeparatorMenuItem())
-        menu.append(refresh_item)
-        menu.append(exchange_item)
+        menu.append(self.exchange_menu)
+        menu.append(self.currency_menu)
+        menu.append(self.refresh_menu)
         menu.append(Gtk.SeparatorMenuItem())
         menu.append(remove_item)
 
@@ -175,7 +181,7 @@ class Indicator():
 
         group = []
         for ri in REFRESH_TIMES:
-            item = Gtk.RadioMenuItem.new_with_label(group, ri + 's')
+            item = Gtk.RadioMenuItem.new_with_label(group, ri + ' sec')
             group.append(item)
             refresh.append(item)
 
@@ -206,8 +212,6 @@ class Indicator():
 
             item.connect('activate', self._menu_exchange_change)
 
-        self._menu_currency(exchange)
-
         return exchange
 
     def _menu_exchange_change(self, widget):
@@ -224,16 +228,6 @@ class Indicator():
             self.settings = Settings(self.active_exchange + ':' + active_asset_pair + ':' + str(self.refresh_frequency))
             self._menu_currency_visible()
             self._start_exchange()
-
-    def _menu_currency(self, exchange_menu):
-        self.currency_separator = Gtk.SeparatorMenuItem()
-        self.currency_menu = Gtk.MenuItem("Currency")
-
-        exchange_menu.append(self.currency_separator)
-        exchange_menu.append(self.currency_menu)
-
-        if self.active_exchange in CURRENCIES:
-            self.currency_menu.set_submenu(self._menu_asset_pairs())
 
     def _menu_asset_pairs(self):
         asset_pairs = Gtk.Menu()
@@ -263,11 +257,9 @@ class Indicator():
 
     def _menu_currency_visible(self):
         if self.active_exchange in CURRENCY_SHOW:
-            self.currency_separator.show()
             self.currency_menu.set_submenu(self._menu_asset_pairs())
             self.currency_menu.show_all()
         else:
-            self.currency_separator.hide()
             self.currency_menu.hide()
 
     def _remove(self, widget):
@@ -277,4 +269,3 @@ class Indicator():
             self.coin.instances.remove(self)
             self._stop_exchanges()
             del self.indicator
-            logging.info("Indicator removed")

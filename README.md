@@ -14,10 +14,7 @@ It currently supports the following exchanges:
 * [Bittrex](https://bittrex.com)
 * [Bitfinex](https://www.bitfinex.com/)
 
-Exchanges can be switched from the menu. Please open an issue to implement your favorite cryptocurrency exchange.
-
 ![Screenshot](https://raw.githubusercontent.com/nilgradisnik/coinprice-indicator/master/resources/screenshot.png)
-
 
 ## Installation
 Tested and working on Ubuntu Linux 16.04 with Unity. On other systems and desktop managers (e.g. Ubuntu 17.10 with Gnome3), you can get the app working by installing Libappindicator support (see troubleshooting below).

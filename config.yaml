@@ -4,7 +4,7 @@ app:
   name: Coin Price Indicator
   description: A cryptocurrency price ticker applet for Ubuntu
   url: https://github.com/nilgradisnik/coinprice-indicator
-  version: "0.7.3"
+  version: "0.7.5"
 
 authors:
   -
@@ -22,10 +22,10 @@ contributors:
     name: Sander Van de Moortel
     email: sander.vandemoortel@gmail.com
   -
-    name: rick
+    name: Rick Ramstetter
     email: rick@anteaterllc.com
   -
-    name: wizzard94
+    name: Sir Paul
     email: wizzard94@github.com
   -
     name: Eliezer Aquino
