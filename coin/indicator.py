@@ -5,7 +5,7 @@
 import logging
 logging.basicConfig(level=logging.INFO)
 
-from gi.repository import Gtk, GdkPixbuf, GLib
+from gi.repository import Gtk, GdkPixbuf, GLib, Gdk
 try:
     from gi.repository import AppIndicator3 as AppIndicator
 except ImportError:
@@ -21,6 +21,10 @@ from exchanges.bitfinex import Bitfinex
 from exchanges.gdax import Gdax
 from exchanges.gemini import Gemini
 from exchanges.bittrex import Bittrex
+
+VALUE_DOWN = Gdk.RGBA()
+VALUE_DOWN.red = 255
+VALUE_DOWN.alpha = 255
 
 REFRESH_TIMES = [  # seconds
     '3',
@@ -102,31 +106,31 @@ class Indicator():
         self.indicator.set_label(label, "$888.88")
 
         if bid:
-            self.bid_item.get_child().set_text(bid)
+            self.bid_item.set_label(bid)
             self.bid_item.show()
         else:
             self.bid_item.hide()
 
         if high:
-            self.high_item.get_child().set_text(high)
+            self.high_item.set_label(high)
             self.high_item.show()
         else:
             self.high_item.hide()
 
         if low:
-            self.low_item.get_child().set_text(low)
+            self.low_item.set_label(low)
             self.low_item.show()
         else:
             self.low_item.hide()
 
         if ask:
-            self.ask_item.get_child().set_text(ask)
+            self.ask_item.set_label(ask)
             self.ask_item.show()
         else:
             self.ask_item.hide()
 
         if volume:
-            self.volume_item.get_child().set_text(volume)
+            self.volume_item.set_label(volume)
             self.volume_item.show()
         else:
             self.volume_item.hide()
