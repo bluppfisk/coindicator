@@ -12,12 +12,12 @@ CURRENCY = {
 }
 
 CATEGORY = {
-    'bid': 'Bid:\t\t',
-    'high': 'High:\t\t',
-    'low': 'Low:\t\t',
-    'ask': 'Ask:\t\t',
-    'volume': 'Volume:\t',
-    'first': 'First:\t\t'
+    'bid': 'Bid',
+    'high': 'High',
+    'low': 'Low',
+    'ask': 'Ask',
+    'volume': 'Vol',
+    'first': 'First'
 }
 
 class Exchange(object):
@@ -39,6 +39,7 @@ class Exchange(object):
     self.timeout_id = GLib.timeout_add_seconds(refresh, self.check_price)
 
   def stop(self):
+    self.error.clear()
     if self.timeout_id is not None:
         GLib.source_remove(self.timeout_id)
 
@@ -54,7 +55,7 @@ class Exchange(object):
     logging.info(self.exchange_name + " API error: " + str(error))
 
   def _handle_result(self, data, validation):
-    ## Check to see if the returning response is still valid
+    # Check to see if the returning response is still valid
     # (user may have changed exchanges before the request finished)
     if validation is not self.asset_pair: # we've already moved on.
       return
@@ -77,20 +78,21 @@ class Exchange(object):
 
     config = [item for item in self.config['asset_pairs'] if item['isocode'] == self.asset_pair][0]
     currency = config['currency']
+    volumecurrency = config.get('volumelabel').upper() if config.get('volumelabel') else config.get('name')[0:3].upper()
 
     label = currency + self.decimal_auto(results.get('label'))
-    bid = CATEGORY['bid'] + currency + self.decimal_auto(results.get('bid'))
-    high = CATEGORY['high'] + currency + self.decimal_auto(results.get('high'))
-    low = CATEGORY['low'] + currency + self.decimal_auto(results.get('low'))
-    ask = CATEGORY['ask'] + currency + self.decimal_auto(results.get('ask'))
-    vol = CATEGORY['volume'] + self.decimal_auto(results.get('vol'))
+    bid = CATEGORY['bid'] + ':\t\t' + currency + self.decimal_auto(results.get('bid'))
+    high = CATEGORY['high'] + ':\t\t' + currency + self.decimal_auto(results.get('high'))
+    low = CATEGORY['low'] + ':\t\t' + currency + self.decimal_auto(results.get('low'))
+    ask = CATEGORY['ask'] + ':\t\t' + currency + self.decimal_auto(results.get('ask'))
+    vol = CATEGORY['volume'] + ' (' + volumecurrency + '):\t' + self.decimal_auto(results.get('vol'))
     
     GLib.idle_add(self.indicator.set_data, label, bid, high, low, ask, vol)
 
-  def decimal_round(self, number, decimals=2):
-    result = round(number, decimals)
-    return result
-
+  ## decimal_auto 
+  # Rounds a number to a meaningful number of decimal places
+  # and returns it as a string
+  # 
   def decimal_auto(self, number):
     if number == None:
       return 'No data'
@@ -123,4 +125,4 @@ class Exchange(object):
         r = requests.get(*args, **kwargs)
         return r
     except requests.exceptions.RequestException as e:
-        self._handle_error('Request timed out or failed')
+        self._handle_error('Connection error')
