@@ -94,8 +94,6 @@ class Exchange(object):
   # and returns it as a string
   # 
   def decimal_auto(self, number):
-    if number == None:
-      return 'No data'
     number = float(number)
     if number < 10:
         for i in range(8, 0, -1):
