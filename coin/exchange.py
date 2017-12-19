@@ -1,5 +1,5 @@
 from gi.repository import GLib
-import logging, requests
+import logging, requests, time
 from error import Error
 from threading import Thread
 
@@ -22,6 +22,7 @@ CATEGORY = {
 
 class Exchange(object):
   def __init__(self, indicator):
+    self.latest_response = 0
     self.indicator = indicator
     self.timeout_id = None
     self.error = Error(self)
@@ -54,14 +55,19 @@ class Exchange(object):
     self.error.increment()
     logging.info(self.exchange_name + " API error: " + str(error))
 
-  def _handle_result(self, data, validation):
+  def _handle_result(self, data, validation, timestamp):
     # Check to see if the returning response is still valid
     # (user may have changed exchanges before the request finished)
     if validation is not self.asset_pair: # we've already moved on.
       return
 
+    # also check if a newer response hasn't already been returned
+    if timestamp < self.latest_response: # this is an older request
+      logging.info('Discarding outdated response.')
+      return
+
     if data.status_code != 200:
-      self._handle_error('Server returned an error')
+      self._handle_error('Server returned an error: ' + str(data.status_code))
       return
 
     else:
@@ -74,6 +80,7 @@ class Exchange(object):
         self._handle_error('Invalid response for ' + str(self.pair))
         return
 
+    self.latest_response = timestamp
     results = self._parse_result(asset)
 
     config = [item for item in self.config['asset_pairs'] if item['isocode'] == self.asset_pair][0]
@@ -106,13 +113,15 @@ class Exchange(object):
 
     return ('{0:.' + str(i + 2) + 'f}').format(number)
 
-  def async_get(self, *args, callback=None, timeout=15, validation=None, **kwargs):
-    """Makes request on a different thread, and optionally passes response to a
-    `callback` function when request returns.
-    """
+  ##
+  # Makes request on a different thread, and optionally passes response to a
+  # `callback` function when request returns.
+  # 
+  def async_get(self, *args, callback=None, timeout=15, validation=None, **kwargs):  
     if callback:
       def callback_with_args(response, *args, **kwargs):
-        callback(response, validation)
+        timestamp = time.time()
+        callback(response, validation, timestamp)
       kwargs['hooks'] = {'response': callback_with_args}
     kwargs['timeout'] = timeout
     thread = Thread(target=self.get_with_exception, args=args, kwargs=kwargs)

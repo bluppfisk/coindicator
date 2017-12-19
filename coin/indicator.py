@@ -3,9 +3,9 @@
 # https://unity.ubuntu.com/projects/appindicators/
 
 import logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
 
-from gi.repository import Gtk, GdkPixbuf, GLib, Gdk
+from gi.repository import Gtk, GdkPixbuf, GLib
 try:
     from gi.repository import AppIndicator3 as AppIndicator
 except ImportError:
@@ -22,16 +22,12 @@ from exchanges.gdax import Gdax
 from exchanges.gemini import Gemini
 from exchanges.bittrex import Bittrex
 
-VALUE_DOWN = Gdk.RGBA()
-VALUE_DOWN.red = 255
-VALUE_DOWN.alpha = 255
-
 REFRESH_TIMES = [  # seconds
-    '3',
-    '5',
-    '10',
-    '30',
-    '60'
+    3,
+    5,
+    10,
+    30,
+    60
 ]
 
 CURRENCY_SHOW = [
@@ -204,19 +200,19 @@ class Indicator():
 
         group = []
         for ri in REFRESH_TIMES:
-            item = Gtk.RadioMenuItem.new_with_label(group, ri + ' sec')
+            item = Gtk.RadioMenuItem.new_with_label(group, str(ri) + ' sec')
             group.append(item)
             refresh.append(item)
 
-            if self.refresh_frequency == int(ri):
+            if self.refresh_frequency == ri:
                 item.set_active(True)
-            item.connect('activate', self._menu_refresh_change)
+            item.connect('activate', self._menu_refresh_change, ri)
 
         return refresh
 
-    def _menu_refresh_change(self, widget):
+    def _menu_refresh_change(self, widget, ri):
         if widget.get_active():
-            self.refresh_frequency = int(widget.get_label()[:-1])
+            self.refresh_frequency = ri
             self.settings.refresh(self.refresh_frequency)
             self._start_exchange()
 
