@@ -101,10 +101,29 @@ class Indicator():
     def set_data(self, label, bid, high, low, ask, volume=None):
         self.indicator.set_label(label, "$888.88")
 
-        self.bid_item.get_child().set_text(bid)
-        self.high_item.get_child().set_text(high)
-        self.low_item.get_child().set_text(low)
-        self.ask_item.get_child().set_text(ask)
+        if bid:
+            self.bid_item.get_child().set_text(bid)
+            self.bid_item.show()
+        else:
+            self.bid_item.hide()
+
+        if high:
+            self.high_item.get_child().set_text(high)
+            self.high_item.show()
+        else:
+            self.high_item.hide()
+
+        if low:
+            self.low_item.get_child().set_text(low)
+            self.low_item.show()
+        else:
+            self.low_item.hide()
+
+        if ask:
+            self.ask_item.get_child().set_text(ask)
+            self.ask_item.show()
+        else:
+            self.ask_item.hide()
 
         if volume:
             self.volume_item.get_child().set_text(volume)

@@ -81,11 +81,11 @@ class Exchange(object):
     volumecurrency = config.get('volumelabel').upper() if config.get('volumelabel') else config.get('name')[0:3].upper()
 
     label = currency + self.decimal_auto(results.get('label'))
-    bid = CATEGORY['bid'] + ':\t\t' + currency + self.decimal_auto(results.get('bid'))
-    high = CATEGORY['high'] + ':\t\t' + currency + self.decimal_auto(results.get('high'))
-    low = CATEGORY['low'] + ':\t\t' + currency + self.decimal_auto(results.get('low'))
-    ask = CATEGORY['ask'] + ':\t\t' + currency + self.decimal_auto(results.get('ask'))
-    vol = CATEGORY['volume'] + ' (' + volumecurrency + '):\t' + self.decimal_auto(results.get('vol'))
+    bid = CATEGORY['bid'] + ':\t\t' + currency + self.decimal_auto(results.get('bid')) if results.get('bid') else None
+    high = CATEGORY['high'] + ':\t\t' + currency + self.decimal_auto(results.get('high')) if results.get('high') else None
+    low = CATEGORY['low'] + ':\t\t' + currency + self.decimal_auto(results.get('low')) if results.get('low') else None
+    ask = CATEGORY['ask'] + ':\t\t' + currency + self.decimal_auto(results.get('ask')) if results.get('ask') else None
+    vol = CATEGORY['volume'] + ' (' + volumecurrency + '):\t' + self.decimal_auto(results.get('vol')) if results.get('vol') else None
     
     GLib.idle_add(self.indicator.set_data, label, bid, high, low, ask, vol)
 
