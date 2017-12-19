@@ -71,7 +71,6 @@ class Exchange(object):
       return
 
     else:
-      self.error.clear()
       try:
         asset = data.json()
       except Exception as e:
