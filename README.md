@@ -8,7 +8,6 @@ It currently supports the following exchanges:
 
 * [Kraken](https://www.kraken.com)
 * [Bitstamp](https://www.bitstamp.net)
-* [BitYep](https://bityep.com)
 * [Gdax](https://www.gdax.com)
 * [Gemini](https://www.gemini.com)
 * [Bittrex](https://bittrex.com)

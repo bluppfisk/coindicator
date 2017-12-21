@@ -3,7 +3,7 @@
 # https://unity.ubuntu.com/projects/appindicators/
 
 import logging
-logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(level=logging.INFO)
 
 from gi.repository import Gtk, GdkPixbuf, GLib
 try:
@@ -55,8 +55,8 @@ class Indicator():
         self.coin = coin
         self.config = config
         self.settings = Settings(settings)
-        self.refresh_frequency = self.settings.refresh()
-        self.active_exchange = self.settings.exchange()
+        self.refresh_frequency = self.settings.getRefresh()
+        self.active_exchange = self.settings.getExchange()
 
         self.exchanges = [
             {
@@ -133,10 +133,9 @@ class Indicator():
 
     def _start_exchange(self):
         self.indicator.set_label('loading', 'loading')
-        ap = ''
-        if self.active_exchange in CURRENCY_SHOW:
-            self.active_asset_pair = self.settings.assetpair(self.active_exchange)
-            ap = self.active_asset_pair
+
+        self.active_asset_pair = self.settings.getAssetpair()
+        ap = self.active_asset_pair
 
         home_currency = self.active_asset_pair.lower()[1:4]
         self.indicator.set_icon(self.config['project_root'] + '/resources/' + home_currency + '.png')
@@ -213,7 +212,7 @@ class Indicator():
     def _menu_refresh_change(self, widget, ri):
         if widget.get_active():
             self.refresh_frequency = ri
-            self.settings.refresh(self.refresh_frequency)
+            self.settings.setRefresh(self.refresh_frequency)
             self._start_exchange()
 
     def _menu_exchange(self):
@@ -244,14 +243,17 @@ class Indicator():
                 else:
                     active_asset_pair = CURRENCIES[self.active_exchange][0]['isocode']
 
-            self.settings = Settings(self.active_exchange + ':' + active_asset_pair + ':' + str(self.refresh_frequency))
+            self.settings.setExchange(self.active_exchange)
+            self.settings.setAssetpair(active_asset_pair)
+            self.settings.setRefresh(self.refresh_frequency)
+            # self.settings = Settings(self.active_exchange + ':' + active_asset_pair + ':' + str(self.refresh_frequency))
             self._menu_currency_visible()
             self._start_exchange()
 
     def _menu_asset_pairs(self):
         asset_pairs = Gtk.Menu()
 
-        self.active_asset_pair = self.settings.assetpair(self.active_exchange)
+        self.active_asset_pair = self.settings.getAssetpair()
 
         group = []
         for asset in CURRENCIES[self.active_exchange]:

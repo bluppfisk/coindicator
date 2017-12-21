@@ -92,7 +92,7 @@ class Coin:
     # adds many tickers
     def add_many_indicators(self, cp_instances):
         for cp_instance in cp_instances:
-            settings = cp_instance['exchange'] + ':' + cp_instance['asset_pair'] + ':' + str(cp_instance['refresh'])
+            settings = cp_instance.get('exchange') + ':' + cp_instance.get('asset_pair') + ':' + str(cp_instance.get('refresh'))
             self.add_indicator(settings)
 
     # Menu item to add a ticker

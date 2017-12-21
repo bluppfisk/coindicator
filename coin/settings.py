@@ -12,13 +12,13 @@ SCHEMA_ID = 'org.nil.indicator.coinprice'
 DEFAULTS = {
     'refresh': 30,
     'exchange': 'kraken',
-    'assetpair-kraken': 'XXBTZUSD',
+    'assetpair': 'XXBTZUSD',
 }
 
 class Settings(object):
     def __init__(self, manual_settings=None):
         if manual_settings == 'DEFAULTS':
-            self.manual_settings = [DEFAULTS['exchange'], DEFAULTS['assetpair-kraken'], DEFAULTS['refresh']]
+            self.manual_settings = [DEFAULTS['exchange'], DEFAULTS['assetpair'], DEFAULTS['refresh']]
             return
         
         self.settings = None
@@ -34,30 +34,38 @@ class Settings(object):
                 self.settings = None
                 logging.info("GSettings: schema [" + SCHEMA_ID + "] not installed. Using defaults.")
 
-    def refresh(self, val=None):
+    def getRefresh(self):
         if self.manual_settings:
             return int(self.manual_settings[2])
         elif self.settings:
-            return self.settings.get_int('refresh') if not val else self.settings.set_int('refresh', val)
+            return self.settings.get_int('refresh')
         else:
             return DEFAULTS['refresh']
 
-    def exchange(self, val=None):
+    def setRefresh(self, val):
+        self.settings.set_int('refresh', val)
+        return True
+
+    def getExchange(self):
         if self.manual_settings:
             return self.manual_settings[0].lower()
         elif self.settings:
-            return self.settings.get_string('exchange') if not val else self.settings.set_string('exchange', val)
+            return self.settings.get_string('exchange')
         else:
             return DEFAULTS['exchange']
 
-    def assetpair(self, exchange, val=None):
-        if val:
-            val.upper()
-        
+    def setExchange(self, val):
+        self.settings.set_string('exchange', val)
+        return True
+
+    def getAssetpair(self):
         if self.manual_settings:
             return self.manual_settings[1].upper()
         elif self.settings:
-            return self.settings.get_string('assetpair-' + exchange) if not val else self.settings.set_string(
-                'assetpair-' + exchange, val)
+            return self.settings.get_string('assetpair')
         else:
-            return DEFAULTS['assetpair-' + exchange]
+            return DEFAULTS['assetpair']
+
+    def setAssetpair(self, val):
+        self.settings.set_string('assetpair', val.upper())
+        return True
