@@ -43,8 +43,9 @@ class Settings(object):
             return DEFAULTS['refresh']
 
     def setRefresh(self, val):
-        self.settings.set_int('refresh', val)
-        return True
+        if not self.manual_settings:
+            self.settings.set_int('refresh', val)
+            return True
 
     def getExchange(self):
         if self.manual_settings:
@@ -55,8 +56,9 @@ class Settings(object):
             return DEFAULTS['exchange']
 
     def setExchange(self, val):
-        self.settings.set_string('exchange', val)
-        return True
+        if not self.manual_settings:
+            self.settings.set_string('exchange', val)
+            return True
 
     def getAssetpair(self):
         if self.manual_settings:
@@ -67,5 +69,6 @@ class Settings(object):
             return DEFAULTS['assetpair']
 
     def setAssetpair(self, val):
-        self.settings.set_string('assetpair', val.upper())
-        return True
+        if not self.manual_settings:
+            self.settings.set_string('assetpair', val.upper())
+            return True

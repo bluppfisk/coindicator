@@ -37,6 +37,7 @@ class Exchange(object):
 
   def start(self, error_refresh=None):
     refresh = error_refresh if error_refresh else self.indicator.refresh_frequency
+    logging.info("loading " + self.asset_pair + " from " + self.exchange_name + " (" + str(refresh) + "s)")
     self.timeout_id = GLib.timeout_add_seconds(refresh, self.check_price)
 
   def stop(self):
@@ -46,7 +47,7 @@ class Exchange(object):
 
   def check_price(self):
     self.asset_pair = self.indicator.active_asset_pair
-    self.pair = [item['pair'] for item in self.config['asset_pairs'] if item['isocode'] == self.asset_pair][0]
+    self.pair = [item.get('pair') for item in self.config.get('asset_pairs') if item.get('isocode') == self.asset_pair][0]
     self.async_get(self.get_ticker(), validation=self.asset_pair, callback=self._handle_result)
 
     return self.error.is_ok() # continues the timer if there are no errors
@@ -82,7 +83,7 @@ class Exchange(object):
     self.latest_response = timestamp
     results = self._parse_result(asset)
 
-    config = [item for item in self.config['asset_pairs'] if item['isocode'] == self.asset_pair][0]
+    config = [item for item in self.config.get('asset_pairs') if item.get('isocode') == self.asset_pair][0]
     currency = config['currency']
     volumecurrency = config.get('volumelabel').upper() if config.get('volumelabel') else config.get('name')[0:3].upper()
 

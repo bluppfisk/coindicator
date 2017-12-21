@@ -40,12 +40,12 @@ CURRENCY_SHOW = [
 ]
 
 CURRENCIES = {
-    'kraken': Kraken.CONFIG['asset_pairs'],
-    'gdax': Gdax.CONFIG['asset_pairs'],
-    'gemini': Gemini.CONFIG['asset_pairs'],
-    'bitstamp': Bitstamp.CONFIG['asset_pairs'],
-    'bittrex': Bittrex.CONFIG['asset_pairs'],
-    'bitfinex': Bitfinex.CONFIG['asset_pairs'],
+    'kraken': Kraken.CONFIG.get('asset_pairs'),
+    'gdax': Gdax.CONFIG.get('asset_pairs'),
+    'gemini': Gemini.CONFIG.get('asset_pairs'),
+    'bitstamp': Bitstamp.CONFIG.get('asset_pairs'),
+    'bittrex': Bittrex.CONFIG.get('asset_pairs'),
+    'bitfinex': Bitfinex.CONFIG.get('asset_pairs'),
 }
 
 
@@ -57,6 +57,7 @@ class Indicator():
         self.settings = Settings(settings)
         self.refresh_frequency = self.settings.getRefresh()
         self.active_exchange = self.settings.getExchange()
+        self.active_asset_pair = self.settings.getAssetpair()
 
         self.exchanges = [
             {
@@ -134,26 +135,19 @@ class Indicator():
     def _start_exchange(self):
         self.indicator.set_label('loading', 'loading')
 
-        self.active_asset_pair = self.settings.getAssetpair()
-        ap = self.active_asset_pair
-
         home_currency = self.active_asset_pair.lower()[1:4]
-        self.indicator.set_icon(self.config['project_root'] + '/resources/' + home_currency + '.png')
+        self.indicator.set_icon(self.config.get('project_root') + '/resources/' + home_currency + '.png')
 
-        logging.info("loading " + ap + " from " + self.active_exchange + " (" + str(self.refresh_frequency) + "s)")
+        if hasattr(self, 'exchangeInstance'):
+            self.exchangeInstance.stop()
 
-        self._stop_exchanges()
-
-        exchange = [e['instance'] for e in self.exchanges if self.active_exchange == e['code']]
-        if len(exchange) == 1:
-            exchange[0].check_price()
-            exchange[0].start()
-        else:
-            logging.info("Error loading [" + self.active_exchange + "]")
+        self.exchangeInstance = [e.get('instance') for e in self.exchanges if self.active_exchange == e.get('code')][0]
+        self.exchangeInstance.check_price()
+        self.exchangeInstance.start()
 
     def _stop_exchanges(self):
         for exchange in self.exchanges:
-            exchange['instance'].stop()
+            exchange.get('instance').stop()
 
     def _menu(self):
         menu = Gtk.Menu()
@@ -216,63 +210,56 @@ class Indicator():
             self._start_exchange()
 
     def _menu_exchange(self):
-        exchange = Gtk.Menu()
+        exchange_menu = Gtk.Menu()
 
         group = []
-        for e in self.exchanges:
-            item = Gtk.RadioMenuItem.new_with_label(group, e['name'])
-            item.set_name(e['code'])
+        for exchange in self.exchanges:
+            item = Gtk.RadioMenuItem.new_with_label(group, exchange.get('name'))
             group.append(item)
-            exchange.append(item)
+            exchange_menu.append(item)
 
-            if self.active_exchange == e['code']:
+            if self.active_exchange == exchange.get('code'):
                 item.set_active(True)
 
-            item.connect('activate', self._menu_exchange_change)
+            item.connect('activate', self._menu_exchange_change, exchange.get('code'))
 
-        return exchange
+        return exchange_menu
 
-    def _menu_exchange_change(self, widget):
+    def _menu_exchange_change(self, widget, exchange):
         if widget.get_active():
-            self.active_exchange = widget.get_name()
-
-            for assetpair in CURRENCIES[self.active_exchange]:
-                if assetpair['isocode'] == self.active_asset_pair:
-                    active_asset_pair = self.active_asset_pair
-                    break
-                else:
-                    active_asset_pair = CURRENCIES[self.active_exchange][0]['isocode']
+            self.active_exchange = exchange
+            tentative_asset_pair = [item.get('isocode') for item in CURRENCIES[exchange] if item.get('isocode') == self.active_asset_pair]
+            if len(tentative_asset_pair) == 0:
+                self.active_asset_pair = CURRENCIES[exchange][0]['isocode']
+            else:
+                self.active_asset_pair = tentative_asset_pair[0]
 
             self.settings.setExchange(self.active_exchange)
-            self.settings.setAssetpair(active_asset_pair)
-            self.settings.setRefresh(self.refresh_frequency)
-            # self.settings = Settings(self.active_exchange + ':' + active_asset_pair + ':' + str(self.refresh_frequency))
+            self.settings.setAssetpair(self.active_asset_pair)
             self._menu_currency_visible()
             self._start_exchange()
 
     def _menu_asset_pairs(self):
         asset_pairs = Gtk.Menu()
 
-        self.active_asset_pair = self.settings.getAssetpair()
-
         group = []
         for asset in CURRENCIES[self.active_exchange]:
             item = Gtk.RadioMenuItem.new_with_label(group, asset['name'])
-            item.set_name(asset['isocode'])
             group.append(item)
             asset_pairs.append(item)
 
             if self.active_asset_pair == asset['isocode']:
                 item.set_active(True)
 
-            item.connect('activate', self._menu_asset_pairs_change)
+            item.connect('activate', self._menu_asset_pairs_change, asset['isocode'])
 
         return asset_pairs
 
-    def _menu_asset_pairs_change(self, widget):
+    def _menu_asset_pairs_change(self, widget, assetpair):
         if widget.get_active():
-            self.active_asset_pair = widget.get_name()
-            self.settings = Settings(self.active_exchange + ':' + self.active_asset_pair + ':' + str(self.refresh_frequency))
+            self.active_asset_pair = assetpair
+            self.settings.setExchange(self.active_exchange)
+            self.settings.setAssetpair(self.active_asset_pair)
 
             self._start_exchange()
 
