@@ -11,7 +11,7 @@ try:
 except ImportError:
     from gi.repository import AppIndicator
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
 
 REFRESH_TIMES = [  # seconds
     3,
