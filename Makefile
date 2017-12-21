@@ -8,3 +8,6 @@ install:
 	sudo cp resources/org.nil.indicator.coinprice.gschema.xml /usr/share/glib-2.0/schemas/
 	sudo glib-compile-schemas --strict /usr/share/glib-2.0/schemas/
 	sudo chmod u+x coin/coin.py
+
+many:
+	python3 coin/coin.py file=startmany.yaml &

@@ -28,6 +28,7 @@ class Coin(object):
     def __init__(self):
         dirfiles = glob.glob(dirname(__file__) + "/exchanges/*.py")
         self.exchanges = [ basename(f)[:-3] for f in dirfiles if isfile(f) and not f.endswith('__init__.py')]
+        self.exchanges.sort()
 
         self.start_main()
         self.instances = []
