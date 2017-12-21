@@ -67,14 +67,14 @@ class Kraken(Exchange):
     return self.config['ticker'] + '?pair=' + self.pair
 
   def _parse_result(self, asset):
-    asset = asset['result'][self.pair]
+    asset = asset.get('result').get(self.pair)
 
-    label = asset['c'][0]
-    bid = asset['b'][0]
-    high = asset['h'][1]
-    low = asset['l'][1]
-    ask = asset['a'][0]
-    vol = asset['v'][1]
+    label = asset.get('c')[0]
+    bid = asset.get('b')[0]
+    high = asset.get('h')[1]
+    low = asset.get('l')[1]
+    ask = asset.get('a')[0]
+    vol = asset.get('v')[1]
     
     return {
       'label': label,

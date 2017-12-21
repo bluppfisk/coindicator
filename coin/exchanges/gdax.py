@@ -73,10 +73,10 @@ class Gdax(Exchange):
     return self.config['ticker'] + self.pair + '/ticker'
 
   def _parse_result(self, asset):
-    label = asset['price']
-    bid = asset['bid']
-    ask = asset['ask']
-    vol = asset['volume']
+    label = asset.get('price')
+    bid = asset.get('bid')
+    ask = asset.get('ask')
+    vol = asset.get('volume')
 
     return {
       'label': label,

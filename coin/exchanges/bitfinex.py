@@ -32,12 +32,12 @@ class Bitfinex(Exchange):
     return self.config['ticker'] + self.pair
 
   def _parse_result(self, asset):
-    label = asset['last_price']
-    bid = asset['bid']
-    ask = asset['ask']
-    vol = asset['volume']
-    high = asset['high']
-    low = asset['low']
+    label = asset.get('last_price')
+    bid = asset.get('bid')
+    ask = asset.get('ask')
+    vol = asset.get('volume')
+    high = asset.get('high')
+    low = asset.get('low')
 
     return {
       'label': label,
