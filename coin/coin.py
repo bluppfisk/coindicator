@@ -6,7 +6,8 @@
 # Sander Van de Moortel <sander.vandemoortel@gmail.com>
 # 
 
-import os, signal, yaml, sys, logging, gi
+from os.path import abspath, dirname, isfile, basename
+import signal, yaml, sys, logging, gi, glob
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
 from gi.repository import Gtk, GdkPixbuf
@@ -16,15 +17,18 @@ except ImportError:
     from gi.repository import AppIndicator
 from indicator import Indicator
 
-PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+PROJECT_ROOT = abspath(dirname(dirname(__file__)))
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)  # ctrl+c exit
 
-class Coin:
+class Coin(object):
     config = yaml.load(open(PROJECT_ROOT + '/config.yaml', 'r'))
     config['project_root'] = PROJECT_ROOT
 
     def __init__(self):
+        dirfiles = glob.glob(dirname(__file__) + "/exchanges/*.py")
+        self.exchanges = [ basename(f)[:-3] for f in dirfiles if isfile(f) and not f.endswith('__init__.py')]
+
         self.start_main()
         self.instances = []
         print("Coin Price indicator v" + self.config['app']['version'])

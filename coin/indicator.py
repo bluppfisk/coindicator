@@ -2,25 +2,17 @@
 # Ubuntu App indicator
 # https://unity.ubuntu.com/projects/appindicators/
 
-import logging
-logging.basicConfig(level=logging.INFO)
-
+import logging, os, sys, inspect, importlib, glob, exchanges
+from os.path import dirname, basename, isfile
+from settings import Settings
+from exchanges import *
 from gi.repository import Gtk, GdkPixbuf, GLib
 try:
     from gi.repository import AppIndicator3 as AppIndicator
 except ImportError:
     from gi.repository import AppIndicator
 
-from settings import Settings
-import os, sys
-import glob, importlib
-
-from exchanges.kraken import Kraken
-from exchanges.bitstamp import Bitstamp
-from exchanges.bitfinex import Bitfinex
-from exchanges.gdax import Gdax
-from exchanges.gemini import Gemini
-from exchanges.bittrex import Bittrex
+logging.basicConfig(level=logging.INFO)
 
 REFRESH_TIMES = [  # seconds
     3,
@@ -30,26 +22,7 @@ REFRESH_TIMES = [  # seconds
     60
 ]
 
-CURRENCY_SHOW = [
-    'kraken',
-    'gdax',
-    'gemini',
-    'bitstamp',
-    'bittrex',
-    'bitfinex'
-]
-
-CURRENCIES = {
-    'kraken': Kraken.CONFIG.get('asset_pairs'),
-    'gdax': Gdax.CONFIG.get('asset_pairs'),
-    'gemini': Gemini.CONFIG.get('asset_pairs'),
-    'bitstamp': Bitstamp.CONFIG.get('asset_pairs'),
-    'bittrex': Bittrex.CONFIG.get('asset_pairs'),
-    'bitfinex': Bitfinex.CONFIG.get('asset_pairs'),
-}
-
-
-class Indicator():
+class Indicator(object):
     def __init__(self, coin, counter, config, settings=None):
         self.counter = counter
         self.coin = coin
@@ -59,38 +32,19 @@ class Indicator():
         self.active_exchange = self.settings.getExchange()
         self.active_asset_pair = self.settings.getAssetpair()
 
-        self.exchanges = [
-            {
-                'code': 'kraken',
-                'name': 'Kraken',
-                'instance': Kraken(self)
-            },
-            {
-                'code': 'bitstamp',
-                'name': 'Bitstamp',
-                'instance': Bitstamp(self)
-            },
-            {
-                'code': 'bitfinex',
-                'name': 'Bitfinex',
-                'instance': Bitfinex(self)
-            },
-            {
-                'code': 'gdax',
-                'name': 'Gdax',
-                'instance': Gdax(self)
-            },
-            {
-                'code': 'gemini',
-                'name': 'Gemini',
-                'instance': Gemini(self)
-            },
-            {
-                'code': 'bittrex',
-                'name': 'Bittrex',
-                'instance': Bittrex(self)
-            }
-        ]
+        self.EXCHANGES = []
+        self.CURRENCIES = {}
+
+        for exchange in self.coin.exchanges:
+            class_name = exchange.capitalize()
+            class_ = getattr(__import__('exchanges.' + exchange, fromlist=[exchange]), class_name)
+
+            self.EXCHANGES.append({
+                'code': exchange,
+                'name': class_name,
+                'instance': class_(self)
+            })
+            self.CURRENCIES[exchange] = getattr(class_, 'CONFIG').get('asset_pairs')
 
     def start(self):
         icon = self.config['project_root'] + '/resources/icon_32px.png'
@@ -141,12 +95,12 @@ class Indicator():
         if hasattr(self, 'exchangeInstance'):
             self.exchangeInstance.stop()
 
-        self.exchangeInstance = [e.get('instance') for e in self.exchanges if self.active_exchange == e.get('code')][0]
+        self.exchangeInstance = [e.get('instance') for e in self.EXCHANGES if self.active_exchange == e.get('code')][0]
         self.exchangeInstance.check_price()
         self.exchangeInstance.start()
 
     def _stop_exchanges(self):
-        for exchange in self.exchanges:
+        for exchange in self.EXCHANGES:
             exchange.get('instance').stop()
 
     def _menu(self):
@@ -213,7 +167,7 @@ class Indicator():
         exchange_menu = Gtk.Menu()
 
         group = []
-        for exchange in self.exchanges:
+        for exchange in self.EXCHANGES:
             item = Gtk.RadioMenuItem.new_with_label(group, exchange.get('name'))
             group.append(item)
             exchange_menu.append(item)
@@ -228,9 +182,9 @@ class Indicator():
     def _menu_exchange_change(self, widget, exchange):
         if widget.get_active():
             self.active_exchange = exchange
-            tentative_asset_pair = [item.get('isocode') for item in CURRENCIES[exchange] if item.get('isocode') == self.active_asset_pair]
+            tentative_asset_pair = [item.get('isocode') for item in self.CURRENCIES[exchange] if item.get('isocode') == self.active_asset_pair]
             if len(tentative_asset_pair) == 0:
-                self.active_asset_pair = CURRENCIES[exchange][0]['isocode']
+                self.active_asset_pair = self.CURRENCIES[exchange][0]['isocode']
             else:
                 self.active_asset_pair = tentative_asset_pair[0]
 
@@ -243,7 +197,7 @@ class Indicator():
         asset_pairs = Gtk.Menu()
 
         group = []
-        for asset in CURRENCIES[self.active_exchange]:
+        for asset in self.CURRENCIES[self.active_exchange]:
             item = Gtk.RadioMenuItem.new_with_label(group, asset['name'])
             group.append(item)
             asset_pairs.append(item)
@@ -264,11 +218,8 @@ class Indicator():
             self._start_exchange()
 
     def _menu_currency_visible(self):
-        if self.active_exchange in CURRENCY_SHOW:
-            self.currency_menu.set_submenu(self._menu_asset_pairs())
-            self.currency_menu.show_all()
-        else:
-            self.currency_menu.hide()
+        self.currency_menu.set_submenu(self._menu_asset_pairs())
+        self.currency_menu.show_all()
 
     def _remove(self, widget):
         if len(self.coin.instances) == 1:
