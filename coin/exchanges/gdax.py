@@ -53,7 +53,19 @@ class Gdax(Exchange):
         'pair': 'LTC-EUR',
         'name': 'LTC to EUR',
         'currency': CURRENCY['eur']
-      }
+      },
+      {
+        'isocode': 'XXBCZEUR',
+        'pair': 'BCH-EUR',
+        'name': 'BCH to EUR',
+        'currency': CURRENCY['eur']
+      },
+      {
+        'isocode': 'XXBCZUSD',
+        'pair': 'BCH-USD',
+        'name': 'BCH to USD',
+        'currency': CURRENCY['usd']
+      },
     ]
   }
 

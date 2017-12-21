@@ -63,7 +63,7 @@ class Exchange(object):
 
     # also check if a newer response hasn't already been returned
     if timestamp < self.latest_response: # this is an older request
-      logging.info('Discarding outdated response.')
+      logging.warning('Discarding outdated response.')
       return
 
     if data.status_code != 200:
