@@ -22,7 +22,6 @@ CATEGORY = {
 
 class Exchange(object):
   def __init__(self, indicator):
-    self.latest_response = 0
     self.indicator = indicator
     self.timeout_id = None
     self.error = Error(self)
@@ -57,7 +56,7 @@ class Exchange(object):
   def _check_price(self):
     self.asset_pair = self.indicator.active_asset_pair
     self.pair = [item.get('pair') for item in self.config.get('asset_pairs') if item.get('isocode') == self.asset_pair][0]
-    self._async_get(self.get_ticker(), validation=self.asset_pair, callback=self._handle_result)
+    self._async_get(self.get_ticker(), validation=self.asset_pair, timestamp=time.time(), callback=self._handle_result)
 
     return self.error.is_ok() # continues the timer if there are no errors
 
@@ -72,8 +71,7 @@ class Exchange(object):
       return
 
     # also check if a newer response hasn't already been returned
-    if timestamp < self.latest_response: # this is an older request
-      logging.info('Discarding outdated response.')
+    if timestamp < self.indicator.latest_response: # this is an older request
       return
 
     if data.status_code != 200:
@@ -89,7 +87,7 @@ class Exchange(object):
         self._handle_error('Invalid response for ' + str(self.pair))
         return
 
-    self.latest_response = timestamp
+    self.indicator.latest_response = timestamp
     results = self._parse_result(asset)
 
     config = [item for item in self.config.get('asset_pairs') if item.get('isocode') == self.asset_pair][0]
@@ -126,10 +124,9 @@ class Exchange(object):
   # Makes request on a different thread, and optionally passes response to a
   # `callback` function when request returns.
   # 
-  def _async_get(self, *args, callback=None, timeout=15, validation=None, **kwargs):  
+  def _async_get(self, *args, callback=None, timeout=15, validation=None, timestamp=None, **kwargs):  
     if callback:
       def _callback_with_args(response, *args, **kwargs):
-        timestamp = time.time()
         callback(response, validation, timestamp)
       kwargs['hooks'] = {'response': _callback_with_args}
     kwargs['timeout'] = timeout
