@@ -128,7 +128,7 @@ class Exchange(object):
   # Makes request on a different thread, and optionally passes response to a
   # `callback` function when request returns.
   # 
-  def _async_get(self, *args, callback=None, timeout=15, validation=None, timestamp=None, **kwargs):  
+  def _async_get(self, *args, callback=None, timeout=5, validation=None, timestamp=None, **kwargs):  
     if callback:
       def _callback_with_args(response, *args, **kwargs):
         callback(response, validation, timestamp)
