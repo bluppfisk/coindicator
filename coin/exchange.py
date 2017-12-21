@@ -56,8 +56,9 @@ class Exchange(object):
   def _check_price(self):
     self.asset_pair = self.indicator.active_asset_pair
     self.pair = [item.get('pair') for item in self.config.get('asset_pairs') if item.get('isocode') == self.asset_pair][0]
-    self._async_get(self.get_ticker(), validation=self.asset_pair, timestamp=time.time(), callback=self._handle_result)
-
+    timestamp = time.time()
+    self._async_get(self.get_ticker(), validation=self.asset_pair, timestamp=timestamp, callback=self._handle_result)
+    logging.debug('Request with TS: ' + str(timestamp))
     return self.error.is_ok() # continues the timer if there are no errors
 
   def _handle_error(self, error):
@@ -67,11 +68,13 @@ class Exchange(object):
   def _handle_result(self, data, validation, timestamp):
     # Check to see if the returning response is still valid
     # (user may have changed exchanges before the request finished)
-    if validation is not self.asset_pair: # we've already moved on.
+    if validation is not self.indicator.active_asset_pair: # we've already moved on.
+      logging.debug("Discarding packet for wrong exchange")
       return
 
     # also check if a newer response hasn't already been returned
     if timestamp < self.indicator.latest_response: # this is an older request
+      logging.debug("Discarding outdated packet")
       return
 
     if data.status_code != 200:
@@ -82,26 +85,27 @@ class Exchange(object):
       try:
         asset = data.json()
       except Exception as e:
-        # Usually a KeyError happens when an asynchronous response comes in
+        # Before, a KeyError happened when an asynchronous response comes in
         # for a previously selected asset pair (see upstream issue #27)
         self._handle_error('Invalid response for ' + str(self.pair))
         return
 
-    self.indicator.latest_response = timestamp
     results = self._parse_result(asset)
+    self.indicator.latest_response = timestamp
+    logging.debug('Requests comes in with timestamp ' + str(timestamp) + ', last response at ' + str(self.indicator.latest_response))
+    
+    self.indicator.current = self._decimal_auto(results.get('cur')) if results.get('cur') else None
+    self.indicator.bid = self._decimal_auto(results.get('bid')) if results.get('bid') else None
+    self.indicator.high = self._decimal_auto(results.get('high')) if results.get('high') else None
+    self.indicator.low = self._decimal_auto(results.get('low')) if results.get('high') else None
+    self.indicator.ask = self._decimal_auto(results.get('ask')) if results.get('ask') else None
+    self.indicator.volume = self._decimal_auto(results.get('vol')) if results.get('vol') else None
 
     config = [item for item in self.config.get('asset_pairs') if item.get('isocode') == self.asset_pair][0]
-    currency = config['currency']
-    volumecurrency = config.get('volumelabel').upper() if config.get('volumelabel') else config.get('name')[0:3].upper()
-
-    label = currency + self._decimal_auto(results.get('label'))
-    bid = CATEGORY['bid'] + ':\t\t' + currency + self._decimal_auto(results.get('bid')) if results.get('bid') else None
-    high = CATEGORY['high'] + ':\t\t' + currency + self._decimal_auto(results.get('high')) if results.get('high') else None
-    low = CATEGORY['low'] + ':\t\t' + currency + self._decimal_auto(results.get('low')) if results.get('low') else None
-    ask = CATEGORY['ask'] + ':\t\t' + currency + self._decimal_auto(results.get('ask')) if results.get('ask') else None
-    vol = CATEGORY['volume'] + ' (' + volumecurrency + '):\t' + self._decimal_auto(results.get('vol')) if results.get('vol') else None
+    self.indicator.volumecurrency = config.get('volumelabel').upper() if config.get('volumelabel') else config.get('name').split(' ')[0].upper()
+    self.indicator.currency = config['currency']
     
-    GLib.idle_add(self.indicator.set_data, label, bid, high, low, ask, vol)
+    GLib.idle_add(self.indicator.update_gui)
 
   ## _decimal_auto 
   # Rounds a number to a meaningful number of decimal places

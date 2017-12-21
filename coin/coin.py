@@ -90,7 +90,7 @@ class Coin(object):
 
     # Adds a ticker and starts it
     def add_indicator(self, settings=None):
-        indicator = Indicator(self, len(self.instances), self.config, settings)
+        indicator = Indicator(self, settings)
         self.instances.append(indicator)
         indicator.start()
 

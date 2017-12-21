@@ -10,6 +10,7 @@ from exchange import Exchange, CURRENCY
 class Kraken(Exchange):
   CONFIG = {
     'name': 'Kraken',
+    'default_label': 'current',
     'ticker': 'https://api.kraken.com/0/public/Ticker',
     'asset_pairs': [
       {
@@ -69,7 +70,7 @@ class Kraken(Exchange):
   def _parse_result(self, asset):
     asset = asset.get('result').get(self.pair)
 
-    label = asset.get('c')[0]
+    cur = asset.get('c')[0]
     bid = asset.get('b')[0]
     high = asset.get('h')[1]
     low = asset.get('l')[1]
@@ -77,7 +78,7 @@ class Kraken(Exchange):
     vol = asset.get('v')[1]
     
     return {
-      'label': label,
+      'cur': cur,
       'bid': bid,
       'high': high,
       'low': low,
