@@ -13,6 +13,8 @@ It currently supports the following exchanges:
 * [Bittrex](https://bittrex.com)
 * [Bitfinex](https://www.bitfinex.com/)
 
+**NEW**: Since version 0.9 you can easily add your own exchanges (see *Extending* below).
+
 ![Screenshot](https://raw.githubusercontent.com/nilgradisnik/coinprice-indicator/master/resources/screenshot.png)
 
 ## Installation
@@ -32,6 +34,9 @@ Coin.py takes two optional parameters to configure the instance(s):
 * `python3 coin/coin.py asset=kraken:XXBTZEUR:30` will launch a single indicator for the asset pair XBT/EUR on the Kraken exchange with a refresh rate of 30 seconds. Asset pairs must always be in this format: `X XBT Z EUR` where `X` means `from` and `Z` means `to`. According to the ISO standard, currencies that are not bound to a country take an X as the first letter of their abbreviation, hence `XBT` for Bitcoin.
 
 * `python3 coin/coin.py file=startmany.yaml` will read startmany.yaml from the `coin` directory and start an indicator for each configuration it finds in there. Take a peek in `startmany.yaml`for examples and edit it to configure the exchanges, currency pairs and refresh rates for each instance.
+
+## Extending (plug-ins)
+Adding your own exchange plug-in is easy. Just create class file with methods for returning a ticker URL and parsing the response from the ticker API and add the file to the `exchanges` folder. Have a peek at the existing plug-ins for an example and don't forget to contribute your plug-ins here on GitHub!
 
 ## Troubleshooting
 - If you're getting a BitYep error, please run `make install` again, it will now clear any old and or corrupted dconf settings before copying in the new settings schema.
