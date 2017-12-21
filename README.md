@@ -34,6 +34,8 @@ Coin.py takes two optional parameters to configure the instance(s):
 * `python3 coin/coin.py file=startmany.yaml` will read startmany.yaml from the `coin` directory and start an indicator for each configuration it finds in there. Take a peek in `startmany.yaml`for examples and edit it to configure the exchanges, currency pairs and refresh rates for each instance.
 
 ## Troubleshooting
+- If you're getting a BitYep error, please run `make install` again, it will now clear any old and or corrupted dconf settings before copying in the new settings schema.
+
 - If you're getting a `SyntaxError: Missing parentheses in call to 'print'.`, you may be using a Python2 library in there somewhere. Look through the error to identify which package it is. If it is `gi`, you can install the correct version with `sudo apt install python3-gi`. Additionally, you may have to uninstall the python2 gi library `pip3 uninstall gi` for it to work.
 
 - If you're not on an Ubuntu Linux or if you're not running the Unity desktop manager, you can still get the app running (depending on the system). Here's how to do it for Ubuntu 17.10 with Gnome3:
