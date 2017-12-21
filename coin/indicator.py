@@ -12,7 +12,7 @@ try:
 except ImportError:
     from gi.repository import AppIndicator
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
 
 REFRESH_TIMES = [  # seconds
     3,
@@ -24,6 +24,7 @@ REFRESH_TIMES = [  # seconds
 
 class Indicator(object):
     def __init__(self, coin, counter, config, settings=None):
+        self.latest_response = 0
         self.counter = counter
         self.coin = coin
         self.config = config
@@ -169,8 +170,6 @@ class Indicator(object):
 
             if self.active_exchange == exchange.get('code'):
                 item.set_active(True)
-            else:
-                item.set_active(False)
 
         return exchange_menu
 
@@ -183,8 +182,6 @@ class Indicator(object):
 
             if self.active_asset_pair == asset['isocode'] and self.active_exchange == exchange.get('code'):
                 item.set_active(True)
-            else:
-                item.set_active(False)
 
             item.connect('activate', self._menu_asset_pairs_change, asset['isocode'], exchange)
 

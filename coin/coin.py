@@ -31,7 +31,7 @@ class Coin(object):
 
         self.start_main()
         self.instances = []
-        print("Coin Price indicator v" + self.config['app']['version'])
+        print(self.config.get('app').get('name') + ' v' + self.config['app']['version'] + " running!")
         usage_error = '\nUsage: coin.py [arguments]\n* asset=exchange:asset_pair:refresh_rate\tLoad a specific asset\n* file=file_to_load.yaml\t\t\tLoad several tickers defined in a YAML file.\n'
         if len(sys.argv) > 2:
             quit('Too many parameters\n' + usage_error)
