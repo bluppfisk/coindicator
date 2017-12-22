@@ -184,7 +184,6 @@ class Indicator(object):
 
     def _menu_refresh_change(self, widget, ri):
         if widget.get_active():
-            print(str(ri))
             self.refresh_frequency = ri
             self.settings.setRefresh(self.refresh_frequency)
             self.exchange_instance.stop().start()
