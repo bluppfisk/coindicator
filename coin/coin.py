@@ -122,6 +122,7 @@ class Coin(object):
         about.set_artists([self.config['artist']['name'] + ' <' + self.config['artist']['email'] + '>'])
         about.set_license_type(Gtk.License.MIT_X11)
         about.set_logo(self.logo_124px)
+        about.set_keep_above(True)
         res = about.run()
         if res == -4 or -6:  # close events
             about.destroy()
