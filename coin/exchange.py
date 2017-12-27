@@ -35,6 +35,12 @@ class Exchange(object):
   def _parse_result(self, data): # to be overwritten by child class
     pass
 
+  # helper function for restoring normal frequency
+  # False must be returned for the restart operation to be done only once
+  def restart(self):
+    self.start()
+    return False
+
   def start(self, error_refresh=None):
     if not self.started:
       self._check_price()
@@ -47,7 +53,7 @@ class Exchange(object):
 
   def stop(self):
     self.started = False
-    self.error.clear()
+    self.error.reset()
     if self.timeout_id is not None:
         GLib.source_remove(self.timeout_id)
 
@@ -62,8 +68,8 @@ class Exchange(object):
     return self.error.is_ok() # continues the timer if there are no errors
 
   def _handle_error(self, error):
+    self.error.log(str(error))
     self.error.increment()
-    logging.info(self.exchange_name + " API error: " + str(error))
 
   def _handle_result(self, data, validation, timestamp):
     # Check to see if the returning response is still valid
@@ -78,7 +84,7 @@ class Exchange(object):
       return
 
     if data.status_code != 200:
-      self._handle_error('Server returned an error: ' + str(data.status_code))
+      self._handle_error('API server returned an error: ' + str(data.status_code))
       return
 
     else:
@@ -104,6 +110,8 @@ class Exchange(object):
     config = [item for item in self.config.get('asset_pairs') if item.get('isocode') == self.asset_pair][0]
     self.indicator.volumecurrency = config.get('volumelabel').upper() if config.get('volumelabel') else config.get('name').split(' ')[0].upper()
     self.indicator.currency = config['currency']
+
+    self.error.reset()
     
     GLib.idle_add(self.indicator.update_gui)
 
@@ -139,7 +147,7 @@ class Exchange(object):
 
   def _get_with_exception(self, *args, **kwargs):
     try:
-        r = requests.get(*args, **kwargs)
+        r = requests.get(*args, **kwargs) # probably should do error code handling here
         return r
     except requests.exceptions.RequestException as e:
         self._handle_error('Connection error')

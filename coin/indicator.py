@@ -11,7 +11,7 @@ try:
 except ImportError:
     from gi.repository import AppIndicator
 
-logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(level=logging.ERROR)
 
 REFRESH_TIMES = [  # seconds
     3,
@@ -95,10 +95,15 @@ class Indicator(object):
 
     # (re)starts the exchange logic and its timer
     def _start_exchange(self):
-        logging.info("loading " + self.active_asset_pair + " from " + self.active_exchange + " (" + str(self.refresh_frequency) + "s)")
+        logging.info("Loading " + self.active_asset_pair + " from " + self.active_exchange + " (" + str(self.refresh_frequency) + "s)")
         
+        # stop any running timers, clear error counter
+        if hasattr(self, 'exchange_instance'):
+            self.exchange_instance.stop()
+
         # don't show any data until first response is in
         self.indicator.set_label('loading', 'loading')
+
         for item in self.price_group:
             item.set_active(False)
             item.set_label('loading')
@@ -107,10 +112,6 @@ class Indicator(object):
 
         home_currency = self.active_asset_pair.lower()[1:4]
         self.indicator.set_icon(self.coin.config.get('project_root') + '/resources/' + home_currency + '.png')
-
-        # stop any running timers, clear error counter
-        if hasattr(self, 'exchange_instance'):
-            self.exchange_instance.stop()
 
         # load new exchange instance
         self.exchange_instance = [e.get('instance') for e in self.EXCHANGES if self.active_exchange == e.get('code')][0]
@@ -136,7 +137,7 @@ class Indicator(object):
         for price_type, name in CATEGORIES:
             price_item = price_type + '_item'
             setattr(self, price_item, Gtk.RadioMenuItem.new_with_label(self.price_group, 'loading...'))
-            getattr(self, price_item).connect('activate', self._make_label, price_type)
+            getattr(self, price_item).connect('toggled', self._make_label, price_type)
             self.price_group.append(getattr(self, price_item))
             menu.append(getattr(self, price_item))
 
@@ -229,7 +230,6 @@ class Indicator(object):
                 self.active_asset_pair = tentative_asset_pair[0]
 
             self.active_asset_pair = assetpair
-            self.default_label = exchange.get('default_label')
             self.settings.setExchange(self.active_exchange)
             self.settings.setAssetpair(self.active_asset_pair)
 
