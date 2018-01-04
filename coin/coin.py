@@ -7,10 +7,11 @@
 # 
 
 from os.path import abspath, dirname, isfile, basename
-import signal, yaml, sys, logging, gi, glob
+import signal, yaml, sys, logging, gi, glob, dbus
+from dbus.mainloop.glib import DBusGMainLoop
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
-from gi.repository import Gtk, GdkPixbuf
+from gi.repository import Gtk, GdkPixbuf, GObject
 try:
     from gi.repository import AppIndicator3 as AppIndicator
 except ImportError:
@@ -104,6 +105,12 @@ class Coin(object):
     def _add_ticker(self, widget):
         self.add_indicator('DEFAULTS')
 
+    # Handle system resume by refreshing all tickers
+    def handle_resume(self, sleeping):
+        if not sleeping:
+            for instance in self.instances:
+                instance.exchange_instance.stop().start()
+
     # Shows an About dialog
     def _about(self, widget):
         about = Gtk.AboutDialog()
@@ -131,5 +138,18 @@ class Coin(object):
     def _quit_all(self, widget):
         Gtk.main_quit()
 
+def hi(event):
+    print(event)
+
 coin = Coin()
+DBusGMainLoop(set_as_default = True)
+bus = dbus.SystemBus()
+bus.add_signal_receiver(
+    coin.handle_resume,
+    None,
+    'org.freedesktop.login1.Manager',
+    'org.freedesktop.login1'
+)
+# loop = GObject.MainLoop()
+# loop.run()
 Gtk.main()
