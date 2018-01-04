@@ -26,7 +26,9 @@ Install python dependencies and install [GSettings schema](https://developer.gno
 ```
 
 ## Running
-To run the indicator with the default settings or with the previous settings, type `make` to run and the indicator should appear in the notification area. Alternatively, you can run `python3 coin/coin.py` to start the app.
+* To run the indicator with the default settings or with the previous settings, type `make` to run and the indicator should appear in the notification area.
+* Alternatively, you can run `python3 coin/coin.py` to start the app (this will also let you specify an asset pair--see below).
+* In order to run the exchanges defined in `startmany.yaml`, run `make many`.
 
 ## Configuration
 Coin.py takes two optional parameters to configure the instance(s):
