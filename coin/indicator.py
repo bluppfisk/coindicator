@@ -208,7 +208,6 @@ class Indicator(object):
     # this eliminates the strange side-effect that an item stays active
     # when you hover over it and then mouse out
     def _handle_toggle(self, widget, exchange_code):
-        print(self.active_exchange + ' ' + exchange_code)
         if self.active_exchange != exchange_code:
             widget.set_active(False)
         else:
