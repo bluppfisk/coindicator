@@ -150,6 +150,4 @@ bus.add_signal_receiver(
     'org.freedesktop.login1.Manager',
     'org.freedesktop.login1'
 )
-# loop = GObject.MainLoop()
-# loop.run()
 Gtk.main()

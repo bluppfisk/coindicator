@@ -190,19 +190,29 @@ class Indicator(object):
             self.exchange_instance.stop().start()
 
     def _menu_exchange(self):
-        exchange_menu = Gtk.Menu()
-        group = []
+        exchange_list_menu = Gtk.Menu()
+        self.exchange_group = []
         subgroup = [] # group all asset pairs of all exchange menus together
         for exchange in self.EXCHANGES:
-            item = Gtk.RadioMenuItem.new_with_label(group, exchange.get('name'))
+            item = Gtk.RadioMenuItem.new_with_label(self.exchange_group, exchange.get('name'))
             item.set_submenu(self._menu_asset_pairs(exchange, subgroup))
-            group.append(item)
-            exchange_menu.append(item)
+            item.connect('toggled', self._handle_toggle, exchange.get('code'))
+            self.exchange_group.append(item)
+            exchange_list_menu.append(item)
 
             if self.active_exchange == exchange.get('code'):
                 item.set_active(True)
 
-        return exchange_menu
+        return exchange_list_menu
+
+    # this eliminates the strange side-effect that an item stays active
+    # when you hover over it and then mouse out
+    def _handle_toggle(self, widget, exchange_code):
+        print(self.active_exchange + ' ' + exchange_code)
+        if self.active_exchange != exchange_code:
+            widget.set_active(False)
+        else:
+            widget.set_active(True)
 
     def _menu_asset_pairs(self, exchange, subgroup):
         asset_pairs_menu = Gtk.Menu()
@@ -213,7 +223,6 @@ class Indicator(object):
 
             if self.active_asset_pair == asset['isocode'] and self.active_exchange == exchange.get('code'):
                 item.set_active(True)
-                item.get_parent().set_active(True)
 
             item.connect('activate', self._menu_asset_pairs_change, asset['isocode'], exchange)
 
@@ -232,6 +241,11 @@ class Indicator(object):
             self.active_asset_pair = assetpair
             self.settings.setExchange(self.active_exchange)
             self.settings.setAssetpair(self.active_asset_pair)
+
+            # set parent (exchange) menu item to active
+            for exchange_menu_item in self.exchange_group:
+                if self.active_exchange == exchange_menu_item.get_label().lower():
+                    exchange_menu_item.set_active(True)
 
             self._start_exchange()
 
