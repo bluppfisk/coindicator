@@ -218,10 +218,12 @@ class Bxinth:
 
 
         label = str(query_result['secondary_currency']) + "  : " + str(query_result['last_price']) + " " + str(query_result['primary_currency'])
-        bids_highbid = str(query_result['orderbook']['bids']['highbid']) #Buy price 
-        bids_volume = str(query_result['orderbook']['bids']['volume'])
-        asks_highbid = str(query_result['orderbook']['asks']['highbid']) #Sell price
-        asks_volume = str(query_result['orderbook']['asks']['volume'])
+        bids_highbid = str("BIDS HIGHBID : \t\t") + str(query_result['orderbook']['bids']['highbid']) #Buy price 
+        bids_volume = str("BIDS VOL : \t\t\t") + str(query_result['orderbook']['bids']['volume'])
+        
+        asks_volume = str("ASKS VOL : \t\t\t") + str(query_result['orderbook']['asks']['volume'])
+        asks_highbid = str("ASKS HIGHBID : \t\t") + str(query_result['orderbook']['asks']['highbid']) #Sell price
+        
 
         self.indicator.set_data(label, bids_highbid,bids_volume, asks_volume,asks_highbid)
 
