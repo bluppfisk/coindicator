@@ -9,13 +9,13 @@
     </key>
  
     <key type="s" name="exchange">
-        <default>'bxinth'</default>
-        <summary>BXINTH exchange</summary>
+        <default>'kraken'</default>
+        <summary>Kraken exchange</summary>
     </key>
 
     <key type="s" name="assetpair">
-        <default>'XXBTCZTHB'</default>
-        <summary>Bxinth asset pairs</summary>
+        <default>'XXBTZUSD'</default>
+        <summary>Asset pairs</summary>
     </key>
  
   </schema>

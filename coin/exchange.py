@@ -9,7 +9,7 @@ CURRENCY = {
     'btc': '฿',
     'thb': '฿',
     'gbp': '£',
-    'eth': 'Ξ',
+    'eth': 'Ξ'
 }
 
 CATEGORY = {

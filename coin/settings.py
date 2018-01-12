@@ -11,8 +11,8 @@ SCHEMA_ID = 'org.nil.indicator.coinprice'
 
 DEFAULTS = {
     'refresh': 30,
-    'exchange': 'bxinth',
-    'assetpair': 'XXBTCZTHB',
+    'exchange': 'kraken',
+    'assetpair': 'XXBTZUSD',
 }
 
 class Settings(object):
