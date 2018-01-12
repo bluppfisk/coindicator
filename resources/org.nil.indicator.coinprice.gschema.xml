@@ -3,8 +3,8 @@
   <schema id="org.nil.indicator.coinprice" path="/org/nil/coinprice/">
  
     <key type="i" name="refresh">
-        <range min="5" max="120"/>
-        <default>30</default>
+        <range min="3" max="60"/>
+        <default>10</default>
         <summary>Refresh interval</summary>
     </key>
  
@@ -12,23 +12,8 @@
         <default>'bxinth'</default>
         <summary>BXINTH exchange</summary>
     </key>
-    
-    <key type="s" name="assetpair-kraken">
-        <default>'XXBTZUSD'</default>
-        <summary>Kraken asset pairs</summary>
-    </key>
-    
-    <key type="s" name="assetpair-bityep">
-        <default>'XXBTZUSD'</default>
-        <summary>BitYep asset pairs</summary>
-    </key>
-    
-    <key type="s" name="assetpair-bitstamp">
-        <default>'XXBTZUSD'</default>
-        <summary>BitYep asset pairs</summary>
-    </key>
-    
-    <key type="s" name="assetpair-bxinth">
+
+    <key type="s" name="assetpair">
         <default>'XXBTCZTHB'</default>
         <summary>Bxinth asset pairs</summary>
     </key>

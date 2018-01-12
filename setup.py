@@ -12,10 +12,10 @@ setup(
     name=config['app']['name'],
     version=config['app']['version'],
     description=config['app']['description'],
-    long_description=readme,
-    author=config['author']['name'],
-    author_email=config['author']['email'],
+    long_description=readme.read(),
+    author=config['authors'][0]['name'],
+    author_email=config['authors'][0]['email'],
     url=config['app']['url'],
-    license=license,
+    license=license.read(),
     packages=find_packages(exclude=('tests', 'docs'))
 )
