@@ -30,7 +30,7 @@ class Bxinth(Exchange):
             'isocode' : 'XXETHZTHB',
             'pair' : 'XXETHZTHB',
             'name' : 'ETH TO THB',
-            'volumelabel' : 'THB',
+            'volumelabel' : 'ETH',
             'currency' : CURRENCY['thb'],
             'pairing_id' : 21,
             'primary_currency': 'THB',
@@ -40,7 +40,7 @@ class Bxinth(Exchange):
             'isocode' : 'XXDASZTHB',
             'pair' : 'XXDASZTHB',
             'name' : 'DASH TO THB',
-            'volumelabel' : 'THB',
+            'volumelabel' : 'DAS',
             'currency' : CURRENCY['thb'],
             'pairing_id' : 22,
             'primary_currency': 'THB',
@@ -50,7 +50,7 @@ class Bxinth(Exchange):
             'isocode' : 'XXREPZTHB',
             'pair' : 'XXREPZTHB',
             'name' : 'REP TO THB',
-            'volumelabel' : 'THB',
+            'volumelabel' : 'REP',
             'currency' : CURRENCY['thb'],
             'pairing_id' : 23,
             'primary_currency': 'THB',
@@ -60,7 +60,7 @@ class Bxinth(Exchange):
             'isocode' : 'XXGNOZTHB',
             'pair' : 'XXGNOZTHB',
             'name' : 'GNO TO THB',
-            'volumelabel' : 'THB',
+            'volumelabel' : 'GNO',
             'currency' : CURRENCY['thb'],
             'pairing_id' : 24,
             'primary_currency': 'THB',
@@ -70,7 +70,7 @@ class Bxinth(Exchange):
             'isocode' : 'XXRPZTHB',
             'pair' : 'XXRPZTHB',
             'name' : 'XRP TO THB',
-            'volumelabel' : 'THB',
+            'volumelabel' : 'XRP',
             'currency' : CURRENCY['thb'],
             'pairing_id' : 25,
             'primary_currency': 'THB',
@@ -80,7 +80,7 @@ class Bxinth(Exchange):
             'isocode' : 'XXOMGZTHB',
             'pair' : 'XXOMGZTHB',
             'name' : 'OMG TO THB',
-            'volumelabel' : 'THB',
+            'volumelabel' : 'OMG',
             'currency' : CURRENCY['thb'],
             'pairing_id' : 26,
             'primary_currency': 'THB',
@@ -90,7 +90,7 @@ class Bxinth(Exchange):
             'isocode' : 'XXBCHZTHB',
             'pair' : 'XXBCHZTHB',
             'name' : 'BCH TO THB',
-            'volumelabel' : 'THB',
+            'volumelabel' : 'BCH',
             'currency' : CURRENCY['thb'],
             'pairing_id' : 27,
             'primary_currency': 'THB',
@@ -100,7 +100,7 @@ class Bxinth(Exchange):
             'isocode' : 'XXEVXZTHB',
             'pair' : 'XXEVXZTHB',
             'name' : 'EVX TO THB',
-            'volumelabel' : 'THB',
+            'volumelabel' : 'EVX',
             'currency' : CURRENCY['thb'],
             'pairing_id' : 28,
             'primary_currency': 'THB',
@@ -110,7 +110,7 @@ class Bxinth(Exchange):
             'isocode' : 'XXXZCZTHB',
             'pair' : 'XXXZCZTHB',
             'name' : 'XZC TO THB',
-            'volumelabel' : 'THB',
+            'volumelabel' : 'XZC',
             'currency' : CURRENCY['thb'],
             'pairing_id' : 29,
             'primary_currency': 'THB',
@@ -120,7 +120,7 @@ class Bxinth(Exchange):
             'isocode' : 'XXLTCZTHB',
             'pair' : 'XXLTCZTHB',
             'name' : 'LTC TO THB',
-            'volumelabel' : 'THB',
+            'volumelabel' : 'LTC',
             'currency' : CURRENCY['thb'],
             'pairing_id' : 30,
             'primary_currency': 'THB',
@@ -128,7 +128,10 @@ class Bxinth(Exchange):
         }
         ]
     }
-
+    
+    def __init__(self,indicator):
+        super().__init__(indicator)
+        self.round = False
 
     def get_ticker(self):
         return self.config['ticker']
