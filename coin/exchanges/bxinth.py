@@ -20,7 +20,7 @@ class Bxinth(Exchange):
         'isocode' : 'XXBTCZTHB',
         'pair' : 'XXBTCZTHB',
         'name' : 'BTC to THB',
-        'volumelabel' : 'THB',
+        'volumelabel' : 'BTC',
         'currency' : CURRENCY['thb'],
         'pairing_id' : 1,
         'primary_currency': 'THB',
@@ -151,7 +151,7 @@ class Bxinth(Exchange):
                            item['secondary_currency'] == selected_asset['secondary_currency'] ][0]
 
         
-        label = float(query_result['last_price'])
+        current = float(query_result['last_price'])
 
         bids_highbid = float(query_result['orderbook']['bids']['highbid']) #Buy price 
         bids_volume = float(query_result['orderbook']['bids']['volume'])
@@ -159,15 +159,15 @@ class Bxinth(Exchange):
         asks_volume = float(query_result['orderbook']['asks']['volume'])
         asks_highbid = float(query_result['orderbook']['asks']['highbid']) #Sell price
         
-        print(label)
-
+        volume = float(query_result['volume_24hours'])
+        
         return {
-          'cur': label,
+          'cur': current,
           'bid': bids_highbid,
-          'high': bids_volume,
-          'low': asks_highbid,
-          'ask': asks_volume,
-          'vol': 0
+          'high': 0,
+          'low': 0,
+          'ask': asks_highbid,
+          'vol': volume
         }
 
 
