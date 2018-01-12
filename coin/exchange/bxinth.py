@@ -70,8 +70,8 @@ CONFIG = {
         'secondary_currency': 'GNO'
     },
      {
-        'isocode' : 'XXXRPZTHB',
-        'pair' : 'XXXRPZTHB',
+        'isocode' : 'XXRPZTHB',
+        'pair' : 'XXRPZTHB',
         'name' : 'XRP TO THB',
         'volumelabel' : 'THB',
         'currency' : utils.currency['thb'],
@@ -217,7 +217,7 @@ class Bxinth:
         print(query_result)
 
 
-        label = str(query_result['last_price'])
+        label = str(query_result['secondary_currency']) + "  : " + str(query_result['last_price']) + " " + str(query_result['primary_currency'])
         bids_highbid = str(query_result['orderbook']['bids']['highbid']) #Buy price 
         bids_volume = str(query_result['orderbook']['bids']['volume'])
         asks_highbid = str(query_result['orderbook']['asks']['highbid']) #Sell price
