@@ -19,6 +19,7 @@ from exchange.bitstamp import Bitstamp
 from exchange.gdax import Gdax
 from exchange.gemini import Gemini
 from exchange.bittrex import Bittrex
+from exchange.bxinth import Bxinth
 
 from settings import Settings
 
@@ -28,6 +29,7 @@ from exchange.gdax import CONFIG as GdaxConfig
 from exchange.gemini import CONFIG as GeminiConfig
 from exchange.bitstamp import CONFIG as BitstampConfig
 from exchange.bittrex import CONFIG as BittrexConfig
+from exchange.bxinth import CONFIG as BxinthConfig
 
 REFRESH_TIMES = [  # seconds
     '3',
@@ -42,7 +44,8 @@ CURRENCY_SHOW = [
     'gdax',
     'gemini',
     'bitstamp',
-    'bittrex'
+    'bittrex',
+    'bxinth'
 ]
 
 CURRENCIES = {
@@ -50,7 +53,8 @@ CURRENCIES = {
     'gdax': GdaxConfig['asset_pairs'],
     'gemini': GeminiConfig['asset_pairs'],
     'bitstamp': BitstampConfig['asset_pairs'],
-    'bittrex': BittrexConfig['asset_pairs']
+    'bittrex': BittrexConfig['asset_pairs'],
+    'bxinth': BxinthConfig['asset_pairs']
 }
 
 
@@ -92,6 +96,11 @@ class Indicator():
                 'code': 'bittrex',
                 'name': 'Bittrex',
                 'instance': Bittrex(self.config, self)
+            },
+            {
+                'code': 'bxinth',
+                'name': 'BX.in.th',
+                'instance': Bxinth(self.config, self)
             }
         ]
 

@@ -19,7 +19,7 @@ from exchange.bitstamp import Bitstamp
 from exchange.gdax import Gdax
 from exchange.gemini import Gemini
 from exchange.bittrex import Bittrex
-
+from exchange.bxinth import Bxinth
 import threading
 
 

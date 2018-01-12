@@ -1,2 +1,6 @@
 *.pyc
 .idea/
+/build
+/Coin_Price_indicator.egg-info
+/dist
+nohup.out
