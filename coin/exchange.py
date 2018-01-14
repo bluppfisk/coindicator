@@ -122,20 +122,17 @@ class Exchange(object):
   # and returns it as a string
   # 
   def _decimal_auto(self, number):
-    if self.round is False:
-    	return str(number)
-    else:
-      number = float(number)
-      if number < 10:
-          for i in range(8, 0, -1):
-              if number < 10**-i:
-                  break
-      elif number >= 100:
-          i = -2
-      elif number >= 10:
-          i = -1
+    number = float(number)
+    if number < 10:
+        for i in range(8, 0, -1):
+            if number < 10**-i:
+                break
+    elif number >= 100:
+        i = -2
+    elif number >= 10:
+        i = -1
 
-      return ('{0:.' + str(i + 2) + 'f}').format(number)
+    return ('{0:.' + str(i + 2) + 'f}').format(number)
 
   ##
   # Makes request on a different thread, and optionally passes response to a
