@@ -12,7 +12,7 @@ currency = {
     'eur': '€',
     'gbp': '£',
     'eth': 'Ξ',
-    'btc': '฿',
+    'btc': 'B',
     'thb': '฿'
 }
 
