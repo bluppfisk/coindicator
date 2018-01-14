@@ -134,6 +134,8 @@ class Coin(object):
         if res == -4 or -6:  # close events
             about.destroy()
 
+        self.gui_ready.set()
+
     # Menu item to remove all tickers and quits the application
     def _quit_all(self, widget):
         Gtk.main_quit()

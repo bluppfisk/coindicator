@@ -10,9 +10,10 @@ __author__ = "nil.gradisnik@gmail.com"
 currency = {
     'usd': '$',
     'eur': '€',
-    'btc': '฿',
     'gbp': '£',
-    'eth': 'Ξ'
+    'eth': 'Ξ',
+    'btc': '฿',
+    'thb': '฿'
 }
 
 category = {

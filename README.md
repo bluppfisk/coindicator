@@ -12,6 +12,7 @@ It currently supports the following exchanges:
 * [Gemini](https://www.gemini.com)
 * [Bittrex](https://bittrex.com)
 * [Bitfinex](https://www.bitfinex.com/)
+* [Bx](https://www.bx.in.th/)
 
 **NEW**: Since version 0.9 you can easily add your own exchanges (see *Extending* below).
 
