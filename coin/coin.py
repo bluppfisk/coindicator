@@ -106,7 +106,7 @@ class Coin(object):
         self.add_indicator('DEFAULTS')
 
     # Handle system resume by refreshing all tickers
-    def handle_resume(self, sleeping):
+    def handle_resume(self, sleeping, *args):
         if not sleeping:
             for instance in self.instances:
                 instance.exchange_instance.stop().start()
