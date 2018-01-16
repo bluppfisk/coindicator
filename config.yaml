@@ -4,7 +4,7 @@ app:
   name: Coin Price Indicator
   description: A cryptocurrency price ticker applet for Ubuntu
   url: https://github.com/nilgradisnik/coinprice-indicator
-  version: "0.9.9"
+  version: "1.0"
 
 authors:
   -
@@ -33,6 +33,9 @@ contributors:
   -
     name: Thepassith N.
     email: tutorgaming@gmail.com
+  -
+    name: Alessio Carrafa
+    email: ruzzico@gmail.com
 
 artist:
   name: Alicen Maniscalco

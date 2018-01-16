@@ -109,9 +109,12 @@ class Indicator(object):
             item.set_label('loading')
 
         self.volume_item.set_label('loading')
-
         home_currency = self.active_asset_pair.lower()[1:4]
-        self.indicator.set_icon(self.coin.config.get('project_root') + '/resources/' + home_currency + '.png')
+
+        if isfile(self.coin.config.get('project_root') + '/resources/' + home_currency + '.png'):
+            self.indicator.set_icon(self.coin.config.get('project_root') + '/resources/' + home_currency + '.png')
+        else:
+            self.indicator.set_icon(self.coin.config.get('project_root') + '/resources/unknown-coin.png')
 
         # load new exchange instance
         self.exchange_instance = [e.get('instance') for e in self.EXCHANGES if self.active_exchange == e.get('code')][0]
