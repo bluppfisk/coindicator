@@ -27,14 +27,18 @@ class Coin(object):
     config['project_root'] = PROJECT_ROOT
 
     def __init__(self):
+        # Load exchange 'plug-ins' from exchanges dir
         dirfiles = glob.glob(dirname(__file__) + "/exchanges/*.py")
         self.exchanges = [ basename(f)[:-3] for f in dirfiles if isfile(f) and not f.endswith('__init__.py')]
         self.exchanges.sort()
 
+        # init phase
         self.start_main()
         self.instances = []
         print(self.config.get('app').get('name') + ' v' + self.config['app']['version'] + " running!")
         usage_error = '\nUsage: coin.py [arguments]\n* asset=exchange:asset_pair:refresh_rate\tLoad a specific asset\n* file=file_to_load.yaml\t\t\tLoad several tickers defined in a YAML file.\n'
+
+        # parse commandline arguments
         if len(sys.argv) > 2:
             quit('Too many parameters\n' + usage_error)
 
@@ -137,9 +141,6 @@ class Coin(object):
     # Menu item to remove all tickers and quits the application
     def _quit_all(self, widget):
         Gtk.main_quit()
-
-def hi(event):
-    print(event)
 
 coin = Coin()
 DBusGMainLoop(set_as_default = True)

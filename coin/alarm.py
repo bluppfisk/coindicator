@@ -21,11 +21,11 @@ class Alarm(object):
 
     def check(self, price):
         if self.ceil <= price:
-            self.__notify('High Bitcoin price alert: $' + str(price),
-                          'Current bitcoin price rose above your alarm threshold: $' + str(self.ceil))
+            self.__notify('Price alert: ' + str(price),
+                          'Price rose above your alarm threshold:' + str(self.ceil))
         if self.floor >= price:
-            self.__notify('Low Bitcoin price alert: $' + str(price),
-                          'Current bitcoin price fell below your alarm threshold: $' + str(self.floor))
+            self.__notify('Price alert: ' + str(price),
+                          'Price fell below your alarm threshold:' + str(self.floor))
 
     def __notify(self, title, message):
         if notify.init(self.app_name):

@@ -5,6 +5,7 @@
 import logging, os, sys, inspect, importlib, glob, exchanges
 from os.path import dirname, basename, isfile
 from settings import Settings
+from alarm import Alarm
 from gi.repository import Gtk, GdkPixbuf
 try:
     from gi.repository import AppIndicator3 as AppIndicator
@@ -32,6 +33,7 @@ CATEGORIES = [
 class Indicator(object):
     def __init__(self, coin, settings=None):
         self.coin = coin # reference to main object
+        self.alarm = Alarm(self.coin.config['app']['name'])
 
         self.default_label = 'bid'
         self.latest_response = 0 # helps with discarding outdated responses
@@ -73,15 +75,20 @@ class Indicator(object):
         if getattr(self, self.default_label):
             label = self.currency + getattr(self, self.default_label)
         else:
-            label = 'no label selected'
+            label = 'select label'
 
         self.indicator.set_label(label, label)
+        # if self.alarm:
+        #     self.alarm.check(int(label))
         
         for item, name in CATEGORIES:
             price_menu_item = getattr(self, item + '_item')
             if getattr(self, item):
                 if item == self.default_label:
                     price_menu_item.set_active(True)
+                    if self.alarm:
+                        self.alarm.check(float(getattr(self, item)))
+                        self.alarm = None
                 price_menu_item.set_label(name + self.currency + getattr(self, item))
                 price_menu_item.show()
             else:
