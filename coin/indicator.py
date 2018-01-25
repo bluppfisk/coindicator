@@ -5,7 +5,7 @@
 import logging, os, sys, inspect, importlib, glob, exchanges
 from os.path import dirname, basename, isfile
 from settings import Settings
-from alarm import Alarm
+from alarm import Alarm, AlarmSettingsWindow
 from gi.repository import Gtk, GdkPixbuf
 try:
     from gi.repository import AppIndicator3 as AppIndicator
@@ -33,7 +33,7 @@ CATEGORIES = [
 class Indicator(object):
     def __init__(self, coin, settings=None):
         self.coin = coin # reference to main object
-        self.alarm = Alarm(self.coin.config['app']['name'])
+        self.alarm = Alarm(self.coin.config['app']['name']) # alarm
 
         self.default_label = 'bid'
         self.latest_response = 0 # helps with discarding outdated responses
@@ -78,22 +78,26 @@ class Indicator(object):
             label = 'select label'
 
         self.indicator.set_label(label, label)
-        # if self.alarm:
-        #     self.alarm.check(int(label))
         
         for item, name in CATEGORIES:
-            price_menu_item = getattr(self, item + '_item')
+            price_menu_item = getattr(self, item + '_item') # get menu item
+
+            # assigns prices to the corresponding menu items
+            # if such a price value is returned from the exchange
             if getattr(self, item):
                 if item == self.default_label:
                     price_menu_item.set_active(True)
-                    if self.alarm:
-                        self.alarm.check(float(getattr(self, item)))
-                        self.alarm = None
+                    if self.alarm.active:
+                        if self.alarm.check(float(getattr(self, item))):
+                            self.alarm.deactivate()
+
                 price_menu_item.set_label(name + self.currency + getattr(self, item))
                 price_menu_item.show()
+            # if no such price value is returned, hide the menu item
             else:
                 price_menu_item.hide()
 
+        # slightly different behaviour for volume menu item
         if self.volume:
             self.volume_item.set_label('Vol (' + self.volumecurrency + '):\t' + self.volume)
             self.volume_item.show()
@@ -110,7 +114,6 @@ class Indicator(object):
 
         # don't show any data until first response is in
         self.indicator.set_label('loading', 'loading')
-
         for item in self.price_group:
             item.set_active(False)
             item.set_label('loading')
@@ -166,6 +169,10 @@ class Indicator(object):
         self.refresh_menu = Gtk.MenuItem("Refresh")
         self.refresh_menu.set_submenu(self._menu_refresh())
         menu.append(self.refresh_menu)
+
+        self.alarm_menu = Gtk.MenuItem("Set Alert")
+        self.alarm_menu.connect("activate", self._alarm_settings)
+        menu.append(self.alarm_menu)
 
         menu.append(Gtk.SeparatorMenuItem())
 
@@ -265,3 +272,6 @@ class Indicator(object):
             self.coin.instances.remove(self)
             self.exchange_instance.stop()
             del self.indicator
+
+    def _alarm_settings(self, widget):
+        alarm_dialog = AlarmSettingsWindow(self)
