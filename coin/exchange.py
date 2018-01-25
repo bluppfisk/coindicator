@@ -13,6 +13,7 @@ CURRENCY = {
 }
 
 CATEGORY = {
+    'cur': 'Now',
     'bid': 'Bid',
     'high': 'High',
     'low': 'Low',
@@ -103,7 +104,8 @@ class Exchange(object):
     logging.debug('Requests comes in with timestamp ' + str(timestamp) + ', last response at ' + str(self.indicator.latest_response))
     
     for item in CATEGORY:
-      self.indicator.prices[item] = self._decimal_auto(results.get(item))
+      if results.get(item):
+        self.indicator.prices[item] = self._decimal_auto(results.get(item))
 
     config = [item for item in self.config.get('asset_pairs') if item.get('isocode') == self.asset_pair][0]
     self.indicator.volumecurrency = config.get('volumelabel').upper() if config.get('volumelabel') else config.get('name').split(' ')[0].upper()

@@ -23,7 +23,7 @@ REFRESH_TIMES = [  # seconds
 ]
 
 CATEGORIES = [
-    ('current', 'Now:\t\t'),
+    ('cur', 'Now:\t\t'),
     ('bid', 'Bid:\t\t'),
     ('ask', 'Ask:\t\t'),
     ('high', 'High:\t\t'),
@@ -76,8 +76,8 @@ class Indicator(object):
     def update_gui(self):
         logging.debug('Updating GUI, last response was: ' + str(self.latest_response))
         
-        if self.prices[self.default_label]:
-            label = self.currency + self.prices[self.default_label]
+        if self.prices.get(self.default_label):
+            label = self.currency + self.prices.get(self.default_label)
         else:
             label = 'select default label'
 
@@ -102,8 +102,8 @@ class Indicator(object):
                 price_menu_item.hide()
 
         # slightly different behaviour for volume menu item
-        if self.volume:
-            self.volume_item.set_label('Vol (' + self.volumecurrency + '):\t' + self.volume)
+        if self.prices.get('volume'):
+            self.volume_item.set_label('Vol (' + self.volumecurrency + '):\t' + self.prices.get('volume'))
             self.volume_item.show()
         else:
             self.volume_item.hide()

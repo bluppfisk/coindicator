@@ -13,7 +13,7 @@ class Bxinth(Exchange):
     """
     CONFIG = {
         'name' : 'BX.in.th',
-        'default_label': 'current',
+        'default_label': 'cur',
         'ticker' : 'https://bx.in.th/api/',
         'asset_pairs': [
             {

@@ -10,7 +10,7 @@ from exchange import Exchange, CURRENCY
 class Kraken(Exchange):
   CONFIG = {
     'name': 'Kraken',
-    'default_label': 'current',
+    'default_label': 'cur',
     'ticker': 'https://api.kraken.com/0/public/Ticker',
     'asset_pairs': [
       {
