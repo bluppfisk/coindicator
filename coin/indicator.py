@@ -142,7 +142,7 @@ class Indicator(object):
         if widget.get_active():
             self.default_label = label
             if self.price_menu_items.get(self.default_label):
-                new_label = self.price_menu_items.get(label).get_label()
+                new_label = self.prices.get(label)
                 if new_label:
                     self.indicator.set_label(self.currency + new_label, new_label)
 
