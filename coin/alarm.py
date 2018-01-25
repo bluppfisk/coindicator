@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-
 # Alarm
+# 
+
 import notify2 as notify
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
-
-__author__ = "sander.vandemoortel@gmail.com"
 
 class Alarm(object):
     def __init__(self, app_name, ceil=None, floor=None):
@@ -87,7 +86,7 @@ class AlarmSettingsWindow(Gtk.Dialog):
 
         # Set and Cancel buttons
         buttonbox = Gtk.Box(spacing=2)
-        button_set = Gtk.Button('Set Alarm')
+        button_set = Gtk.Button('Set Alert')
         button_cancel = Gtk.Button('Cancel')
         button_set.connect("clicked", self._set_alarm, radio_over, entry_price)
         button_cancel.connect("clicked", self._close)

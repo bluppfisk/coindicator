@@ -35,6 +35,9 @@ class Indicator(object):
         self.coin = coin # reference to main object
         self.alarm = Alarm(self.coin.config['app']['name']) # alarm
 
+        self.prices = {}
+        self.currency = ''
+        self.volumecurrency = ''
         self.default_label = 'bid'
         self.latest_response = 0 # helps with discarding outdated responses
         
@@ -72,26 +75,27 @@ class Indicator(object):
     # updates GUI menus with data stored in the object
     def update_gui(self):
         logging.debug('Updating GUI, last response was: ' + str(self.latest_response))
-        if getattr(self, self.default_label):
-            label = self.currency + getattr(self, self.default_label)
+        
+        if self.prices[self.default_label]:
+            label = self.currency + self.prices[self.default_label]
         else:
-            label = 'select label'
+            label = 'select default label'
 
         self.indicator.set_label(label, label)
         
         for item, name in CATEGORIES:
-            price_menu_item = getattr(self, item + '_item') # get menu item
+            price_menu_item = self.price_menu_items.get(item) # get menu item
 
             # assigns prices to the corresponding menu items
             # if such a price value is returned from the exchange
-            if getattr(self, item):
+            if self.prices.get(item):
                 if item == self.default_label:
                     price_menu_item.set_active(True)
                     if self.alarm.active:
-                        if self.alarm.check(float(getattr(self, item))):
+                        if self.alarm.check(float(self.prices.get(item))):
                             self.alarm.deactivate()
 
-                price_menu_item.set_label(name + self.currency + getattr(self, item))
+                price_menu_item.set_label(name + self.currency + self.prices.get(item))
                 price_menu_item.show()
             # if no such price value is returned, hide the menu item
             else:
@@ -137,8 +141,8 @@ class Indicator(object):
     def _make_label(self, widget, label):
         if widget.get_active():
             self.default_label = label
-            if hasattr(self, label):
-                new_label = getattr(self, label)
+            if self.price_menu_items.get(self.default_label):
+                new_label = self.price_menu_items.get(label).get_label()
                 if new_label:
                     self.indicator.set_label(self.currency + new_label, new_label)
 
@@ -147,15 +151,15 @@ class Indicator(object):
         self.price_group = [] # so that a radio button can be set on the active one
 
         # hacky way to get every price item on the menu and filled
+        self.price_menu_items = {}
         for price_type, name in CATEGORIES:
-            price_item = price_type + '_item'
-            setattr(self, price_item, Gtk.RadioMenuItem.new_with_label(self.price_group, 'loading...'))
-            getattr(self, price_item).connect('toggled', self._make_label, price_type)
-            self.price_group.append(getattr(self, price_item))
-            menu.append(getattr(self, price_item))
+            self.price_menu_items[price_type] = Gtk.RadioMenuItem.new_with_label(self.price_group, 'loading...')
+            self.price_menu_items[price_type].connect('toggled', self._make_label, price_type)
+            self.price_group.append(self.price_menu_items.get(price_type))
+            menu.append(self.price_menu_items.get(price_type))
 
         # trading volume display
-        self.volume_item = Gtk.MenuItem('loading')
+        self.volume_item = Gtk.MenuItem('loading...')
         menu.append(self.volume_item)
 
         menu.append(Gtk.SeparatorMenuItem())
@@ -274,4 +278,4 @@ class Indicator(object):
             del self.indicator
 
     def _alarm_settings(self, widget):
-        alarm_dialog = AlarmSettingsWindow(self)
+        AlarmSettingsWindow(self)

@@ -102,16 +102,12 @@ class Exchange(object):
     self.indicator.latest_response = timestamp
     logging.debug('Requests comes in with timestamp ' + str(timestamp) + ', last response at ' + str(self.indicator.latest_response))
     
-    self.indicator.current = self._decimal_auto(results.get('cur')) if results.get('cur') else None
-    self.indicator.bid = self._decimal_auto(results.get('bid')) if results.get('bid') else None
-    self.indicator.high = self._decimal_auto(results.get('high')) if results.get('high') else None
-    self.indicator.low = self._decimal_auto(results.get('low')) if results.get('high') else None
-    self.indicator.ask = self._decimal_auto(results.get('ask')) if results.get('ask') else None
-    self.indicator.volume = self._decimal_auto(results.get('vol')) if results.get('vol') else None
+    for item in CATEGORY:
+      self.indicator.prices[item] = self._decimal_auto(results.get(item))
 
     config = [item for item in self.config.get('asset_pairs') if item.get('isocode') == self.asset_pair][0]
     self.indicator.volumecurrency = config.get('volumelabel').upper() if config.get('volumelabel') else config.get('name').split(' ')[0].upper()
-    self.indicator.currency = config['currency']
+    self.indicator.currency = config.get('currency')
 
     self.error.reset()
     
