@@ -6,7 +6,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
-__author__ = "nil.gradisnik@gmail.com"
+__author__ = "sander.vandemoortel@gmail.com"
 
 class Alarm(object):
     def __init__(self, app_name, ceil=None, floor=None):
@@ -58,15 +58,15 @@ class AlarmSettingsWindow(Gtk.Dialog):
         self.set_default_size(200, 100)
         self.set_keep_above(True)
 
-        label = Gtk.Label("Set a price alert if the price rises above or drops below the given price:")
+        label = Gtk.Label("Set a price alert if the price is")
 
-        hbox = Gtk.Box(spacing=4)
-        radio_over = Gtk.RadioButton.new_with_label(None, 'Over')
-        radio_under = Gtk.RadioButton.new_with_label_from_widget(radio_over, 'Under')
+        hbox = Gtk.Box(spacing=2)
+        radio_over = Gtk.RadioButton.new_with_label(None, 'above')
+        radio_under = Gtk.RadioButton.new_with_label_from_widget(radio_over, 'below')
 
         price = 0
-        radio_over.set_active(True)
 
+        # Get existing alarm settings
         if self.parent.alarm.active:
             if self.parent.alarm.ceil:
                 price = self.parent.alarm.ceil
@@ -78,21 +78,30 @@ class AlarmSettingsWindow(Gtk.Dialog):
         entry_price = Gtk.Entry()
         entry_price.set_text(str(price))
         entry_price.connect('activate', self._set_alarm, radio_over, entry_price)
+
+        # Pack horizontally
+        hbox.pack_start(label, False, False, 0)
+        hbox.pack_start(radio_over, False, False, 0)
+        hbox.pack_start(radio_under, False, False, 0)
+        hbox.pack_start(entry_price, False, False, 0)
+
+        # Set and Cancel buttons
+        buttonbox = Gtk.Box(spacing=2)
         button_set = Gtk.Button('Set Alarm')
         button_cancel = Gtk.Button('Cancel')
         button_set.connect("clicked", self._set_alarm, radio_over, entry_price)
         button_cancel.connect("clicked", self._close)
+        buttonbox.pack_start(button_set, False, False, 0)
+        buttonbox.pack_start(button_cancel, False, False, 0)
 
+        # Display in content area
         box = self.get_content_area()
-        hbox.pack_start(radio_over, False, False, 0)
-        hbox.pack_start(radio_under, False, False, 0)
         box.add(hbox)
-        box.add(entry_price)
-        box.add(button_set)
-        box.add(button_cancel)
-        entry_price.grab_focus()
+        box.add(buttonbox)
+        entry_price.grab_focus() # focus on entry field
 
         self.show_all()
+        self.grab_focus()
 
     def _set_alarm(self, widget, radio_over, entry_price):
         above = radio_over.get_active()
