@@ -12,7 +12,7 @@ SCHEMA_ID = 'org.nil.indicator.coinprice'
 DEFAULTS = {
     'refresh': 30,
     'exchange': 'kraken',
-    'assetpair': 'XXBTZUSD',
+    'asset_pair': 'XXBTZUSD',
 }
 
 class Settings(object):
@@ -34,7 +34,7 @@ class Settings(object):
                 self.settings = None
                 logging.info("GSettings: schema [" + SCHEMA_ID + "] not installed. Using defaults.")
 
-    def getRefresh(self):
+    def get_refresh(self):
         if self.manual_settings:
             return int(self.manual_settings[2])
         elif self.settings:
@@ -42,12 +42,12 @@ class Settings(object):
         else:
             return DEFAULTS['refresh']
 
-    def setRefresh(self, val):
+    def set_refresh(self, val):
         if not self.manual_settings:
             self.settings.set_int('refresh', val)
             return True
 
-    def getExchange(self):
+    def get_exchange(self):
         if self.manual_settings:
             return self.manual_settings[0].lower()
         elif self.settings:
@@ -55,20 +55,20 @@ class Settings(object):
         else:
             return DEFAULTS['exchange']
 
-    def setExchange(self, val):
+    def set_exchange(self, val):
         if not self.manual_settings:
             self.settings.set_string('exchange', val)
             return True
 
-    def getAssetpair(self):
+    def get_asset_pair(self):
         if self.manual_settings:
             return self.manual_settings[1].upper()
         elif self.settings:
-            return self.settings.get_string('assetpair')
+            return self.settings.get_string('asset_pair')
         else:
-            return DEFAULTS['assetpair']
+            return DEFAULTS['asset_pair']
 
-    def setAssetpair(self, val):
+    def set_asset_pair(self, val):
         if not self.manual_settings:
-            self.settings.set_string('assetpair', val.upper())
+            self.settings.set_string('asset_pair', val.upper())
             return True

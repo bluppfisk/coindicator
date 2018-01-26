@@ -18,7 +18,7 @@ CATEGORY = {
     'high': 'High',
     'low': 'Low',
     'ask': 'Ask',
-    'volume': 'Vol',
+    'vol': 'Vol',
     'first': 'First'
 }
 
@@ -115,7 +115,7 @@ class Exchange(object):
     
     GLib.idle_add(self.indicator.update_gui)
 
-  ## _decimal_auto 
+  ##
   # Rounds a number to a meaningful number of decimal places
   # and returns it as a string
   # 

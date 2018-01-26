@@ -41,13 +41,13 @@ class Gemini(Exchange):
 
   def _parse_result(self, asset):
     volumelabel = [item for item in self.config['asset_pairs'] if item['pair'] == self.pair][0]['volumelabel']
-    label = asset.get('last')
+    cur = asset.get('last')
     bid = asset.get('bid')
     ask = asset.get('ask')
     vol = asset.get('volume').get(volumelabel)
 
     return {
-      'label': label,
+      'cur': cur,
       'bid': bid,
       'high': None,
       'low': None,

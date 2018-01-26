@@ -44,9 +44,9 @@ class Indicator(object):
         self.settings = Settings(settings) # override pre-set values if settings is set
 
         # get the various settings for this indicator
-        self.refresh_frequency = self.settings.getRefresh()
-        self.active_exchange = self.settings.getExchange()
-        self.active_asset_pair = self.settings.getAssetpair()
+        self.refresh_frequency = self.settings.get_refresh()
+        self.active_exchange = self.settings.get_exchange()
+        self.active_asset_pair = self.settings.get_asset_pair()
 
         # load all the exchange modules and the classes contained within
         self.EXCHANGES = []
@@ -207,7 +207,7 @@ class Indicator(object):
     def _menu_refresh_change(self, widget, ri):
         if widget.get_active():
             self.refresh_frequency = ri
-            self.settings.setRefresh(self.refresh_frequency)
+            self.settings.set_refresh(self.refresh_frequency)
             self.exchange_instance.stop().start()
 
     def _menu_exchange(self):
@@ -249,7 +249,7 @@ class Indicator(object):
         return asset_pairs_menu
 
     # if the asset pairs change
-    def _menu_asset_pairs_change(self, widget, assetpair, exchange):
+    def _menu_asset_pairs_change(self, widget, asset_pair, exchange):
         if widget.get_active():
             self.active_exchange = exchange.get('code')
             tentative_asset_pair = [item.get('isocode') for item in self.CURRENCIES[exchange.get('code')] if item.get('isocode') == self.active_asset_pair]
@@ -258,9 +258,9 @@ class Indicator(object):
             else:
                 self.active_asset_pair = tentative_asset_pair[0]
 
-            self.active_asset_pair = assetpair
-            self.settings.setExchange(self.active_exchange)
-            self.settings.setAssetpair(self.active_asset_pair)
+            self.active_asset_pair = asset_pair
+            self.settings.set_exchange(self.active_exchange)
+            self.settings.set_asset_pair(self.active_asset_pair)
 
             # set parent (exchange) menu item to active
             for exchange_menu_item in self.exchange_group:
