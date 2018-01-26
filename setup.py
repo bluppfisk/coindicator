@@ -9,7 +9,7 @@ readme = open('README.md', 'r')
 license = open('LICENSE', 'r')
 
 setup(
-    name=config['app']['name'],
+    name=config['app']['name'].replace(" ","-"),
     version=config['app']['version'],
     description=config['app']['description'],
     long_description=readme.read(),
