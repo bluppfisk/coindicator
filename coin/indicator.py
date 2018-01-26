@@ -102,7 +102,6 @@ class Indicator(object):
                 price_menu_item.hide()
 
         # slightly different behaviour for volume menu item
-        print(self.prices)
         if self.prices.get('vol'):
             self.volume_item.set_label('Vol (' + self.volumecurrency + '):\t' + self.prices.get('vol'))
             self.volume_item.show()
