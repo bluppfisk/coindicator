@@ -6,7 +6,7 @@ import logging, os, sys, inspect, importlib, glob, exchanges
 from os.path import dirname, basename, isfile
 from settings import Settings
 from alarm import Alarm, AlarmSettingsWindow
-from gi.repository import Gtk, GdkPixbuf
+from gi.repository import Gtk
 try:
     from gi.repository import AppIndicator3 as AppIndicator
 except ImportError:
@@ -33,7 +33,7 @@ CATEGORIES = [
 class Indicator(object):
     def __init__(self, coin, settings=None):
         self.coin = coin # reference to main object
-        self.alarm = Alarm(self.coin.config['app']['name']) # alarm
+        self.alarm = Alarm(self) # alarm
 
         self.prices = {}
         self.currency = ''
@@ -75,7 +75,7 @@ class Indicator(object):
     # updates GUI menus with data stored in the object
     def update_gui(self):
         logging.debug('Updating GUI, last response was: ' + str(self.latest_response))
-        
+
         if self.prices.get(self.default_label):
             label = self.currency + self.prices.get(self.default_label)
         else:
@@ -174,7 +174,7 @@ class Indicator(object):
         self.refresh_menu.set_submenu(self._menu_refresh())
         menu.append(self.refresh_menu)
 
-        self.alarm_menu = Gtk.MenuItem("Set Alert")
+        self.alarm_menu = Gtk.MenuItem("Set Alert" + u"\u2026")
         self.alarm_menu.connect("activate", self._alarm_settings)
         menu.append(self.alarm_menu)
 
