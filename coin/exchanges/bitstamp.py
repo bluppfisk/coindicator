@@ -25,7 +25,7 @@ class Bitstamp(Exchange):
     return self.config['ticker']
 
   def _parse_result(self, asset):
-    label = asset.get('last')
+    cur = asset.get('last')
     bid = asset.get('bid')
     ask = asset.get('ask')
     vol = asset.get('volume')
@@ -33,7 +33,7 @@ class Bitstamp(Exchange):
     low = asset.get('low')
 
     return {
-      'label': label,
+      'cur': cur,
       'bid': bid,
       'high': high,
       'low': low,

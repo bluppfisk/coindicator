@@ -51,7 +51,7 @@ class Bitfinex(Exchange):
 
   def _parse_result(self, asset):
 
-    label = asset[6]
+    cur = asset[6]
     bid = asset[0]
     ask = asset[2]
     vol = asset[7]
@@ -59,7 +59,7 @@ class Bitfinex(Exchange):
     low = asset[9]
 
     return {
-      'label': label,
+      'cur': cur,
       'bid': bid,
       'high': high,
       'low': low,

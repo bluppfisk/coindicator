@@ -68,7 +68,7 @@ class Bittrex(Exchange):
   def _parse_result(self, asset):
     asset = asset['result'][0]
 
-    label = asset.get('Last')
+    cur = asset.get('Last')
     bid = asset.get('Bid')
     high = asset.get('High')
     low = asset.get('Low')
@@ -76,7 +76,7 @@ class Bittrex(Exchange):
     vol = None
 
     return {
-      'label': label,
+      'cur': cur,
       'bid': bid,
       'high': high,
       'low': low,
