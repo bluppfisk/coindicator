@@ -38,7 +38,7 @@ class Indicator(object):
         self.prices = {}
         self.currency = ''
         self.volumecurrency = ''
-        self.default_label = 'bid'
+        self.default_label = 'cur'
         self.latest_response = 0 # helps with discarding outdated responses
         
         self.settings = Settings(settings) # override pre-set values if settings is set
@@ -60,7 +60,7 @@ class Indicator(object):
                 'code': exchange,
                 'name': class_name,
                 'instance': class_(self),
-                'default_label': class_.CONFIG.get('default_label') or 'bid'
+                'default_label': class_.CONFIG.get('default_label') or 'cur'
             })
             self.CURRENCIES[exchange] = class_.CONFIG.get('asset_pairs')
 
@@ -102,8 +102,8 @@ class Indicator(object):
                 price_menu_item.hide()
 
         # slightly different behaviour for volume menu item
-        if self.prices.get('volume'):
-            self.volume_item.set_label('Vol (' + self.volumecurrency + '):\t' + self.prices.get('volume'))
+        if self.prices.get('vol'):
+            self.volume_item.set_label('Vol (' + self.volumecurrency + '):\t' + self.prices.get('vol'))
             self.volume_item.show()
         else:
             self.volume_item.hide()

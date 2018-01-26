@@ -17,21 +17,21 @@ class Gemini(Exchange):
         'pair': 'btcusd',
         'name': 'BTC to USD',
         'currency': CURRENCY['usd'],
-        'volumelabel' : 'BTC'
+        'volumelabel': 'BTC'
       },
       {
         'isocode': 'XXETZUSD',
         'pair': 'ethusd',
         'name': 'ETH to USD',
         'currency': CURRENCY['usd'],
-        'volumelabel' : 'ETH'
+        'volumelabel': 'ETH'
       },
       {
         'isocode': 'XXETZXBT',
         'pair': 'ethbtc',
         'name': 'ETH to BTC',
         'currency': CURRENCY['btc'],
-        'volumelabel' : 'ETH'
+        'volumelabel': 'ETH'
       }
     ]
   }
