@@ -29,6 +29,10 @@ class Alarm(object):
         self.floor = None
         self.active = False
 
+    ##
+    # Checks the threshold property against a given price and
+    # calls the notification function
+    # 
     def check(self, price):
         if self.ceil:
             if self.ceil <= price:
@@ -42,6 +46,10 @@ class Alarm(object):
 
         return False
 
+    ##
+    # Creates a system notification. On Ubuntu 16.04, this is a translucent
+    # bubble, of which only one can be shown at the same time.
+    # 
     def __notify(self, price, direction, threshold):
         exchange_name = [e.get('name') for e in self.parent.EXCHANGES if self.parent.active_exchange == e.get('code')][0]
         assets = self.parent.CURRENCIES[self.parent.active_exchange]
@@ -59,6 +67,7 @@ class Alarm(object):
             n.set_icon_from_pixbuf(logo)
             n.set_urgency(2) # highest
             n.show()
+
 
 class AlarmSettingsWindow(Gtk.Dialog):
     def __init__(self, parent):
@@ -121,6 +130,11 @@ class AlarmSettingsWindow(Gtk.Dialog):
         self.show_all()
         self.grab_focus()
 
+    ##
+    # This function strips all but numbers and decimal points from
+    # the entry field. If the value cannot be converted to a float,
+    # the text colour will turn red.
+    # 
     def _strip_text(self, widget):
         widget.modify_fg(Gtk.StateFlags.NORMAL, None)
         text = widget.get_text().strip()
@@ -131,8 +145,11 @@ class AlarmSettingsWindow(Gtk.Dialog):
         except ValueError:
             widget.modify_fg(Gtk.StateFlags.NORMAL, Color(50000, 0, 0))
 
+    ##
+    # Sets the alarm threshold
+    # 
     def _set_alarm(self, widget, radio_over, entry_price):
-        above = radio_over.get_active()
+        above = radio_over.get_active() # if False, then 'under' must be True
         try:
             price = float(entry_price.get_text())
             if above:
@@ -144,10 +161,12 @@ class AlarmSettingsWindow(Gtk.Dialog):
 
             self.destroy()
         
+        # if user attempts to set an incorrect value, the dialog box stays
+        # and the field is emptied
         except ValueError:
             entry_price.set_text('')
             entry_price.grab_focus()
-        
+    
     def _clear_alarm(self, widget):
         self.parent.alarm.deactivate()
         self.destroy()

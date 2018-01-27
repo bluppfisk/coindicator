@@ -134,8 +134,8 @@ class Bxinth(Exchange):
 
     def _parse_result(self, data):
         database = []
-        # convert key value to array 
 
+        # convert key value to array 
         for key,value in data.items():
             database.append(value)
 
@@ -153,10 +153,10 @@ class Bxinth(Exchange):
         current = float(query_result['last_price'])
 
         bids_highbid = float(query_result['orderbook']['bids']['highbid']) #Buy price 
-        bids_volume = float(query_result['orderbook']['bids']['volume'])
+        # bids_volume = float(query_result['orderbook']['bids']['volume'])
         
         asks_volume = float(query_result['orderbook']['asks']['volume'])
-        asks_highbid = float(query_result['orderbook']['asks']['highbid']) #Sell price
+        # asks_highbid = float(query_result['orderbook']['asks']['highbid']) #Sell price
         
         volume = float(query_result['volume_24hours'])
         

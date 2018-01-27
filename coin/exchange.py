@@ -24,12 +24,11 @@ CATEGORY = {
 
 class Exchange(object):
   def __init__(self, indicator):
-    self.round = True
     self.indicator = indicator
     self.timeout_id = None
     self.error = Error(self)
     self.config = self.CONFIG
-    self.exchange_name = self.config['name']
+    self.exchange_name = self.config.get('name')
     self.started = False
 
   def get_ticker(self): # to be overwritten by child class

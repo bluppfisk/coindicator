@@ -11,7 +11,6 @@ MAX_ERRORS = 5  # maximum number of errors before chilling
 REFRESH_INTERVAL = 5  # chill refresh frequency in seconds
 
 class Error:
-
   def __init__(self, exchange):
     self.exchange = exchange
 

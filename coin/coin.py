@@ -33,7 +33,7 @@ class Coin(object):
         self.exchanges.sort()
 
         # init phase
-        self.start_main()
+        self._start_main()
         self.instances = []
         print(self.config.get('app').get('name') + ' v' + self.config['app']['version'] + " running!")
         usage_error = '\nUsage: coin.py [arguments]\n* asset=exchange:asset_pair:refresh_rate\tLoad a specific asset\n* file=file_to_load.yaml\t\t\tLoad several tickers defined in a YAML file.\n'
@@ -51,10 +51,10 @@ class Coin(object):
                     except:
                         quit('Error opening assets file')
                     
-                    self.add_many_indicators(cp_instances)
+                    self._add_many_indicators(cp_instances)
 
                 elif args[0] == 'asset':
-                    self.add_indicator(args[1])
+                    self._add_indicator(args[1])
 
                 else:
                     quit('Invalid parameter\n' + usage_error)
@@ -63,10 +63,10 @@ class Coin(object):
                 quit('Invalid parameter\n' + usage_error)
 
         else:
-            self.add_indicator()
+            self._add_indicator()
 
     # Start the main indicator icon and its menu
-    def start_main(self):
+    def _start_main(self):
         icon = self.config['project_root'] + '/resources/icon_32px.png'
         self.logo_124px = GdkPixbuf.Pixbuf.new_from_file(self.config['project_root'] + '/resources/icon_32px.png')
         self.main_item = AppIndicator.Indicator.new(self.config['app']['name'], icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
@@ -94,20 +94,20 @@ class Coin(object):
         return menu
 
     # Adds a ticker and starts it
-    def add_indicator(self, settings=None):
+    def _add_indicator(self, settings=None):
         indicator = Indicator(self, settings)
         self.instances.append(indicator)
         indicator.start()
 
     # adds many tickers
-    def add_many_indicators(self, cp_instances):
+    def _add_many_indicators(self, cp_instances):
         for cp_instance in cp_instances:
             settings = cp_instance.get('exchange') + ':' + cp_instance.get('asset_pair') + ':' + str(cp_instance.get('refresh'))
-            self.add_indicator(settings)
+            self._add_indicator(settings)
 
     # Menu item to add a ticker
     def _add_ticker(self, widget):
-        self.add_indicator('DEFAULTS')
+        self._add_indicator('DEFAULTS')
 
     # Handle system resume by refreshing all tickers
     def handle_resume(self, sleeping, *args):
