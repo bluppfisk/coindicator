@@ -12,7 +12,7 @@ SCHEMA_ID = 'org.nil.indicator.coinprice'
 DEFAULTS = {
     'refresh': 30,
     'exchange': 'kraken',
-    'asset_pair': 'XXBTZUSD',
+    'asset-pair': 'XXBTZUSD', # hyphen because of how GSettings handles names
 }
 
 class Settings(object):
@@ -64,11 +64,11 @@ class Settings(object):
         if self.manual_settings:
             return self.manual_settings[1].upper()
         elif self.settings:
-            return self.settings.get_string('asset_pair')
+            return self.settings.get_string('asset-pair')
         else:
-            return DEFAULTS['asset_pair']
+            return DEFAULTS['asset-pair']
 
     def set_asset_pair(self, val):
         if not self.manual_settings:
-            self.settings.set_string('asset_pair', val.upper())
+            self.settings.set_string('asset-pair', val.upper())
             return True

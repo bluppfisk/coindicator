@@ -13,7 +13,7 @@
         <summary>Kraken exchange</summary>
     </key>
 
-    <key type="s" name="asset_pair">
+    <key type="s" name="asset-pair">
         <default>'XXBTZUSD'</default>
         <summary>Asset pairs</summary>
     </key>
