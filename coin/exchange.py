@@ -9,7 +9,10 @@ CURRENCY = {
     'btc': '฿',
     'thb': '฿',
     'gbp': '£',
-    'eth': 'Ξ'
+    'eth': 'Ξ',
+    'xbt': '฿',
+    'cad': '$',
+    'jpy': '¥'
 }
 
 CATEGORY = {
@@ -30,6 +33,25 @@ class Exchange(object):
     self.config = self.CONFIG
     self.exchange_name = self.config.get('name')
     self.started = False
+
+  def discover_assets(self):
+    self._async_get(self.get_discovery_url(), callback=self._handle_discovery_result)
+    
+  def get_discovery_url(self): # to be overwritten by child class
+    pass
+
+  def _handle_discovery_result(self, data, *args, **kwargs):
+    if data.status_code is not 200:
+      self._handle_error('API server returned an error: ' + str(data.status_code))
+
+    result = data.json()
+    self._parse_discovery(result)
+
+  def _update_indicator_currencies(self):
+    self.indicator.coin.update_assets() # update the asset menus of all instances
+
+  def _parse_discovery(self, data): # to be overwritten by child class
+    pass
 
   def get_ticker(self): # to be overwritten by child class
     pass

@@ -12,6 +12,7 @@ class Kraken(Exchange):
     'name': 'Kraken',
     'default_label': 'cur',
     'ticker': 'https://api.kraken.com/0/public/Ticker',
+    'discovery': 'https://api.kraken.com/0/public/AssetPairs',
     'asset_pairs': [
       {
         'isocode': 'XXBTZUSD',
@@ -63,6 +64,25 @@ class Kraken(Exchange):
       }
     ]
   }
+
+  def get_discovery_url(self):
+    return self.config['discovery']
+
+  def _parse_discovery(self, result):
+    asset_pairs = []
+    assets = result.get('result')
+    for asset in assets:
+      asset_data = assets.get(asset)
+      asset_pair = {
+        'isocode': asset,
+        'pair': asset,
+        'name': asset_data.get('base') + ' to ' + asset_data.get('quote'),
+        'currency': CURRENCY[asset_data.get('quote')[-3:].lower()]
+      }
+      asset_pairs.append(asset_pair)
+    
+    self.config['asset_pairs'] = asset_pairs
+    self._update_indicator_currencies()
 
   def get_ticker(self):
     return self.config['ticker'] + '?pair=' + self.pair

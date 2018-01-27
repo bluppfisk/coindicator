@@ -78,14 +78,17 @@ class Coin(object):
         menu = Gtk.Menu()
 
         self.add_item = Gtk.MenuItem("Add Ticker")
+        self.discover_item = Gtk.MenuItem("Update Assets")
         self.about_item = Gtk.MenuItem("About")
         self.quit_item = Gtk.MenuItem("Quit")
         
         self.add_item.connect("activate", self._add_ticker)
+        self.discover_item.connect("activate", self._discover_assets)
         self.about_item.connect("activate", self._about)
         self.quit_item.connect("activate", self._quit_all)
 
         menu.append(self.add_item)
+        menu.append(self.discover_item)
         menu.append(self.about_item)
         menu.append(Gtk.SeparatorMenuItem())
         menu.append(self.quit_item)
@@ -108,6 +111,17 @@ class Coin(object):
     # Menu item to add a ticker
     def _add_ticker(self, widget):
         self._add_indicator('DEFAULTS')
+
+    # Menu item to download any new assets from the exchanges
+    def _discover_assets(self, widget):
+        for exchange in self.instances[0].EXCHANGES:
+            exchange.get('instance').discover_assets()
+
+    # When discovery completes, reload currencies and rebuild menus of all instances
+    def update_assets(self):
+        for instance in self.instances:
+            instance.load_asset_pairs()
+            instance.rebuild_asset_menu()
 
     # Handle system resume by refreshing all tickers
     def handle_resume(self, sleeping, *args):

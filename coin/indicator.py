@@ -14,7 +14,7 @@ except ImportError:
 
 logging.basicConfig(level=logging.ERROR)
 
-REFRESH_TIMES = [  # seconds
+REFRESH_TIMES = [ # seconds
     3,
     5,
     10,
@@ -62,7 +62,13 @@ class Indicator(object):
                 'instance': class_(self),
                 'default_label': class_.CONFIG.get('default_label') or 'cur'
             })
-            self.CURRENCIES[exchange] = class_.CONFIG.get('asset_pairs')
+            
+        self.load_asset_pairs()
+
+    # load assets in memory
+    def load_asset_pairs(self):
+        for exchange in self.EXCHANGES:
+            self.CURRENCIES[exchange.get('code')] = exchange.get('instance').CONFIG.get('asset_pairs')
 
     # initialisation and start of indicator and exchanges
     def start(self):
@@ -188,6 +194,13 @@ class Indicator(object):
         menu.show_all()
 
         return menu
+
+    ##
+    # Gets called by exchange instance when new asset pairs are discovered
+    # 
+    def rebuild_asset_menu(self):
+        self.exchange_menu.set_submenu(self._menu_exchange())
+        self.exchange_menu.show_all()
 
     def _menu_refresh(self):
         refresh_menu = Gtk.Menu()
