@@ -7,7 +7,7 @@
 # 
 
 from os.path import abspath, dirname, isfile, basename
-import signal, yaml, sys, logging, gi, glob, dbus
+import signal, yaml, sys, logging, gi, glob, dbus, importlib
 from dbus.mainloop.glib import DBusGMainLoop
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
@@ -27,13 +27,10 @@ class Coin(object):
     config['project_root'] = PROJECT_ROOT
 
     def __init__(self):
-        # Load exchange 'plug-ins' from exchanges dir
-        dirfiles = glob.glob(dirname(__file__) + "/exchanges/*.py")
-        self.exchanges = [ basename(f)[:-3] for f in dirfiles if isfile(f) and not f.endswith('__init__.py')]
-        self.exchanges.sort()
-
-        # init phase
+        self._load_exchanges()
+        self._load_assets()
         self._start_main()
+
         self.instances = []
         print(self.config.get('app').get('name') + ' v' + self.config['app']['version'] + " running!")
         usage_error = '\nUsage: coin.py [arguments]\n* asset=exchange:asset_pair:refresh_rate\tLoad a specific asset\n* file=file_to_load.yaml\t\t\tLoad several tickers defined in a YAML file.\n'
@@ -64,6 +61,30 @@ class Coin(object):
 
         else:
             self._add_indicator()
+
+    # Load exchange 'plug-ins' from exchanges dir
+    def _load_exchanges(self):
+        dirfiles = glob.glob(dirname(__file__) + "/exchanges/*.py")
+        plugins = [ basename(f)[:-3] for f in dirfiles if isfile(f) and not f.endswith('__init__.py')]
+        plugins.sort()
+
+        self.EXCHANGES = []
+        for plugin in plugins:
+            class_name = plugin.capitalize()
+            class_ = getattr(importlib.import_module('exchanges.' + plugin), class_name)
+
+            self.EXCHANGES.append({
+                'code': plugin,
+                'name': class_name,
+                'class': class_,
+                'default_label': class_.CONFIG.get('default_label') or 'cur'
+            })
+
+    # Creates a structure of available assets (from_currency > to_currency > exchange)
+    def _load_assets(self):
+        self.CURRENCIES = {}
+        for exchange in self.EXCHANGES:
+            self.CURRENCIES[exchange.get('code')] = exchange.get('class').CONFIG.get('asset_pairs')
 
     # Start the main indicator icon and its menu
     def _start_main(self):
@@ -114,13 +135,14 @@ class Coin(object):
 
     # Menu item to download any new assets from the exchanges
     def _discover_assets(self, widget):
-        for exchange in self.instances[0].EXCHANGES:
-            exchange.get('instance').discover_assets()
+        for exchange in self.EXCHANGES:
+            exchange.get('class')(None, self).discover_assets()
 
     # When discovery completes, reload currencies and rebuild menus of all instances
     def update_assets(self):
+        self._load_assets()
         for instance in self.instances:
-            instance.load_asset_pairs()
+            # instance.load_asset_pairs()
             instance.rebuild_asset_menu()
 
     # Handle system resume by refreshing all tickers

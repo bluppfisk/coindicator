@@ -26,8 +26,9 @@ CATEGORY = {
 }
 
 class Exchange(object):
-  def __init__(self, indicator):
+  def __init__(self, indicator=None, coin=None):
     self.indicator = indicator
+    self.coin = coin
     self.timeout_id = None
     self.error = Error(self)
     self.config = self.CONFIG
@@ -48,7 +49,7 @@ class Exchange(object):
     self._parse_discovery(result)
 
   def _update_indicator_currencies(self):
-    self.indicator.coin.update_assets() # update the asset menus of all instances
+    self.coin.update_assets() # update the asset menus of all instances
 
   def _parse_discovery(self, data): # to be overwritten by child class
     pass

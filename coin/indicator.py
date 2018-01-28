@@ -49,33 +49,33 @@ class Indicator(object):
         self.active_asset_pair = self.settings.get_asset_pair()
 
         # load all the exchange modules and the classes contained within
-        self.EXCHANGES = []
-        self.CURRENCIES = {}
+        # self.EXCHANGES = []
+        # self.CURRENCIES = {}
 
-        for exchange in self.coin.exchanges:
-            class_name = exchange.capitalize()
-            class_ = getattr(importlib.import_module('exchanges.' + exchange), class_name)
+        # for exchange in self.coin.exchanges:
+        #     class_name = exchange.capitalize()
+        #     class_ = getattr(importlib.import_module('exchanges.' + exchange), class_name)
 
-            self.EXCHANGES.append({
-                'code': exchange,
-                'name': class_name,
-                'instance': class_(self),
-                'default_label': class_.CONFIG.get('default_label') or 'cur'
-            })
+        #     self.EXCHANGES.append({
+        #         'code': exchange,
+        #         'name': class_name,
+        #         'instance': class_(self),
+        #         'default_label': class_.CONFIG.get('default_label') or 'cur'
+        #     })
             
-        self.load_asset_pairs()
+        # self.load_asset_pairs()
 
     # load assets in memory
-    def load_asset_pairs(self):
-        for exchange in self.EXCHANGES:
-            self.CURRENCIES[exchange.get('code')] = exchange.get('instance').CONFIG.get('asset_pairs')
+    # def load_asset_pairs(self):
+    #     for exchange in self.EXCHANGES:
+    #         self.CURRENCIES[exchange.get('code')] = exchange.get('instance').CONFIG.get('asset_pairs')
 
     # initialisation and start of indicator and exchanges
     def start(self):
         icon = self.coin.config['project_root'] + '/resources/icon_32px.png'
-        self.indicator = AppIndicator.Indicator.new("CoinPriceIndicator_" + str(len(self.coin.instances)), icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
-        self.indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
-        self.indicator.set_menu(self._menu())
+        self.indicator_widget = AppIndicator.Indicator.new("CoinPriceIndicator_" + str(len(self.coin.instances)), icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
+        self.indicator_widget.set_status(AppIndicator.IndicatorStatus.ACTIVE)
+        self.indicator_widget.set_menu(self._menu())
         self._start_exchange()
 
     # updates GUI menus with data stored in the object
@@ -87,7 +87,7 @@ class Indicator(object):
         else:
             label = 'select default label'
 
-        self.indicator.set_label(label, label)
+        self.indicator_widget.set_label(label, label)
         
         for item, name in CATEGORIES:
             price_menu_item = self.price_menu_items.get(item) # get menu item
@@ -123,7 +123,7 @@ class Indicator(object):
             self.exchange_instance.stop()
 
         # don't show any data until first response is in
-        self.indicator.set_label('loading', 'loading')
+        self.indicator_widget.set_label('loading', 'loading')
         for item in self.price_group:
             item.set_active(False)
             item.set_label('loading')
@@ -132,13 +132,14 @@ class Indicator(object):
         home_currency = self.active_asset_pair.lower()[1:4]
 
         if isfile(self.coin.config.get('project_root') + '/resources/' + home_currency + '.png'):
-            self.indicator.set_icon(self.coin.config.get('project_root') + '/resources/' + home_currency + '.png')
+            self.indicator_widget.set_icon(self.coin.config.get('project_root') + '/resources/' + home_currency + '.png')
         else:
-            self.indicator.set_icon(self.coin.config.get('project_root') + '/resources/unknown-coin.png')
+            self.indicator_widget.set_icon(self.coin.config.get('project_root') + '/resources/unknown-coin.png')
 
         # load new exchange instance
-        self.exchange_instance = [e.get('instance') for e in self.EXCHANGES if self.active_exchange == e.get('code')][0]
-        self.default_label = [e.get('default_label') for e in self.EXCHANGES if self.active_exchange == e.get('code')][0] or 'bid'
+        exchange_class = [e.get('class') for e in self.coin.EXCHANGES if self.active_exchange == e.get('code')][0]
+        self.exchange_instance = exchange_class(self)
+        self.default_label = [e.get('default_label') for e in self.coin.EXCHANGES if self.active_exchange == e.get('code')][0] or 'bid'
 
         # start the timers and logic
         self.exchange_instance.start()
@@ -150,7 +151,7 @@ class Indicator(object):
             if self.price_menu_items.get(self.default_label):
                 new_label = self.prices.get(label)
                 if new_label:
-                    self.indicator.set_label(self.currency + new_label, new_label)
+                    self.indicator_widget.set_label(self.currency + new_label, new_label)
 
     def _menu(self):
         menu = Gtk.Menu()
@@ -227,7 +228,7 @@ class Indicator(object):
         exchange_list_menu = Gtk.Menu()
         self.exchange_group = []
         subgroup = [] # group all asset pairs of all exchange menus together
-        for exchange in self.EXCHANGES:
+        for exchange in self.coin.EXCHANGES:
             item = Gtk.RadioMenuItem.new_with_label(self.exchange_group, exchange.get('name'))
             item.set_submenu(self._menu_asset_pairs(exchange, subgroup))
             item.connect('toggled', self._handle_toggle, exchange.get('code'))
@@ -249,7 +250,7 @@ class Indicator(object):
 
     def _menu_asset_pairs(self, exchange, subgroup):
         asset_pairs_menu = Gtk.Menu()
-        for asset in self.CURRENCIES[exchange.get('code')]:
+        for asset in self.coin.CURRENCIES[exchange.get('code')]:
             item = Gtk.RadioMenuItem.new_with_label(subgroup, asset['name'])
             subgroup.append(item)
             asset_pairs_menu.append(item)
@@ -265,9 +266,9 @@ class Indicator(object):
     def _menu_asset_pairs_change(self, widget, asset_pair, exchange):
         if widget.get_active():
             self.active_exchange = exchange.get('code')
-            tentative_asset_pair = [item.get('isocode') for item in self.CURRENCIES[exchange.get('code')] if item.get('isocode') == self.active_asset_pair]
+            tentative_asset_pair = [item.get('isocode') for item in self.coin.CURRENCIES[exchange.get('code')] if item.get('isocode') == self.active_asset_pair]
             if len(tentative_asset_pair) == 0:
-                self.active_asset_pair = self.CURRENCIES[exchange.get('code')][0]['isocode']
+                self.active_asset_pair = self.coin.CURRENCIES[exchange.get('code')][0]['isocode']
             else:
                 self.active_asset_pair = tentative_asset_pair[0]
 
@@ -288,7 +289,7 @@ class Indicator(object):
         else: # otherwise just remove this one
             self.coin.instances.remove(self)
             self.exchange_instance.stop()
-            del self.indicator
+            del self.indicator_widget
 
     def _alarm_settings(self, widget):
         AlarmSettingsWindow(self)
