@@ -142,7 +142,6 @@ class Coin(object):
     def update_assets(self):
         self._load_assets()
         for instance in self.instances:
-            # instance.load_asset_pairs()
             instance.rebuild_asset_menu()
 
     # Handle system resume by refreshing all tickers

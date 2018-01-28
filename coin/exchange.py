@@ -49,7 +49,7 @@ class Exchange(object):
     self._parse_discovery(result)
 
   def _update_indicator_currencies(self):
-    self.coin.update_assets() # update the asset menus of all instances
+    GLib.idle_add(self.coin.update_assets) # update the asset menus of all instances
 
   def _parse_discovery(self, data): # to be overwritten by child class
     pass

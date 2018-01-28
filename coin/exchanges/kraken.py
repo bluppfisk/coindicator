@@ -72,6 +72,9 @@ class Kraken(Exchange):
     asset_pairs = []
     assets = result.get('result')
     for asset in assets:
+      if asset[:-2] == ".d":
+        continue
+
       asset_data = assets.get(asset)
       asset_pair = {
         'isocode': asset,

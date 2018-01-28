@@ -179,6 +179,7 @@ class Indicator(object):
     # Gets called by exchange instance when new asset pairs are discovered
     # 
     def rebuild_asset_menu(self):
+        # self.exchange_menu.remove(self.exchange_menu.get_submenu())
         self.exchange_menu.set_submenu(self._menu_exchange())
         self.exchange_menu.show_all()
 
