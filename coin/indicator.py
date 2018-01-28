@@ -39,6 +39,7 @@ class Indicator(object):
         self.currency = ''
         self.volumecurrency = ''
         self.default_label = 'cur'
+        
         self.latest_response = 0 # helps with discarding outdated responses
         
         self.settings = Settings(settings) # override pre-set values if settings is set
@@ -47,28 +48,6 @@ class Indicator(object):
         self.refresh_frequency = self.settings.get_refresh()
         self.active_exchange = self.settings.get_exchange()
         self.active_asset_pair = self.settings.get_asset_pair()
-
-        # load all the exchange modules and the classes contained within
-        # self.EXCHANGES = []
-        # self.CURRENCIES = {}
-
-        # for exchange in self.coin.exchanges:
-        #     class_name = exchange.capitalize()
-        #     class_ = getattr(importlib.import_module('exchanges.' + exchange), class_name)
-
-        #     self.EXCHANGES.append({
-        #         'code': exchange,
-        #         'name': class_name,
-        #         'instance': class_(self),
-        #         'default_label': class_.CONFIG.get('default_label') or 'cur'
-        #     })
-            
-        # self.load_asset_pairs()
-
-    # load assets in memory
-    # def load_asset_pairs(self):
-    #     for exchange in self.EXCHANGES:
-    #         self.CURRENCIES[exchange.get('code')] = exchange.get('instance').CONFIG.get('asset_pairs')
 
     # initialisation and start of indicator and exchanges
     def start(self):

@@ -65,7 +65,7 @@ class Coin(object):
     # Load exchange 'plug-ins' from exchanges dir
     def _load_exchanges(self):
         dirfiles = glob.glob(dirname(__file__) + "/exchanges/*.py")
-        plugins = [ basename(f)[:-3] for f in dirfiles if isfile(f) and not f.endswith('__init__.py')]
+        plugins = [basename(f)[:-3] for f in dirfiles if isfile(f) and not f.endswith('__init__.py')]
         plugins.sort()
 
         self.EXCHANGES = []
