@@ -18,7 +18,7 @@ DEFAULTS = {
 class Settings(object):
     def __init__(self, manual_settings=None):
         if manual_settings == 'DEFAULTS':
-            self.manual_settings = [DEFAULTS['exchange'], DEFAULTS['assetpair'], DEFAULTS['refresh']]
+            self.manual_settings = [DEFAULTS['exchange'], DEFAULTS['asset-pair'], DEFAULTS['refresh']]
             return
         
         self.settings = None
