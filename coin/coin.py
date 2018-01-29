@@ -80,11 +80,42 @@ class Coin(object):
                 'default_label': class_.CONFIG.get('default_label') or 'cur'
             })
 
+    # find an exchange
+    def find_exchange_by_code(self, code):
+        for exchange in self.EXCHANGES:
+            if exchange.get('code') == code.lower():
+                return exchange
+
     # Creates a structure of available assets (from_currency > to_currency > exchange)
     def _load_assets(self):
         self.CURRENCIES = {}
         for exchange in self.EXCHANGES:
             self.CURRENCIES[exchange.get('code')] = exchange.get('class').CONFIG.get('asset_pairs')
+
+        # reverse the hierarchy for easier asset selection
+        bases = {}
+        assets = self.CURRENCIES
+        for exchange in assets:
+            for asset_pair in assets.get(exchange):
+                if asset_pair.get('base'):
+                    base = asset_pair.get('base')
+                else:
+                    base = asset_pair.get('name').split(' to ')[0]
+
+                if asset_pair.get('quote'):
+                    base = asset_pair.get('base')
+                else:
+                    quote = asset_pair.get('name').split(' to ')[1]
+
+                if base not in bases:
+                    bases[base] = {}
+                
+                if quote not in bases[base]:
+                    bases[base][quote] = []
+                
+                bases[base][quote].append(self.find_exchange_by_code(exchange))
+
+        self.bases = bases
 
     # Start the main indicator icon and its menu
     def _start_main(self):

@@ -36,9 +36,8 @@ class Indicator(object):
         self.alarm = Alarm(self) # alarm
 
         self.prices = {}
-        self.currency = ''
-        self.volumecurrency = ''
-        self.default_label = 'cur'
+        #self.currency = ''
+        #self.volumecurrency = ''
         
         self.latest_response = 0 # helps with discarding outdated responses
         
@@ -46,8 +45,10 @@ class Indicator(object):
 
         # get the various settings for this indicator
         self.refresh_frequency = self.settings.get_refresh()
-        self.active_exchange = self.settings.get_exchange()
-        self.active_asset_pair = self.settings.get_asset_pair()
+        exchange_class = self.coin.find_exchange_by_code(self.settings.get_exchange()).get('class')
+        self.exchange = exchange_class(self)
+        self.exchange.set_asset_pair_from_isocode(self.settings.get_asset_pair())
+        self.default_label = self.exchange.get_default_label()
 
     # initialisation and start of indicator and exchanges
     def start(self):
@@ -60,6 +61,9 @@ class Indicator(object):
     # updates GUI menus with data stored in the object
     def update_gui(self):
         logging.debug('Updating GUI, last response was: ' + str(self.latest_response))
+
+        self.currency = self.exchange.get_currency()
+        self.volumecurrency = self.exchange.get_volume_currency()
 
         if self.prices.get(self.default_label):
             label = self.currency + self.prices.get(self.default_label)
@@ -95,11 +99,7 @@ class Indicator(object):
 
     # (re)starts the exchange logic and its timer
     def _start_exchange(self):
-        logging.info("Loading " + self.active_asset_pair + " from " + self.active_exchange + " (" + str(self.refresh_frequency) + "s)")
-        
-        # stop any running timers, clear error counter
-        if hasattr(self, 'exchange_instance'):
-            self.exchange_instance.stop()
+        logging.info("Loading " + self.exchange.asset_pair.get('isocode') + " from " + self.exchange.get_name() + " (" + str(self.refresh_frequency) + "s)")
 
         # don't show any data until first response is in
         self.indicator_widget.set_label('loading', 'loading')
@@ -108,20 +108,20 @@ class Indicator(object):
             item.set_label('loading')
 
         self.volume_item.set_label('loading')
-        home_currency = self.active_asset_pair.lower()[1:4]
 
-        if isfile(self.coin.config.get('project_root') + '/resources/' + home_currency + '.png'):
-            self.indicator_widget.set_icon(self.coin.config.get('project_root') + '/resources/' + home_currency + '.png')
+        # set icon for asset if it exists
+        asset_name = self.exchange.asset_pair.get('currency')
+
+        if isfile(self.coin.config.get('project_root') + '/resources/' + asset_name + '.png'):
+            self.indicator_widget.set_icon(self.coin.config.get('project_root') + '/resources/' + asset_name + '.png')
         else:
             self.indicator_widget.set_icon(self.coin.config.get('project_root') + '/resources/unknown-coin.png')
 
         # load new exchange instance
-        exchange_class = [e.get('class') for e in self.coin.EXCHANGES if self.active_exchange == e.get('code')][0]
-        self.exchange_instance = exchange_class(self)
-        self.default_label = [e.get('default_label') for e in self.coin.EXCHANGES if self.active_exchange == e.get('code')][0] or 'bid'
+        self.default_label = self.exchange.get_default_label()
 
         # start the timers and logic
-        self.exchange_instance.start()
+        self.exchange.start()
 
     # promotes a price value to the main label position
     def _make_label(self, widget, label):
@@ -150,10 +150,10 @@ class Indicator(object):
 
         menu.append(Gtk.SeparatorMenuItem())
 
-        # exchange choice menu
-        self.exchange_menu = Gtk.MenuItem("Exchange")
-        self.exchange_menu.set_submenu(self._menu_exchange())
-        menu.append(self.exchange_menu)
+        # asset choice menu
+        self.asset_menu = Gtk.MenuItem("Assets")
+        self.asset_menu.set_submenu(self._menu_assets())
+        menu.append(self.asset_menu)
 
         # refresh rate choice menu
         self.refresh_menu = Gtk.MenuItem("Refresh")
@@ -179,9 +179,11 @@ class Indicator(object):
     # Gets called by exchange instance when new asset pairs are discovered
     # 
     def rebuild_asset_menu(self):
-        # self.exchange_menu.remove(self.exchange_menu.get_submenu())
         self.exchange_menu.set_submenu(self._menu_exchange())
         self.exchange_menu.show_all()
+
+        self.asset_menu.set_submenu(self._menu_assets())
+        self.asset_menu.show_all()
 
     def _menu_refresh(self):
         refresh_menu = Gtk.Menu()
@@ -204,71 +206,125 @@ class Indicator(object):
             self.settings.set_refresh(self.refresh_frequency)
             self.exchange_instance.stop().start()
 
-    def _menu_exchange(self):
+    def _menu_assets(self):
+        base_list_menu = Gtk.Menu()
+        self.base_group = []
+        subgroup = []
+
+        # sorting magic
+        bases = []
+        for base in self.coin.bases:
+            bases.append(base)
+        bases.sort()
+
+        for base in bases:
+            base_item = Gtk.RadioMenuItem.new_with_label(self.base_group, base)
+            base_item.set_submenu(self._menu_assets_quotes(base, subgroup))
+            base_item.connect('toggled', self._handle_toggle, base)
+            self.base_group.append(base_item)
+            base_list_menu.append(base_item)
+
+            if self.exchange.asset_pair.get('base') == base:
+                base_item.set_active(True)
+
+        return base_list_menu
+
+    def _menu_assets_quotes(self, base, subgroup):
+        quote_list_menu = Gtk.Menu()
+        self.quote_group = []
+
+        # sorting magic
+        quotes = []
+        for quote in self.coin.bases[base]:
+            quotes.append(quote)
+        quotes.sort()
+
+        for quote in quotes:
+            quote_item = Gtk.RadioMenuItem.new_with_label(subgroup, quote)
+            quote_item.set_submenu(self._menu_assets_quotes_exchanges(base, quote, subgroup))
+            quote_item.connect('toggled', self._handle_toggle, base, quote)
+            self.quote_group.append(quote_item)
+            subgroup.append(quote_item)
+            quote_list_menu.append(quote_item)
+
+            if self.exchange.asset_pair.get('quote') == quote:
+                quote_item.set_active(True)
+
+        return quote_list_menu
+
+    def _menu_assets_quotes_exchanges(self, base, quote, subgroup):
         exchange_list_menu = Gtk.Menu()
         self.exchange_group = []
-        subgroup = [] # group all asset pairs of all exchange menus together
-        for exchange in self.coin.EXCHANGES:
-            item = Gtk.RadioMenuItem.new_with_label(self.exchange_group, exchange.get('name'))
-            item.set_submenu(self._menu_asset_pairs(exchange, subgroup))
-            item.connect('toggled', self._handle_toggle, exchange.get('code'))
-            self.exchange_group.append(item)
-            exchange_list_menu.append(item)
 
-            if self.active_exchange == exchange.get('code'):
-                item.set_active(True)
+        # some sorting magic
+        exchanges = []
+        for exchange in self.coin.bases[base][quote]:
+            exchanges.append(exchange)        
+        exchanges = sorted(exchanges, key=lambda k: k['name'])
+
+        for exchange in exchanges:
+            exchange_item = Gtk.RadioMenuItem.new_with_label(subgroup, exchange.get('name'))
+            #exchange_item.connect('activate', self._menu_asset_pairs_change, base, quote, exchange.get('code'))
+            exchange_item.connect('toggled', self._handle_toggle, base, quote, exchange.get('code'))
+            exchange_item.connect('activate', self._menu_asset_pairs_change, base, quote, exchange.get('code'))
+            self.exchange_group.append(exchange_item)
+            subgroup.append(exchange_item)
+            exchange_list_menu.append(exchange_item)
+
+            if (self.exchange.asset_pair.get('base') == base) and (self.exchange.asset_pair.get('quote') == quote) and (self.exchange.get_code() == exchange):
+                exchange_item.set_active(True)
 
         return exchange_list_menu
 
     # this eliminates the strange side-effect that an item stays active
     # when you hover over it and then mouse out
-    def _handle_toggle(self, widget, exchange_code):
-        if self.active_exchange != exchange_code:
-            widget.set_active(False)
-        else:
+    def _handle_toggle(self, widget, base=None, quote=None, exchange=None):
+        if base == None:
+            base = self.exchange.asset_pair.get('base')
+        if quote == None:
+            quote = self.exchange.asset_pair.get('quote')
+        if exchange == None:
+            exchange = self.exchange.get_code()
+        if (self.exchange.get_code() == exchange) and (self.exchange.asset_pair.get('quote') == quote) and (self.exchange.asset_pair.get('base') == base):
             widget.set_active(True)
-
-    def _menu_asset_pairs(self, exchange, subgroup):
-        asset_pairs_menu = Gtk.Menu()
-        for asset in self.coin.CURRENCIES[exchange.get('code')]:
-            item = Gtk.RadioMenuItem.new_with_label(subgroup, asset['name'])
-            subgroup.append(item)
-            asset_pairs_menu.append(item)
-
-            if self.active_asset_pair == asset['isocode'] and self.active_exchange == exchange.get('code'):
-                item.set_active(True)
-
-            item.connect('activate', self._menu_asset_pairs_change, asset['isocode'], exchange)
-
-        return asset_pairs_menu
+        else:
+            widget.set_active(False)
 
     # if the asset pairs change
-    def _menu_asset_pairs_change(self, widget, asset_pair, exchange):
+    def _menu_asset_pairs_change(self, widget, base, quote, exchange):
         if widget.get_active():
-            self.active_exchange = exchange.get('code')
-            tentative_asset_pair = [item.get('isocode') for item in self.coin.CURRENCIES[exchange.get('code')] if item.get('isocode') == self.active_asset_pair]
-            if len(tentative_asset_pair) == 0:
-                self.active_asset_pair = self.coin.CURRENCIES[exchange.get('code')][0]['isocode']
-            else:
-                self.active_asset_pair = tentative_asset_pair[0]
+            self.exchange.stop()
 
-            self.active_asset_pair = asset_pair
-            self.settings.set_exchange(self.active_exchange)
-            self.settings.set_asset_pair(self.active_asset_pair)
+            exchange_class = self.coin.find_exchange_by_code(exchange).get('class')
+            self.exchange = exchange_class(self)
+            self.exchange.set_asset_pair(base, quote)
+            self.settings.update_from_indicator(self)
 
-            # set parent (exchange) menu item to active
-            for exchange_menu_item in self.exchange_group:
-                if self.active_exchange == exchange_menu_item.get_label().lower():
-                    exchange_menu_item.set_active(True)
-
+            self._set_active_toggles()
             self._start_exchange()
+
+    def _set_active_toggles(self):
+        # set parent (exchange) menu item to active
+        print('hi')
+        for exchange_menu_item in self.exchange_group:
+            print(self.exchange.get_code() + ' ' + exchange_menu_item.get_label().lower())
+            if self.exchange.get_code() == exchange_menu_item.get_label().lower():
+                exchange_menu_item.set_active(True)
+
+        for base_menu_item in self.base_group:
+            if self.exchange.asset_pair.get('base').lower() == base_menu_item.get_label().lower():
+                base_menu_item.set_active(True)
+
+        for quote_menu_item in self.quote_group:
+            if self.exchange.asset_pair.get('quote').lower() == quote_menu_item.get_label().lower():
+                quote_menu_item.set_active(True)
 
     def _remove(self, widget):
         if len(self.coin.instances) == 1: # is this the last ticker?
             Gtk.main_quit() # then quit entirely
         else: # otherwise just remove this one
             self.coin.instances.remove(self)
-            self.exchange_instance.stop()
+            self.exchange.stop()
             del self.indicator_widget
 
     def _alarm_settings(self, widget):

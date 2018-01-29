@@ -79,13 +79,15 @@ class Kraken(Exchange):
       asset_pair = {
         'isocode': asset,
         'pair': asset,
+        'base': asset_data.get('base'),
+        'quote': asset_data.get('quote'),
         'name': asset_data.get('base') + ' to ' + asset_data.get('quote'),
-        'currency': CURRENCY[asset_data.get('quote')[-3:].lower()]
+        'currency': CURRENCY[asset_data.get('quote')[-3:].lower()],
+        'volumecurrency': asset_data.get('base')
       }
       asset_pairs.append(asset_pair)
     
-    self.config['asset_pairs'] = asset_pairs
-    self._update_indicator_currencies()
+    return asset_pairs
 
   def get_ticker(self):
     return self.config['ticker'] + '?pair=' + self.pair

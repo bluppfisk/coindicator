@@ -35,6 +35,45 @@ class Exchange(object):
     self.exchange_name = self.config.get('name')
     self.started = False
 
+    self.normalise_assets()
+
+  def normalise_assets(self):
+    for ap in self.config['asset_pairs']:
+      if not ap.get('base'):
+        ap['base'] = ap.get('name').split(' ')[0]
+      if not ap.get('quote'):
+        ap['quote'] = ap.get('name').split(' ')[2]
+      if not ap.get('volumecurrency'):
+        ap['volumecurrency'] = ap.get('base')
+
+  def get_name(self):
+    return self.config.get('name')
+
+  def get_code(self):
+    return self.config.get('code', self.config.get('name').capitalize())
+
+  def get_default_label(self):
+    return self.config.get('default_label', 'cur')
+
+  def get_currency(self):
+    return self.asset_pair.get('currency')
+
+  def get_volume_currency(self):
+    return self.asset_pair.get('volumecurrency', self.asset_pair.get('base'))
+
+  def get_ticker(self): # to be overwritten by child class
+    pass
+
+  def set_asset_pair(self, base, quote):
+    for ap in self.config.get('asset_pairs'):
+      if ap.get('base') == base and ap.get('quote') == quote:
+        self.asset_pair = ap
+
+  def set_asset_pair_from_isocode(self, isocode):
+    for ap in self.config.get('asset_pairs'):
+      if ap.get('isocode') == isocode:
+        self.asset_pair = ap
+
   def discover_assets(self):
     self._async_get(self.get_discovery_url(), callback=self._handle_discovery_result)
     
@@ -46,26 +85,18 @@ class Exchange(object):
       self._handle_error('API server returned an error: ' + str(data.status_code))
 
     result = data.json()
-    self._parse_discovery(result)
+    asset_pairs = self._parse_discovery(result)
+    self.config['asset_pairs'] = asset_pairs
+    self.normalise_assets()
 
-  def _update_indicator_currencies(self):
     GLib.idle_add(self.coin.update_assets) # update the asset menus of all instances
 
   def _parse_discovery(self, data): # to be overwritten by child class
     pass
 
-  def get_ticker(self): # to be overwritten by child class
-    pass
-
-  def _parse_result(self, data): # to be overwritten by child class
-    pass
-
-  # helper function for restoring normal frequency
-  # False must be returned for the restart operation to be done only once
-  def restart(self):
-    self.start()
-    return False
-
+  ##
+  # Start exchange
+  # 
   def start(self, error_refresh=None):
     if not self.started:
       self._check_price()
@@ -76,6 +107,9 @@ class Exchange(object):
 
     return self
 
+  ##
+  # Stop exchange, resets errors
+  # 
   def stop(self):
     self.started = False
     self.error.reset()
@@ -84,9 +118,19 @@ class Exchange(object):
 
     return self
 
+  ##
+  # Restarts the exchange. This is necessary for restoring normal frequency as
+  # False must be returned for the restart operation to be done only once
+  # 
+  def restart(self):
+    self.start()
+    return False
+
+  ##
+  # This function is called frequently to get price updates from the API
+  # 
   def _check_price(self):
-    self.asset_pair = self.indicator.active_asset_pair
-    self.pair = [item.get('pair') for item in self.config.get('asset_pairs') if item.get('isocode') == self.asset_pair][0]
+    self.pair = self.asset_pair.get('pair')
     timestamp = time.time()
     self._async_get(self.get_ticker(), validation=self.asset_pair, timestamp=timestamp, callback=self._handle_result)
     logging.debug('Request with TS: ' + str(timestamp))
@@ -99,7 +143,7 @@ class Exchange(object):
   def _handle_result(self, data, validation, timestamp):
     # Check to see if the returning response is still valid
     # (user may have changed exchanges before the request finished)
-    if validation is not self.indicator.active_asset_pair: # we've already moved on.
+    if validation is not self.asset_pair: # we've already moved on.
       logging.debug("Discarding packet for wrong exchange")
       return
 
@@ -129,13 +173,12 @@ class Exchange(object):
       if results.get(item):
         self.indicator.prices[item] = self._decimal_auto(results.get(item))
 
-    config = [item for item in self.config.get('asset_pairs') if item.get('isocode') == self.asset_pair][0]
-    self.indicator.volumecurrency = config.get('volumelabel').upper() if config.get('volumelabel') else config.get('name').split(' ')[0].upper()
-    self.indicator.currency = config.get('currency')
-
     self.error.reset()
     
     GLib.idle_add(self.indicator.update_gui)
+
+  def _parse_result(self, data): # to be overwritten by child class
+    pass
 
   ##
   # Rounds a number to a meaningful number of decimal places

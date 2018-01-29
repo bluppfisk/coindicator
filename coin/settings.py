@@ -34,6 +34,11 @@ class Settings(object):
                 self.settings = None
                 logging.info("GSettings: schema [" + SCHEMA_ID + "] not installed. Using defaults.")
 
+    def update_from_indicator(self, indicator):
+        self.set_refresh(indicator.refresh_frequency)
+        self.set_exchange(indicator.exchange.get_code())
+        self.set_asset_pair(indicator.exchange.asset_pair.get('isocode'))
+
     def get_refresh(self):
         if self.manual_settings:
             return int(self.manual_settings[2])
