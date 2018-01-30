@@ -71,6 +71,13 @@ class Bittrex(Exchange):
       base = asset.get('MarketCurrency')
       quote = asset.get('BaseCurrency')
 
+      names = {'DSH': 'DASH', 'TRST': 'TRUST', 'XZC': 'ZEC', 'GAM': 'GAME', 'BCC': 'BCH'}
+      if base in names:
+        base = names[base]
+
+      if quote in names:
+        quote = names[quote]
+
       asset_pair = {
         'pair': asset.get('MarketName'),
         'base': base,
