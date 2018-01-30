@@ -2,8 +2,7 @@
 
 # Bitstamp
 # https://www.bitstamp.net/api/
-
-__author__ = "nil.gradisnik@gmail.com"
+# By Nil Gradisnik <nil.gradisnik@gmail.com>
 
 from exchange import Exchange, CURRENCY
 

@@ -4,7 +4,6 @@
 
 import gi, pygame, notify2
 gi.require_version('Gtk', '3.0')
-gi.require_version('Notify', '0.7')
 from gi.repository import Gtk, GdkPixbuf
 from gi.repository.Gdk import Color
 
@@ -51,12 +50,11 @@ class Alarm(object):
     # bubble, of which only one can be shown at the same time.
     # 
     def __notify(self, price, direction, threshold):
-        exchange_name = [e.get('name') for e in self.parent.EXCHANGES if self.parent.active_exchange == e.get('code')][0]
-        assets = self.parent.CURRENCIES[self.parent.active_exchange]
-        asset_name = [e.get('name') for e in assets if self.parent.active_asset_pair == e.get('isocode')][0][0:3]
+        exchange_name = self.parent.exchange.get_name()
+        asset_name = self.parent.exchange.asset_pair.get('base')
 
-        title = asset_name + ' price alert: ' + self.parent.currency + str(price)
-        message = 'Price on ' + exchange_name + ' ' + direction + ' ' + self.parent.currency + str(threshold)
+        title = asset_name + ' price alert: ' + self.parent.symbol + str(price)
+        message = 'Price on ' + exchange_name + ' ' + direction + ' ' + self.parent.symbol + str(threshold)
 
         if notify2.init(self.app_name):
             if pygame.init():

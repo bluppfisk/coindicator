@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
 
 # Bx.in.th Api 
-# https://bittrex.com/Home/Api
-# Added by : Theppasith N. 
-__author__ = "tutorgaming@gmail.com"
+# https://bx.in.th/api/
+# By Theppasith N. <tutorgaming@gmail.com>
 
 from exchange import Exchange, CURRENCY
 
 class Bxinth(Exchange):
-    """
-    Bx.in.th Exchange class
-    """
     CONFIG = {
         'name' : 'BX.in.th',
+        'code' : 'bxinth',
         'default_label': 'cur',
         'ticker' : 'https://bx.in.th/api/',
         'asset_pairs': [
@@ -29,7 +26,7 @@ class Bxinth(Exchange):
             {
                 'isocode' : 'XXETHZTHB',
                 'pair' : 'XXETHZTHB',
-                'name' : 'ETH TO THB',
+                'name' : 'ETH to THB',
                 'volumelabel' : 'ETH',
                 'currency' : CURRENCY['thb'],
                 'pairing_id' : 21,
@@ -39,7 +36,7 @@ class Bxinth(Exchange):
             {
                 'isocode' : 'XXDASZTHB',
                 'pair' : 'XXDASZTHB',
-                'name' : 'DASH TO THB',
+                'name' : 'DASH to THB',
                 'volumelabel' : 'DAS',
                 'currency' : CURRENCY['thb'],
                 'pairing_id' : 22,
@@ -49,7 +46,7 @@ class Bxinth(Exchange):
             {
                 'isocode' : 'XXREPZTHB',
                 'pair' : 'XXREPZTHB',
-                'name' : 'REP TO THB',
+                'name' : 'REP to THB',
                 'volumelabel' : 'REP',
                 'currency' : CURRENCY['thb'],
                 'pairing_id' : 23,
@@ -59,7 +56,7 @@ class Bxinth(Exchange):
             {
                 'isocode' : 'XXGNOZTHB',
                 'pair' : 'XXGNOZTHB',
-                'name' : 'GNO TO THB',
+                'name' : 'GNO to THB',
                 'volumelabel' : 'GNO',
                 'currency' : CURRENCY['thb'],
                 'pairing_id' : 24,
@@ -69,7 +66,7 @@ class Bxinth(Exchange):
             {
                 'isocode' : 'XXRPZTHB',
                 'pair' : 'XXRPZTHB',
-                'name' : 'XRP TO THB',
+                'name' : 'XRP to THB',
                 'volumelabel' : 'XRP',
                 'currency' : CURRENCY['thb'],
                 'pairing_id' : 25,
@@ -79,7 +76,7 @@ class Bxinth(Exchange):
             {
                 'isocode' : 'XXOMGZTHB',
                 'pair' : 'XXOMGZTHB',
-                'name' : 'OMG TO THB',
+                'name' : 'OMG to THB',
                 'volumelabel' : 'OMG',
                 'currency' : CURRENCY['thb'],
                 'pairing_id' : 26,
@@ -89,7 +86,7 @@ class Bxinth(Exchange):
             {
                 'isocode' : 'XXBCHZTHB',
                 'pair' : 'XXBCHZTHB',
-                'name' : 'BCH TO THB',
+                'name' : 'BCH to THB',
                 'volumelabel' : 'BCH',
                 'currency' : CURRENCY['thb'],
                 'pairing_id' : 27,
@@ -99,7 +96,7 @@ class Bxinth(Exchange):
             {
                 'isocode' : 'XXEVXZTHB',
                 'pair' : 'XXEVXZTHB',
-                'name' : 'EVX TO THB',
+                'name' : 'EVX to THB',
                 'volumelabel' : 'EVX',
                 'currency' : CURRENCY['thb'],
                 'pairing_id' : 28,
@@ -109,7 +106,7 @@ class Bxinth(Exchange):
             {
                 'isocode' : 'XXXZCZTHB',
                 'pair' : 'XXXZCZTHB',
-                'name' : 'XZC TO THB',
+                'name' : 'XZC to THB',
                 'volumelabel' : 'XZC',
                 'currency' : CURRENCY['thb'],
                 'pairing_id' : 29,
@@ -119,7 +116,7 @@ class Bxinth(Exchange):
             {
                 'isocode' : 'XXLTCZTHB',
                 'pair' : 'XXLTCZTHB',
-                'name' : 'LTC TO THB',
+                'name' : 'LTC to THB',
                 'volumelabel' : 'LTC',
                 'currency' : CURRENCY['thb'],
                 'pairing_id' : 30,
@@ -139,11 +136,7 @@ class Bxinth(Exchange):
         for key,value in data.items():
             database.append(value)
 
-        selected_isocode = self.asset_pair
-
-
-        # Select result by its isocode
-        selected_asset = [item for item in self.config['asset_pairs'] if item['isocode'] == selected_isocode][0]
+        selected_asset = self.asset_pair
 
         query_result = [item for item in database 
                         if item['primary_currency'] == selected_asset['primary_currency'] and
@@ -153,10 +146,8 @@ class Bxinth(Exchange):
         current = float(query_result['last_price'])
 
         bids_highbid = float(query_result['orderbook']['bids']['highbid']) #Buy price 
-        # bids_volume = float(query_result['orderbook']['bids']['volume'])
         
-        asks_volume = float(query_result['orderbook']['asks']['volume'])
-        # asks_highbid = float(query_result['orderbook']['asks']['highbid']) #Sell price
+        asks_highbid = float(query_result['orderbook']['asks']['highbid']) #Sell price
         
         volume = float(query_result['volume_24hours'])
         

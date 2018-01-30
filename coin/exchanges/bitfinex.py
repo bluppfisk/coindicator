@@ -2,8 +2,7 @@
 
 # Bitfinex
 # https://bitfinex.readme.io/v2/docs
-
-__author__ = "ruzzico@gmail.com"
+# By Alessio Carrafa <ruzzico@gmail.com>
 
 from exchange import Exchange, CURRENCY
 
@@ -17,7 +16,7 @@ class Bitfinex(Exchange):
       { 'isocode': 'XBCHZUSD', 'pair': 'tBCHUSD', 'name': 'BCH to USD', 'currency': CURRENCY['usd'] },
       { 'isocode': 'XBTGZUSD', 'pair': 'tBTGUSD', 'name': 'BTG to USD', 'currency': CURRENCY['usd'] },
       { 'isocode': 'XDATZUSD', 'pair': 'tDATUSD', 'name': 'DAT to USD', 'currency': CURRENCY['usd'] },
-      { 'isocode': 'XDSHZUSD', 'pair': 'tDSHUSD', 'name': 'DSH to USD', 'currency': CURRENCY['usd'] },
+      { 'isocode': 'XDSHZUSD', 'pair': 'tDSHUSD', 'name': 'DASH to USD', 'currency': CURRENCY['usd'] },
       { 'isocode': 'XEDOZUSD', 'pair': 'tEDOUSD', 'name': 'EDO to USD', 'currency': CURRENCY['usd'] },
       { 'isocode': 'XEOSZUSD', 'pair': 'tEOSUSD', 'name': 'EOS to USD', 'currency': CURRENCY['usd'] },
       { 'isocode': 'XETCZUSD', 'pair': 'tETCUSD', 'name': 'ETC to USD', 'currency': CURRENCY['usd'] },

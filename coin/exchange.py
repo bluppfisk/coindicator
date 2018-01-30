@@ -1,5 +1,5 @@
 from gi.repository import GLib
-import logging, requests, time
+import logging, requests, time, pickle
 from error import Error
 from threading import Thread
 
@@ -9,7 +9,10 @@ CURRENCY = {
     'btc': '฿',
     'thb': '฿',
     'gbp': '£',
-    'eth': 'Ξ'
+    'eth': 'Ξ',
+    'xbt': '฿',
+    'cad': '$',
+    'jpy': '¥'
 }
 
 CATEGORY = {
@@ -23,26 +26,97 @@ CATEGORY = {
 }
 
 class Exchange(object):
-  def __init__(self, indicator):
+  def __init__(self, indicator=None, coin=None):
     self.indicator = indicator
+    self.coin = coin
     self.timeout_id = None
     self.error = Error(self)
     self.config = self.CONFIG
     self.exchange_name = self.config.get('name')
     self.started = False
 
+    self.normalise_assets()
+
+  def normalise_assets(self):
+    for ap in self.config['asset_pairs']:
+      if not ap.get('base'):
+        ap['base'] = ap.get('name').split(' ')[0]
+      if not ap.get('quote'):
+        ap['quote'] = ap.get('name').split(' ')[2]
+      if not ap.get('volumecurrency'):
+        ap['volumecurrency'] = ap.get('base')
+
+  def get_asset_pairs(self):
+    try:
+      with open('./coin/exchanges/' + self.get_code() + '.conf', 'rb') as handle:
+        asset_pairs = pickle.loads(handle.read())
+        return asset_pairs
+
+    except:
+      # no CONF file, return predefined from config
+      return self.config.get('asset_pairs')
+
+  def store_asset_pairs(self, asset_pairs):
+    try:
+      with open('./coin/exchanges/' + self.get_code() + '.conf', 'wb') as handle:
+        pickle.dump(asset_pairs, handle)
+    except:
+      logging.error('Could not write to config file')
+
+  def get_name(self):
+    return self.config.get('name')
+
+  def get_code(self):
+    return self.config.get('code', self.config.get('name').lower())
+
+  def get_default_label(self):
+    return self.config.get('default_label', 'cur')
+
+  def get_currency(self):
+    return self.asset_pair.get('quote').lower()
+
+  def get_symbol(self):
+    return CURRENCY.get(self.get_currency(), self.get_currency().upper())
+
+  def get_volume_currency(self):
+    return self.asset_pair.get('volumecurrency', self.asset_pair.get('base'))
+
   def get_ticker(self): # to be overwritten by child class
     pass
 
-  def _parse_result(self, data): # to be overwritten by child class
+  def set_asset_pair(self, base, quote):
+    for ap in self.get_asset_pairs():
+      if ap.get('base').upper() == base.upper() and ap.get('quote').upper() == quote.upper():
+        self.asset_pair = ap
+
+  def set_asset_pair_from_code(self, code):
+    for ap in self.get_asset_pairs():
+      if ap.get('pair').upper() == code.upper():
+        self.asset_pair = ap
+
+  def discover_assets(self):
+    self._async_get(self.get_discovery_url(), callback=self._handle_discovery_result)
+    
+  def get_discovery_url(self): # to be overwritten by child class
     pass
 
-  # helper function for restoring normal frequency
-  # False must be returned for the restart operation to be done only once
-  def restart(self):
-    self.start()
-    return False
+  def _handle_discovery_result(self, data, *args, **kwargs):
+    if data.status_code is not 200:
+      self._handle_error('API server returned an error: ' + str(data.status_code))
 
+    result = data.json()
+    asset_pairs = self._parse_discovery(result)
+    self.normalise_assets()
+    self.store_asset_pairs(asset_pairs)
+
+    GLib.idle_add(self.coin.update_assets) # update the asset menus of all instances
+
+  def _parse_discovery(self, data): # to be overwritten by child class
+    pass
+
+  ##
+  # Start exchange
+  # 
   def start(self, error_refresh=None):
     if not self.started:
       self._check_price()
@@ -53,20 +127,34 @@ class Exchange(object):
 
     return self
 
+  ##
+  # Stop exchange, resets errors
+  # 
   def stop(self):
     self.started = False
+    self.indicator.alarm.deactivate()
     self.error.reset()
-    if self.timeout_id is not None:
+    if self.timeout_id:
         GLib.source_remove(self.timeout_id)
 
     return self
 
+  ##
+  # Restarts the exchange. This is necessary for restoring normal frequency as
+  # False must be returned for the restart operation to be done only once
+  # 
+  def restart(self):
+    self.start()
+    return False
+
+  ##
+  # This function is called frequently to get price updates from the API
+  # 
   def _check_price(self):
-    self.asset_pair = self.indicator.active_asset_pair
-    self.pair = [item.get('pair') for item in self.config.get('asset_pairs') if item.get('isocode') == self.asset_pair][0]
+    self.pair = self.asset_pair.get('pair')
     timestamp = time.time()
     self._async_get(self.get_ticker(), validation=self.asset_pair, timestamp=timestamp, callback=self._handle_result)
-    logging.debug('Request with TS: ' + str(timestamp))
+    logging.info('Request with TS: ' + str(timestamp))
     return self.error.is_ok() # continues the timer if there are no errors
 
   def _handle_error(self, error):
@@ -76,43 +164,45 @@ class Exchange(object):
   def _handle_result(self, data, validation, timestamp):
     # Check to see if the returning response is still valid
     # (user may have changed exchanges before the request finished)
-    if validation is not self.indicator.active_asset_pair: # we've already moved on.
-      logging.debug("Discarding packet for wrong exchange")
+    if not self.started:
+      logging.info("Discarding packet for inactive exchange")
+      return
+
+    if validation is not self.asset_pair: # we've already moved on.
+      logging.info("Discarding packet for wrong asset pair or exchange")
       return
 
     # also check if a newer response hasn't already been returned
     if timestamp < self.indicator.latest_response: # this is an older request
-      logging.debug("Discarding outdated packet")
+      logging.info("Discarding outdated packet")
       return
 
     if data.status_code != 200:
       self._handle_error('API server returned an error: ' + str(data.status_code))
       return
 
-    else:
-      try:
-        asset = data.json()
-      except Exception as e:
-        # Before, a KeyError happened when an asynchronous response comes in
-        # for a previously selected asset pair (see upstream issue #27)
-        self._handle_error('Invalid response for ' + str(self.pair))
-        return
+    try:
+      asset = data.json()
+    except Exception as e:
+      # Before, a KeyError happened when an asynchronous response comes in
+      # for a previously selected asset pair (see upstream issue #27)
+      self._handle_error('Invalid response for ' + str(self.pair))
+      return
 
     results = self._parse_result(asset)
     self.indicator.latest_response = timestamp
-    logging.debug('Requests comes in with timestamp ' + str(timestamp) + ', last response at ' + str(self.indicator.latest_response))
+    logging.info('Requests comes in with timestamp ' + str(timestamp) + ', last response at ' + str(self.indicator.latest_response))
     
     for item in CATEGORY:
       if results.get(item):
         self.indicator.prices[item] = self._decimal_auto(results.get(item))
 
-    config = [item for item in self.config.get('asset_pairs') if item.get('isocode') == self.asset_pair][0]
-    self.indicator.volumecurrency = config.get('volumelabel').upper() if config.get('volumelabel') else config.get('name').split(' ')[0].upper()
-    self.indicator.currency = config.get('currency')
-
     self.error.reset()
     
     GLib.idle_add(self.indicator.update_gui)
+
+  def _parse_result(self, data): # to be overwritten by child class
+    pass
 
   ##
   # Rounds a number to a meaningful number of decimal places
