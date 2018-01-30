@@ -6,11 +6,10 @@ from threading import Thread
 CURRENCY = {
     'usd': '$',
     'eur': '€',
-    'btc': '฿',
+    'btc': 'B',
     'thb': '฿',
     'gbp': '£',
     'eth': 'Ξ',
-    'xbt': '฿',
     'cad': '$',
     'jpy': '¥'
 }

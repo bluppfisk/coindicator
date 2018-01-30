@@ -68,8 +68,30 @@ class Gdax(Exchange):
     ]
   }
 
+  def get_discovery_url(self):
+    return self.config.get('ticker')
+
+  def _parse_discovery(self, result):
+    asset_pairs = []
+    for asset in result:
+      base = asset.get('base_currency')
+      quote = asset.get('quote_currency')
+
+      asset_pair = {
+        'pair': asset.get('id'),
+        'base': base,
+        'quote': quote,
+        'name': base + ' to ' + quote,
+        'currency': quote.lower(),
+        'volumecurrency': base
+      }
+
+      asset_pairs.append(asset_pair)
+
+    return asset_pairs
+
   def get_ticker(self):
-    return self.config['ticker'] + self.pair + '/ticker'
+    return self.config.get('ticker') + self.pair + '/ticker'
 
   def _parse_result(self, asset):
     cur = asset.get('price')

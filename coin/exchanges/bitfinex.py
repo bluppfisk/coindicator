@@ -10,6 +10,7 @@ class Bitfinex(Exchange):
   CONFIG = {
     'name': 'Bitfinex',
     'ticker': 'https://api.bitfinex.com/v2/ticker/',
+    'discovery': 'https://api.bitfinex.com/v1/symbols',
     'asset_pairs': [
       { 'isocode': 'XAVTZUSD', 'pair': 'tAVTUSD', 'name': 'AVT to USD', 'currency': CURRENCY['usd'] },
       { 'isocode': 'XBATZUSD', 'pair': 'tBATUSD', 'name': 'BAT to USD', 'currency': CURRENCY['usd'] },
@@ -44,6 +45,35 @@ class Bitfinex(Exchange):
       { 'isocode': 'XZRXZUSD', 'pair': 'tZRXUSD', 'name': 'ZRX to USD', 'currency': CURRENCY['usd'] }
     ]
   }
+
+  def get_discovery_url(self):
+    return self.config.get('discovery')
+
+  def _parse_discovery(self, result):
+    asset_pairs = []
+    for asset in result:
+      base = asset[0:3].upper()
+      quote = asset[-3:].upper()
+
+      names = {'DSH': 'DASH'}
+      if base in names:
+        base = names[base]
+
+      if quote in names:
+        quote = names[quote]
+
+      asset_pair = {
+        'pair': asset,
+        'base': base,
+        'quote': quote,
+        'name': base + ' to ' + quote,
+        'currency': quote.lower(),
+        'volumecurrency': base
+      }
+
+      asset_pairs.append(asset_pair)
+
+    return asset_pairs
 
   def get_ticker(self):
     return self.config['ticker'] + self.pair

@@ -10,6 +10,7 @@ class Bitstamp(Exchange):
   CONFIG = {
     'name': 'Bitstamp',
     'ticker': 'https://www.bitstamp.net/api/ticker/',
+    'discovery': 'https://www.bitstamp.net/api/v2/trading-pairs-info/',
     'asset_pairs': [
       {
         'isocode': 'XXBTZUSD',
@@ -19,6 +20,29 @@ class Bitstamp(Exchange):
       }
     ]
   }
+
+  def get_discovery_url(self):
+    return self.config.get('discovery')
+
+  def _parse_discovery(self, result):
+    asset_pairs = []
+    for asset in result:
+      basequote = asset.get('name').split('/')
+      base = basequote[0]
+      quote = basequote[1]
+
+      asset_pair = {
+        'pair': asset.get('url_symbol'),
+        'base': base,
+        'quote': quote,
+        'name': base + ' to ' + quote,
+        'currency': quote.lower(),
+        'volumecurrency': base
+      }
+
+      asset_pairs.append(asset_pair)
+    
+    return asset_pairs
 
   def get_ticker(self):
     return self.config['ticker']

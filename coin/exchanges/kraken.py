@@ -65,10 +65,10 @@ class Kraken(Exchange):
   }
 
   def get_discovery_url(self):
-    return self.config['discovery']
+    return self.config.get('discovery')
 
   def get_ticker(self):
-    return self.config['ticker'] + '?pair=' + self.pair
+    return self.config.get('ticker') + '?pair=' + self.pair
 
   def _parse_discovery(self, result):
     asset_pairs = []

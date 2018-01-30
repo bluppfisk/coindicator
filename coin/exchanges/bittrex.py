@@ -14,6 +14,7 @@ class Bittrex(Exchange):
   CONFIG = {
     'name': 'Bittrex',
     'ticker': 'https://bittrex.com/api/v1.1/public/getmarketsummary',
+    'discovery': 'https://bittrex.com/api/v1.1/public/getmarkets',
     'asset_pairs': [
       {
         'isocode': 'XXBTZUSD',
@@ -59,6 +60,29 @@ class Bittrex(Exchange):
       }
     ]
   }
+
+  def get_discovery_url(self):
+    return self.config.get('discovery')
+
+  def _parse_discovery(self, result):
+    asset_pairs = []
+    assets = result.get('result')
+    for asset in assets:
+      base = asset.get('MarketCurrency')
+      quote = asset.get('BaseCurrency')
+
+      asset_pair = {
+        'pair': asset.get('MarketName'),
+        'base': base,
+        'quote': quote,
+        'name': base + ' to ' + quote,
+        'currency': quote.lower(),
+        'volumecurrency': base
+      }
+
+      asset_pairs.append(asset_pair)
+    
+    return asset_pairs
 
   def get_ticker(self):
     return self.config['ticker'] + '?market=' + self.pair

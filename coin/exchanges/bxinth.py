@@ -126,8 +126,37 @@ class Bxinth(Exchange):
         ]
     }
 
+    def get_discovery_url(self):
+        return self.get_ticker()
+
+    def _parse_discovery(self, result):
+        asset_pairs = []
+        for asset in result:
+            base = result[asset].get('secondary_currency')
+            quote = result[asset].get('primary_currency')
+
+            names = {'DAS': 'DASH', 'DOG': 'DOGE'}
+            if base in names:
+                base = names[base]
+
+            if quote in names:
+                quote = names[quote]
+            
+            asset_pair = {
+                'pair': base + quote,
+                'base': base,
+                'quote': quote,
+                'name': base + ' to ' + quote,
+                'currency': quote.lower(),
+                'volumecurrency': base
+            }
+
+            asset_pairs.append(asset_pair)
+        
+        return asset_pairs
+
     def get_ticker(self):
-        return self.config['ticker']
+        return self.config.get('ticker')
 
     def _parse_result(self, data):
         database = []
@@ -142,7 +171,6 @@ class Bxinth(Exchange):
                         if item['primary_currency'] == selected_asset['primary_currency'] and
                            item['secondary_currency'] == selected_asset['secondary_currency'] ][0]
 
-        
         current = float(query_result['last_price'])
 
         bids_highbid = float(query_result['orderbook']['bids']['highbid']) #Buy price 

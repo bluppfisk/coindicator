@@ -10,6 +10,7 @@ class Gemini(Exchange):
   CONFIG = {
     'name': 'Gemini',
     'ticker': 'https://api.gemini.com/v1/pubticker/',
+    'discovery': 'https://api.gemini.com/v1/symbols',
     'asset_pairs': [
       {
         'isocode': 'XXBTZUSD',
@@ -34,6 +35,28 @@ class Gemini(Exchange):
       }
     ]
   }
+
+  def get_discovery_url(self):
+    return self.config.get('discovery')
+
+  def _parse_discovery(self, result):
+    asset_pairs = []
+    for asset in result:
+      base = asset[0:3].upper()
+      quote = asset[-3:].upper()
+
+      asset_pair = {
+        'pair': asset,
+        'base': base,
+        'quote': quote,
+        'name': base + ' to ' + quote,
+        'currency': quote.lower(),
+        'volumecurrency': base
+      }
+
+      asset_pairs.append(asset_pair)
+
+    return asset_pairs
 
   def get_ticker(self):
     return self.config['ticker'] + self.pair
