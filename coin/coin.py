@@ -7,7 +7,7 @@
 # 
 
 from os.path import abspath, dirname, isfile, basename
-import signal, yaml, sys, logging, gi, glob, dbus, importlib
+import signal, yaml, logging, gi, glob, dbus, importlib
 from dbus.mainloop.glib import DBusGMainLoop
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
@@ -19,8 +19,7 @@ except ImportError:
 from indicator import Indicator
 
 PROJECT_ROOT = abspath(dirname(dirname(__file__)))
-
-signal.signal(signal.SIGINT, signal.SIG_DFL)  # ctrl+c exit
+SETTINGS_FILE = PROJECT_ROOT + '/user.conf'
 
 class Coin(object):
     config = yaml.load(open(PROJECT_ROOT + '/config.yaml', 'r'))
@@ -29,38 +28,11 @@ class Coin(object):
     def __init__(self):
         self._load_exchanges()
         self._load_assets()
+        self._load_settings()
         self._start_main()
 
         self.instances = []
-        print(self.config.get('app').get('name') + ' v' + self.config['app']['version'] + " running!")
-        usage_error = '\nUsage: coin.py [arguments]\n* asset=exchange:asset_pair:refresh_rate\tLoad a specific asset\n* file=file_to_load.yaml\t\t\tLoad several tickers defined in a YAML file.\n'
-
-        # parse commandline arguments
-        if len(sys.argv) > 2:
-            quit('Too many parameters\n' + usage_error)
-
-        if len(sys.argv) == 2:
-            if '=' in sys.argv[1]:
-                args = sys.argv[1].split('=')
-                if args[0] == 'file':
-                    try:
-                        cp_instances = yaml.load(open(PROJECT_ROOT + '/coin/' + args[1], 'r'))
-                    except:
-                        quit('Error opening assets file')
-                    
-                    self._add_many_indicators(cp_instances)
-
-                elif args[0] == 'asset':
-                    self._add_indicator(args[1])
-
-                else:
-                    quit('Invalid parameter\n' + usage_error)
-
-            else:
-                quit('Invalid parameter\n' + usage_error)
-
-        else:
-            self._add_indicator()
+        self._add_many_indicators(self.settings.get('tickers'))
 
     # Load exchange 'plug-ins' from exchanges dir
     def _load_exchanges(self):
@@ -83,27 +55,27 @@ class Coin(object):
     # find an exchange
     def find_exchange_by_code(self, code):
         for exchange in self.EXCHANGES:
-            if exchange.get('code') == code.lower():
+            if exchange.get('code').lower() == code.lower():
                 return exchange
 
     # Creates a structure of available assets (from_currency > to_currency > exchange)
     def _load_assets(self):
-        self.CURRENCIES = {}
-        for exchange in self.EXCHANGES:
-            self.CURRENCIES[exchange.get('code')] = exchange.get('class').CONFIG.get('asset_pairs')
+        self.assets = {}
 
-        # reverse the hierarchy for easier asset selection
+        for exchange in self.EXCHANGES:
+            self.assets[exchange.get('code')] = exchange.get('class')(None, self).get_asset_pairs()
+
+        # inverse the hierarchy for easier asset selection
         bases = {}
-        assets = self.CURRENCIES
-        for exchange in assets:
-            for asset_pair in assets.get(exchange):
+        for exchange in self.assets:
+            for asset_pair in self.assets.get(exchange):
                 if asset_pair.get('base'):
                     base = asset_pair.get('base')
                 else:
                     base = asset_pair.get('name').split(' to ')[0]
 
                 if asset_pair.get('quote'):
-                    base = asset_pair.get('base')
+                    quote = asset_pair.get('quote')
                 else:
                     quote = asset_pair.get('name').split(' to ')[1]
 
@@ -117,8 +89,42 @@ class Coin(object):
 
         self.bases = bases
 
+    # load instances
+    def _load_settings(self):
+        self.settings = {}
+        if not isfile(SETTINGS_FILE):
+            self.settings['tickers'] = [{
+                'exchange': self.EXCHANGES[0].get('code'),
+                'asset_pair': self.assets[self.EXCHANGES[0].get('code')][0].get('pair'),
+                'refresh': 3,
+                'default_label': self.EXCHANGES[0].get('default_label')
+                }]
+        else:
+            self.settings = yaml.load(open(SETTINGS_FILE, 'r'))
+        
+
+    def save_settings(self):
+        tickers = []
+        for instance in self.instances:
+            ticker = {
+                'exchange': instance.exchange.get_code(),
+                'asset_pair': instance.exchange.asset_pair.get('pair'),
+                'refresh': instance.refresh_frequency,
+                'default_label': instance.default_label
+            }
+            tickers.append(ticker)
+            self.settings['tickers'] = tickers
+
+        try:
+            with open(SETTINGS_FILE, 'w') as handle:
+                yaml.dump(self.settings, handle, default_flow_style=False)
+        except:
+            logging.error('Settings file not writable')
+
     # Start the main indicator icon and its menu
     def _start_main(self):
+        print(self.config.get('app').get('name') + ' v' + self.config['app']['version'] + " running!")
+
         icon = self.config['project_root'] + '/resources/icon_32px.png'
         self.logo_124px = GdkPixbuf.Pixbuf.new_from_file(self.config['project_root'] + '/resources/icon_32px.png')
         self.main_item = AppIndicator.Indicator.new(self.config['app']['name'], icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
@@ -149,20 +155,34 @@ class Coin(object):
         return menu
 
     # Adds a ticker and starts it
-    def _add_indicator(self, settings=None):
-        indicator = Indicator(self, settings)
+    def _add_indicator(self, settings):
+        exchange = settings.get('exchange')
+        refresh = settings.get('refresh')
+        asset_pair = settings.get('asset_pair')
+        default_label = settings.get('default_label')
+        indicator = Indicator(self, exchange, asset_pair, refresh, default_label)
         self.instances.append(indicator)
         indicator.start()
 
     # adds many tickers
-    def _add_many_indicators(self, cp_instances):
-        for cp_instance in cp_instances:
-            settings = cp_instance.get('exchange') + ':' + cp_instance.get('asset_pair') + ':' + str(cp_instance.get('refresh'))
-            self._add_indicator(settings)
+    def _add_many_indicators(self, tickers):
+        for ticker in tickers:
+            self._add_indicator(ticker)
 
     # Menu item to add a ticker
     def _add_ticker(self, widget):
-        self._add_indicator('DEFAULTS')
+        self._add_indicator(self.settings.get('tickers')[0])
+        self.save_settings()
+
+    # Remove ticker
+    def remove_ticker(self, indicator):
+        if len(self.instances) == 1: # is it the last ticker?
+            Gtk.main_quit() # then quit entirely
+        else: # otherwise just remove this one
+            indicator.exchange.stop()
+            del indicator.indicator_widget
+            self.instances.remove(indicator)
+            self.save_settings()
 
     # Menu item to download any new assets from the exchanges
     def _discover_assets(self, widget):
@@ -209,6 +229,7 @@ class Coin(object):
         Gtk.main_quit()
 
 coin = Coin()
+signal.signal(signal.SIGINT, Gtk.main_quit)  # ctrl+c exit
 DBusGMainLoop(set_as_default = True)
 bus = dbus.SystemBus()
 bus.add_signal_receiver(

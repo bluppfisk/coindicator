@@ -13,6 +13,7 @@ class Bxinth(Exchange):
     """
     CONFIG = {
         'name' : 'BX.in.th',
+        'code' : 'bxinth',
         'default_label': 'cur',
         'ticker' : 'https://bx.in.th/api/',
         'asset_pairs': [
@@ -139,11 +140,7 @@ class Bxinth(Exchange):
         for key,value in data.items():
             database.append(value)
 
-        selected_isocode = self.asset_pair
-
-
-        # Select result by its isocode
-        selected_asset = [item for item in self.config['asset_pairs'] if item['isocode'] == selected_isocode][0]
+        selected_asset = self.asset_pair
 
         query_result = [item for item in database 
                         if item['primary_currency'] == selected_asset['primary_currency'] and
@@ -153,10 +150,8 @@ class Bxinth(Exchange):
         current = float(query_result['last_price'])
 
         bids_highbid = float(query_result['orderbook']['bids']['highbid']) #Buy price 
-        # bids_volume = float(query_result['orderbook']['bids']['volume'])
         
-        asks_volume = float(query_result['orderbook']['asks']['volume'])
-        # asks_highbid = float(query_result['orderbook']['asks']['highbid']) #Sell price
+        asks_highbid = float(query_result['orderbook']['asks']['highbid']) #Sell price
         
         volume = float(query_result['volume_24hours'])
         

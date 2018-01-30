@@ -4,3 +4,4 @@ node_modules
 startmany.yaml
 dist/
 Coin_Price_Indicator.egg-info
+user.conf

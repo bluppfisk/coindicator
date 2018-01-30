@@ -1,5 +1,5 @@
 from gi.repository import GLib
-import logging, requests, time
+import logging, requests, time, pickle
 from error import Error
 from threading import Thread
 
@@ -46,17 +46,37 @@ class Exchange(object):
       if not ap.get('volumecurrency'):
         ap['volumecurrency'] = ap.get('base')
 
+  def get_asset_pairs(self):
+    try:
+      with open('./coin/exchanges/' + self.get_code() + '.conf', 'rb') as handle:
+        asset_pairs = pickle.loads(handle.read())
+        return asset_pairs
+
+    except:
+      # no CONF file, return predefined from config
+      return self.config.get('asset_pairs')
+
+  def store_asset_pairs(self, asset_pairs):
+    try:
+      with open('./coin/exchanges/' + self.get_code() + '.conf', 'wb') as handle:
+        pickle.dump(asset_pairs, handle)
+    except:
+      logging.error('Could not write to config file')
+
   def get_name(self):
     return self.config.get('name')
 
   def get_code(self):
-    return self.config.get('code', self.config.get('name').capitalize())
+    return self.config.get('code', self.config.get('name').lower())
 
   def get_default_label(self):
     return self.config.get('default_label', 'cur')
 
   def get_currency(self):
-    return self.asset_pair.get('currency')
+    return self.asset_pair.get('quote').lower()
+
+  def get_symbol(self):
+    return CURRENCY.get(self.get_currency(), self.get_currency().upper())
 
   def get_volume_currency(self):
     return self.asset_pair.get('volumecurrency', self.asset_pair.get('base'))
@@ -65,13 +85,13 @@ class Exchange(object):
     pass
 
   def set_asset_pair(self, base, quote):
-    for ap in self.config.get('asset_pairs'):
-      if ap.get('base') == base and ap.get('quote') == quote:
+    for ap in self.get_asset_pairs():
+      if ap.get('base').upper() == base.upper() and ap.get('quote').upper() == quote.upper():
         self.asset_pair = ap
 
-  def set_asset_pair_from_isocode(self, isocode):
-    for ap in self.config.get('asset_pairs'):
-      if ap.get('isocode') == isocode:
+  def set_asset_pair_from_code(self, code):
+    for ap in self.get_asset_pairs():
+      if ap.get('pair').upper() == code.upper():
         self.asset_pair = ap
 
   def discover_assets(self):
@@ -86,8 +106,8 @@ class Exchange(object):
 
     result = data.json()
     asset_pairs = self._parse_discovery(result)
-    self.config['asset_pairs'] = asset_pairs
     self.normalise_assets()
+    self.store_asset_pairs(asset_pairs)
 
     GLib.idle_add(self.coin.update_assets) # update the asset menus of all instances
 
@@ -112,6 +132,7 @@ class Exchange(object):
   # 
   def stop(self):
     self.started = False
+    self.indicator.alarm.deactivate()
     self.error.reset()
     if self.timeout_id is not None:
         GLib.source_remove(self.timeout_id)
@@ -133,7 +154,7 @@ class Exchange(object):
     self.pair = self.asset_pair.get('pair')
     timestamp = time.time()
     self._async_get(self.get_ticker(), validation=self.asset_pair, timestamp=timestamp, callback=self._handle_result)
-    logging.debug('Request with TS: ' + str(timestamp))
+    logging.info('Request with TS: ' + str(timestamp))
     return self.error.is_ok() # continues the timer if there are no errors
 
   def _handle_error(self, error):
@@ -143,13 +164,17 @@ class Exchange(object):
   def _handle_result(self, data, validation, timestamp):
     # Check to see if the returning response is still valid
     # (user may have changed exchanges before the request finished)
+    if not self.started:
+      logging.info("Discarding packet for inactive exchange")
+      return
+
     if validation is not self.asset_pair: # we've already moved on.
-      logging.debug("Discarding packet for wrong exchange")
+      logging.info("Discarding packet for wrong asset pair or exchange")
       return
 
     # also check if a newer response hasn't already been returned
     if timestamp < self.indicator.latest_response: # this is an older request
-      logging.debug("Discarding outdated packet")
+      logging.info("Discarding outdated packet")
       return
 
     if data.status_code != 200:
@@ -167,7 +192,7 @@ class Exchange(object):
 
     results = self._parse_result(asset)
     self.indicator.latest_response = timestamp
-    logging.debug('Requests comes in with timestamp ' + str(timestamp) + ', last response at ' + str(self.indicator.latest_response))
+    logging.info('Requests comes in with timestamp ' + str(timestamp) + ', last response at ' + str(self.indicator.latest_response))
     
     for item in CATEGORY:
       if results.get(item):

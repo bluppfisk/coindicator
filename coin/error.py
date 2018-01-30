@@ -8,7 +8,7 @@ from gi.repository import GLib
 __author__ = "nil.gradisnik@gmail.com"
 
 MAX_ERRORS = 5  # maximum number of errors before chilling
-REFRESH_INTERVAL = 5  # chill refresh frequency in seconds
+REFRESH_INTERVAL = 60  # chill refresh frequency in seconds
 
 class Error:
   def __init__(self, exchange):
