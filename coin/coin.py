@@ -199,7 +199,7 @@ class Coin(object):
     def handle_resume(self, sleeping, *args):
         if not sleeping:
             for instance in self.instances:
-                instance.exchange_instance.stop().start()
+                instance.exchange.stop().start()
 
     # Shows an About dialog
     def _about(self, widget):

@@ -196,7 +196,7 @@ class Indicator(object):
         if widget.get_active():
             self.refresh_frequency = ri
             self.coin.save_settings()
-            self.exchange_instance.stop().start()
+            self.exchange.stop().start()
 
     def _menu_bases(self):
         base_list_menu = Gtk.Menu()
