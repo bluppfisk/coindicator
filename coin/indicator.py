@@ -201,7 +201,10 @@ class Indicator(object):
     def _menu_bases(self):
         base_list_menu = Gtk.Menu()
         self.base_group = []
-        subgroup = []
+
+        # these are to keep track of all the option groups across menus
+        subgroup_quotes = []
+        subgroup_exchanges = []
 
         # sorting magic
         bases = []
@@ -211,7 +214,7 @@ class Indicator(object):
 
         for base in bases:
             base_item = Gtk.RadioMenuItem.new_with_label(self.base_group, base)
-            base_item.set_submenu(self._menu_quotes(base, subgroup))
+            base_item.set_submenu(self._menu_quotes(base, subgroup_quotes, subgroup_exchanges))
             self.base_group.append(base_item)
             base_list_menu.append(base_item)
 
@@ -222,10 +225,8 @@ class Indicator(object):
 
         return base_list_menu
 
-    def _menu_quotes(self, base, subgroup):
+    def _menu_quotes(self, base, subgroup_quotes, subgroup_exchanges):
         quote_list_menu = Gtk.Menu()
-        # self.quote_group = []
-        subgroup_quotes = []
 
         # sorting magic
         quotes = []
@@ -234,10 +235,9 @@ class Indicator(object):
         quotes.sort()
 
         for quote in quotes:
-            quote_item = Gtk.RadioMenuItem.new_with_label(subgroup, quote)
-            quote_item.set_submenu(self._menu_exchanges(base, quote, subgroup_quotes))
-            # self.quote_group.append(quote_item)
-            subgroup.append(quote_item)
+            quote_item = Gtk.RadioMenuItem.new_with_label(subgroup_quotes, quote)
+            quote_item.set_submenu(self._menu_exchanges(base, quote, subgroup_exchanges))
+            subgroup_quotes.append(quote_item)
             quote_list_menu.append(quote_item)
 
             if (self.exchange.asset_pair.get('quote') == quote) and (self.exchange.asset_pair.get('base') == base):
@@ -247,9 +247,8 @@ class Indicator(object):
 
         return quote_list_menu
 
-    def _menu_exchanges(self, base, quote, subgroup_quotes):
+    def _menu_exchanges(self, base, quote, subgroup_exchanges):
         exchange_list_menu = Gtk.Menu()
-        # self.exchange_group = []
 
         # some sorting magic
         exchanges = []
@@ -258,14 +257,12 @@ class Indicator(object):
         exchanges = sorted(exchanges, key=lambda k: k['name'])
 
         for exchange in exchanges:
-            exchange_item = Gtk.RadioMenuItem.new_with_label(subgroup_quotes, exchange.get('name'))
-            # self.exchange_group.append(exchange_item)
-            subgroup_quotes.append(exchange_item)
+            exchange_item = Gtk.RadioMenuItem.new_with_label(subgroup_exchanges, exchange.get('name'))
+            subgroup_exchanges.append(exchange_item)
             exchange_list_menu.append(exchange_item)
             exchange_item.set_active(False)
 
             if (self.exchange.get_code() == exchange.get('code')) and (self.exchange.asset_pair.get('quote') == quote) and (self.exchange.asset_pair.get('base') == base):
-                print(base + ' ' + quote + ' ' + exchange.get('code'))
                 exchange_item.set_active(True)
 
             exchange_item.connect('activate', self._change_assets, base, quote, exchange.get('code'))
