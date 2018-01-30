@@ -5,7 +5,7 @@
 import logging
 from os.path import isfile
 from alarm import Alarm, AlarmSettingsWindow
-from gi.repository import Gtk
+from gi.repository import Gtk, GLib
 try:
     from gi.repository import AppIndicator3 as AppIndicator
 except ImportError:
@@ -93,10 +93,10 @@ class Indicator(object):
         logging.info("Loading " + self.exchange.asset_pair.get('pair') + " from " + self.exchange.get_name() + " (" + str(self.refresh_frequency) + "s)")
 
         # don't show any data until first response is in
-        self.indicator_widget.set_label('loading', 'loading')
+        GLib.idle_add(self.indicator_widget.set_label, 'loading', 'loading')
         for item in self.price_group:
-            item.set_active(False)
-            item.set_label('loading')
+            GLib.idle_add(item.set_active, False)
+            GLib.idle_add(item.set_label, 'loading')
 
         self.volume_item.set_label('loading')
 
@@ -224,7 +224,7 @@ class Indicator(object):
 
     def _menu_quotes(self, base, subgroup):
         quote_list_menu = Gtk.Menu()
-        self.quote_group = []
+        # self.quote_group = []
         subgroup_quotes = []
 
         # sorting magic
@@ -236,7 +236,7 @@ class Indicator(object):
         for quote in quotes:
             quote_item = Gtk.RadioMenuItem.new_with_label(subgroup, quote)
             quote_item.set_submenu(self._menu_exchanges(base, quote, subgroup_quotes))
-            self.quote_group.append(quote_item)
+            # self.quote_group.append(quote_item)
             subgroup.append(quote_item)
             quote_list_menu.append(quote_item)
 
@@ -249,7 +249,7 @@ class Indicator(object):
 
     def _menu_exchanges(self, base, quote, subgroup_quotes):
         exchange_list_menu = Gtk.Menu()
-        self.exchange_group = []
+        # self.exchange_group = []
 
         # some sorting magic
         exchanges = []
@@ -259,11 +259,13 @@ class Indicator(object):
 
         for exchange in exchanges:
             exchange_item = Gtk.RadioMenuItem.new_with_label(subgroup_quotes, exchange.get('name'))
-            self.exchange_group.append(exchange_item)
+            # self.exchange_group.append(exchange_item)
             subgroup_quotes.append(exchange_item)
             exchange_list_menu.append(exchange_item)
+            exchange_item.set_active(False)
 
             if (self.exchange.get_code() == exchange.get('code')) and (self.exchange.asset_pair.get('quote') == quote) and (self.exchange.asset_pair.get('base') == base):
+                print(base + ' ' + quote + ' ' + exchange.get('code'))
                 exchange_item.set_active(True)
 
             exchange_item.connect('activate', self._change_assets, base, quote, exchange.get('code'))
@@ -286,13 +288,12 @@ class Indicator(object):
     # if the asset pairs change
     def _change_assets(self, widget, base, quote, exchangeCode):
         if widget.get_active():
-            if self.exchange.get_code() == exchangeCode:
-                self.exchange.set_asset_pair(base, quote)
-            else:
-                self.exchange.stop()
+            self.exchange.stop()
+            if self.exchange.get_code() is not exchangeCode:
                 exchange_class = self.coin.find_exchange_by_code(exchangeCode).get('class')
                 self.exchange = exchange_class(self)
-                self.exchange.set_asset_pair(base, quote)
+
+            self.exchange.set_asset_pair(base, quote)
 
             self.coin.save_settings()
             self._start_exchange()

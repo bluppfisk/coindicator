@@ -102,7 +102,7 @@ class Coin(object):
         else:
             self.settings = yaml.load(open(SETTINGS_FILE, 'r'))
         
-
+    # saves settings for each ticker
     def save_settings(self):
         tickers = []
         for instance in self.instances:
@@ -136,7 +136,7 @@ class Coin(object):
         menu = Gtk.Menu()
 
         self.add_item = Gtk.MenuItem("Add Ticker")
-        self.discover_item = Gtk.MenuItem("Update Assets")
+        self.discover_item = Gtk.MenuItem("Discover Assets")
         self.about_item = Gtk.MenuItem("About")
         self.quit_item = Gtk.MenuItem("Quit")
         

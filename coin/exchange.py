@@ -134,7 +134,7 @@ class Exchange(object):
     self.started = False
     self.indicator.alarm.deactivate()
     self.error.reset()
-    if self.timeout_id is not None:
+    if self.timeout_id:
         GLib.source_remove(self.timeout_id)
 
     return self
@@ -181,14 +181,13 @@ class Exchange(object):
       self._handle_error('API server returned an error: ' + str(data.status_code))
       return
 
-    else:
-      try:
-        asset = data.json()
-      except Exception as e:
-        # Before, a KeyError happened when an asynchronous response comes in
-        # for a previously selected asset pair (see upstream issue #27)
-        self._handle_error('Invalid response for ' + str(self.pair))
-        return
+    try:
+      asset = data.json()
+    except Exception as e:
+      # Before, a KeyError happened when an asynchronous response comes in
+      # for a previously selected asset pair (see upstream issue #27)
+      self._handle_error('Invalid response for ' + str(self.pair))
+      return
 
     results = self._parse_result(asset)
     self.indicator.latest_response = timestamp
