@@ -214,7 +214,7 @@ class Indicator(object):
 
         for base in bases:
             base_item = Gtk.RadioMenuItem.new_with_label(self.base_group, base)
-            base_item.set_submenu(self._menu_quotes(base, subgroup_quotes, subgroup_exchanges))
+            base_item.set_submenu(self._menu_quotes(base, subgroup_quotes, base_item, subgroup_exchanges))
             self.base_group.append(base_item)
             base_list_menu.append(base_item)
 
@@ -225,7 +225,7 @@ class Indicator(object):
 
         return base_list_menu
 
-    def _menu_quotes(self, base, subgroup_quotes, subgroup_exchanges):
+    def _menu_quotes(self, base, subgroup_quotes, base_item, subgroup_exchanges):
         quote_list_menu = Gtk.Menu()
 
         # sorting magic
@@ -236,7 +236,7 @@ class Indicator(object):
 
         for quote in quotes:
             quote_item = Gtk.RadioMenuItem.new_with_label(subgroup_quotes, quote)
-            quote_item.set_submenu(self._menu_exchanges(base, quote, subgroup_exchanges))
+            quote_item.set_submenu(self._menu_exchanges(base, quote, base_item, quote_item, subgroup_exchanges))
             subgroup_quotes.append(quote_item)
             quote_list_menu.append(quote_item)
 
@@ -247,7 +247,7 @@ class Indicator(object):
 
         return quote_list_menu
 
-    def _menu_exchanges(self, base, quote, subgroup_exchanges):
+    def _menu_exchanges(self, base, quote, base_item, quote_item, subgroup_exchanges):
         exchange_list_menu = Gtk.Menu()
 
         # some sorting magic
@@ -260,12 +260,11 @@ class Indicator(object):
             exchange_item = Gtk.RadioMenuItem.new_with_label(subgroup_exchanges, exchange.get('name'))
             subgroup_exchanges.append(exchange_item)
             exchange_list_menu.append(exchange_item)
-            exchange_item.set_active(False)
 
             if (self.exchange.get_code() == exchange.get('code')) and (self.exchange.asset_pair.get('quote') == quote) and (self.exchange.asset_pair.get('base') == base):
                 exchange_item.set_active(True)
 
-            exchange_item.connect('activate', self._change_assets, base, quote, exchange.get('code'))
+            exchange_item.connect('activate', self._change_assets, base, quote, exchange.get('code'), base_item, quote_item)
 
         return exchange_list_menu
 
@@ -283,7 +282,7 @@ class Indicator(object):
             widget.set_active(False)
 
     # if the asset pairs change
-    def _change_assets(self, widget, base, quote, exchangeCode):
+    def _change_assets(self, widget, base, quote, exchangeCode, base_item, quote_item):
         if widget.get_active():
             self.exchange.stop()
             if self.exchange.get_code() is not exchangeCode:
@@ -293,6 +292,10 @@ class Indicator(object):
             self.exchange.set_asset_pair(base, quote)
 
             self.coin.save_settings()
+
+            # There must be an easier way to set the parent menu item active
+            base_item.set_active(True)
+            quote_item.set_active(True)
             self._start_exchange()
 
     def _remove(self, widget):

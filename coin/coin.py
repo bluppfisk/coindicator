@@ -171,7 +171,7 @@ class Coin(object):
 
     # Menu item to add a ticker
     def _add_ticker(self, widget):
-        self._add_indicator(self.settings.get('tickers')[0])
+        self._add_indicator(self.settings.get('tickers')[len(self.settings.get('tickers'))-1])
         self.save_settings()
 
     # Remove ticker
