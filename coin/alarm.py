@@ -34,12 +34,12 @@ class Alarm(object):
     # 
     def check(self, price):
         if self.ceil:
-            if self.ceil <= price:
+            if price > self.ceil:
                 self.__notify(price, 'rose above', self.ceil)
                 return True
 
         if self.floor:
-            if self.floor >= price:
+            if price < self.floor:
                 self.__notify(price, 'fell below', self.floor)
                 return True
 

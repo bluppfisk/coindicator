@@ -55,7 +55,7 @@ class Bitfinex(Exchange):
       base = asset[0:3].upper()
       quote = asset[-3:].upper()
 
-      names = {'DSH': 'DASH'}
+      names = {'DSH': 'DASH', 'TRST': 'TRUST', 'XZC': 'ZEC'}
       if base in names:
         base = names[base]
 
