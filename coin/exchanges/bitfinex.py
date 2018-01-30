@@ -2,8 +2,7 @@
 
 # Bitfinex
 # https://bitfinex.readme.io/v2/docs
-
-__author__ = "ruzzico@gmail.com"
+# By Alessio Carrafa <ruzzico@gmail.com>
 
 from exchange import Exchange, CURRENCY
 

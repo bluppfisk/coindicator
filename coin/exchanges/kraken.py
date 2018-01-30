@@ -2,8 +2,7 @@
 
 # Kraken
 # https://www.kraken.com/help/api#public-market-data
-
-__author__ = "nil.gradisnik@gmail.com"
+# By Nil Gradisnik <nil.gradisnik@gmail.com>
 
 from exchange import Exchange, CURRENCY
 

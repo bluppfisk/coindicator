@@ -2,8 +2,7 @@
 
 # Gdax
 # https://api.gdax.com/
-
-__author__ = "sander.vandemoortel@gmail.com"
+# By Sander Van de Moortel <sander.vandemoortel@gmail.com>
 
 from exchange import Exchange, CURRENCY
 

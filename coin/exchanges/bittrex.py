@@ -2,13 +2,11 @@
 
 # Bittrex
 # https://bittrex.com/Home/Api
-# 
+# By "Sir Paul" <wizzard94@github.com>
 '''
 Response example
 [{'Bid': 5655.15, 'MarketName': 'USDT-BTC', 'Ask': 5665.0, 'BaseVolume': 19499585.87469274, 'High': 5888.0, 'Low': 5648.0, 'Volume': 3393.61801172, 'OpenBuyOrders': 8505, 'Created': '2015-12-11T06:31:40.633', 'PrevDay': 5762.180121, 'Last': 5665.0, 'OpenSellOrders': 4194, 'TimeStamp': '2017-10-28T12:24:39.38'}]
 '''
-
-__author__ = "wizzard94@github.com"
 
 from exchange import Exchange, CURRENCY
 

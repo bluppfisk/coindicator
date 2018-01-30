@@ -2,8 +2,7 @@
 
 # Gemini
 # https://docs.gemini.com/rest-api/
-
-__author__ = "rick@anteaterllc.com"
+# By Rick Ramstetter <rick@anteaterllc.com>
 
 from exchange import Exchange, CURRENCY
 

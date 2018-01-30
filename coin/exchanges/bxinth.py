@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
 
 # Bx.in.th Api 
-# https://bittrex.com/Home/Api
-# Added by : Theppasith N. 
-__author__ = "tutorgaming@gmail.com"
+# https://bx.in.th/api/
+# By Theppasith N. <tutorgaming@gmail.com>
 
 from exchange import Exchange, CURRENCY
 
 class Bxinth(Exchange):
-    """
-    Bx.in.th Exchange class
-    """
     CONFIG = {
         'name' : 'BX.in.th',
         'code' : 'bxinth',
