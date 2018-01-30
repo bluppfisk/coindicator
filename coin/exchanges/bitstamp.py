@@ -9,7 +9,7 @@ from exchange import Exchange, CURRENCY
 class Bitstamp(Exchange):
   CONFIG = {
     'name': 'Bitstamp',
-    'ticker': 'https://www.bitstamp.net/api/ticker/',
+    'ticker': 'https://www.bitstamp.net/api/v2/ticker/',
     'discovery': 'https://www.bitstamp.net/api/v2/trading-pairs-info/',
     'asset_pairs': [
       {
@@ -45,7 +45,7 @@ class Bitstamp(Exchange):
     return asset_pairs
 
   def get_ticker(self):
-    return self.config['ticker']
+    return self.config.get('ticker') + self.pair
 
   def _parse_result(self, asset):
     cur = asset.get('last')
