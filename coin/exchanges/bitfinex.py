@@ -63,7 +63,7 @@ class Bitfinex(Exchange):
         quote = names[quote]
 
       asset_pair = {
-        'pair': asset,
+        'pair': 't' + asset.upper(),
         'base': base,
         'quote': quote,
         'name': base + ' to ' + quote,
