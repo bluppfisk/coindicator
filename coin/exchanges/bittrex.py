@@ -91,10 +91,10 @@ class Bittrex(Exchange):
     
     return asset_pairs
 
-  def get_ticker(self):
+  def _get_ticker_url(self):
     return self.config['ticker'] + '?market=' + self.pair
 
-  def _parse_result(self, asset):
+  def _parse_ticker(self, asset):
     asset = asset['result'][0]
 
     cur = asset.get('Last')

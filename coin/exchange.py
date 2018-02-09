@@ -34,34 +34,20 @@ class Exchange(object):
     self.exchange_name = self.config.get('name')
     self.started = False
 
-    self.normalise_assets()
+  ##
+  # Abstract methods to be overwritten by the child classes
+  # 
+  def get_discovery_url(self): pass
 
-  def normalise_assets(self):
-    for ap in self.config['asset_pairs']:
-      if not ap.get('base'):
-        ap['base'] = ap.get('name').split(' ')[0]
-      if not ap.get('quote'):
-        ap['quote'] = ap.get('name').split(' ')[2]
-      if not ap.get('volumecurrency'):
-        ap['volumecurrency'] = ap.get('base')
+  def _parse_discovery(self, data): pass
 
-  def get_asset_pairs(self):
-    try:
-      with open('./coin/exchanges/' + self.get_code() + '.conf', 'rb') as handle:
-        asset_pairs = pickle.loads(handle.read())
-        return asset_pairs
+  def _get_ticker_url(self): pass
 
-    except:
-      # no CONF file, return predefined from config
-      return self.config.get('asset_pairs')
+  def _parse_ticker(self, data): pass
 
-  def store_asset_pairs(self, asset_pairs):
-    try:
-      with open('./coin/exchanges/' + self.get_code() + '.conf', 'wb') as handle:
-        pickle.dump(asset_pairs, handle)
-    except:
-      logging.error('Could not write to config file')
-
+  ##
+  # Getters and setters follow
+  # 
   def get_name(self):
     return self.config.get('name')
 
@@ -80,9 +66,6 @@ class Exchange(object):
   def get_volume_currency(self):
     return self.asset_pair.get('volumecurrency', self.asset_pair.get('base'))
 
-  def get_ticker(self): # to be overwritten by child class
-    pass
-
   def set_asset_pair(self, base, quote):
     for ap in self.get_asset_pairs():
       if ap.get('base').upper() == base.upper() and ap.get('quote').upper() == quote.upper():
@@ -93,25 +76,68 @@ class Exchange(object):
       if ap.get('pair').upper() == code.upper():
         self.asset_pair = ap
 
+  ##
+  # Legacy function to make sure the hard-coded asset
+  # configuration is consistent with the new format
+  # 
+  def normalise_assets(self):
+    for ap in self.config['asset_pairs']:
+      if not ap.get('base'):
+        ap['base'] = ap.get('name').split(' ')[0]
+      if not ap.get('quote'):
+        ap['quote'] = ap.get('name').split(' ')[2]
+      if not ap.get('volumecurrency'):
+        ap['volumecurrency'] = ap.get('base')
+
+  ##
+  # Loads asset pairs from the config files or,
+  # failing that, from the hard-coded lines
+  # 
+  def get_asset_pairs(self):
+    try:
+      with open('./coin/exchanges/' + self.get_code() + '.conf', 'rb') as handle:
+        asset_pairs = pickle.loads(handle.read())
+        return asset_pairs
+
+    except:
+      # no CONF file, return predefined from config
+      self.normalise_assets()
+      return self.config.get('asset_pairs')
+
+  ##
+  # Saves asset pairs to disk
+  # 
+  def store_asset_pairs(self, asset_pairs):
+    try:
+      with open('./coin/exchanges/' + self.get_code() + '.conf', 'wb') as handle:
+        pickle.dump(asset_pairs, handle)
+    except:
+      logging.error('Could not write to config file')
+
+  ##
+  # Discovers assets from the exchange's API url retrieved
+  # through the instance-specific method _get_discovery_url()
+  # 
   def discover_assets(self):
     self._async_get(self.get_discovery_url(), callback=self._handle_discovery_result)
-    
-  def get_discovery_url(self): # to be overwritten by child class
-    pass
 
+  ##
+  # Deals with the result from the discovery HTTP request
+  # Should probably be merged with _handle_result() later
+  # 
   def _handle_discovery_result(self, data, *args, **kwargs):
     if data.status_code is not 200:
       self._handle_error('API server returned an error: ' + str(data.status_code))
 
-    result = data.json()
-    asset_pairs = self._parse_discovery(result)
-    self.normalise_assets()
-    self.store_asset_pairs(asset_pairs)
+    try:
+      result = data.json()
+      asset_pairs = self._parse_discovery(result)
+      self.normalise_assets()
+      self.store_asset_pairs(asset_pairs)
+    except Exception as e:
+      self._handle_error(e)
 
-    GLib.idle_add(self.coin.update_assets) # update the asset menus of all instances
-
-  def _parse_discovery(self, data): # to be overwritten by child class
-    pass
+    self.coin.update_assets() # update the asset menus of all instances
 
   ##
   # Start exchange
@@ -152,7 +178,7 @@ class Exchange(object):
   def _check_price(self):
     self.pair = self.asset_pair.get('pair')
     timestamp = time.time()
-    self._async_get(self.get_ticker(), validation=self.asset_pair, timestamp=timestamp, callback=self._handle_result)
+    self._async_get(self._get_ticker_url(), validation=self.asset_pair, timestamp=timestamp, callback=self._handle_result)
     logging.info('Request with TS: ' + str(timestamp))
     return self.error.is_ok() # continues the timer if there are no errors
 
@@ -188,7 +214,7 @@ class Exchange(object):
       self._handle_error('Invalid response for ' + str(self.pair))
       return
 
-    results = self._parse_result(asset)
+    results = self._parse_ticker(asset)
     self.indicator.latest_response = timestamp
     logging.info('Requests comes in with timestamp ' + str(timestamp) + ', last response at ' + str(self.indicator.latest_response))
     
@@ -199,9 +225,6 @@ class Exchange(object):
     self.error.reset()
     
     GLib.idle_add(self.indicator.update_gui)
-
-  def _parse_result(self, data): # to be overwritten by child class
-    pass
 
   ##
   # Rounds a number to a meaningful number of decimal places

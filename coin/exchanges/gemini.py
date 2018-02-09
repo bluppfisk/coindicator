@@ -58,10 +58,10 @@ class Gemini(Exchange):
 
     return asset_pairs
 
-  def get_ticker(self):
+  def _get_ticker_url(self):
     return self.config['ticker'] + self.pair
 
-  def _parse_result(self, asset):
+  def _parse_ticker(self, asset):
     volumelabel = [item for item in self.config['asset_pairs'] if item['pair'] == self.pair][0]['volumelabel']
     cur = asset.get('last')
     bid = asset.get('bid')

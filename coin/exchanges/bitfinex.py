@@ -75,10 +75,10 @@ class Bitfinex(Exchange):
 
     return asset_pairs
 
-  def get_ticker(self):
+  def _get_ticker_url(self):
     return self.config['ticker'] + self.pair
 
-  def _parse_result(self, asset):
+  def _parse_ticker(self, asset):
 
     cur = asset[6]
     bid = asset[0]

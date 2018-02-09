@@ -32,6 +32,7 @@ class Coin(object):
         self._start_main()
 
         self.instances = []
+        self.discoveries = 0
         self._add_many_indicators(self.settings.get('tickers'))
 
     # Load exchange 'plug-ins' from exchanges dir
@@ -69,15 +70,8 @@ class Coin(object):
         bases = {}
         for exchange in self.assets:
             for asset_pair in self.assets.get(exchange):
-                if asset_pair.get('base'):
-                    base = asset_pair.get('base')
-                else:
-                    base = asset_pair.get('name').split(' to ')[0]
-
-                if asset_pair.get('quote'):
-                    quote = asset_pair.get('quote')
-                else:
-                    quote = asset_pair.get('name').split(' to ')[1]
+                base = asset_pair.get('base')
+                quote = asset_pair.get('quote')
 
                 if base not in bases:
                     bases[base] = {}
@@ -92,15 +86,21 @@ class Coin(object):
     # load instances
     def _load_settings(self):
         self.settings = {}
-        if not isfile(SETTINGS_FILE):
-            self.settings['tickers'] = [{
-                'exchange': self.EXCHANGES[0].get('code'),
-                'asset_pair': self.assets[self.EXCHANGES[0].get('code')][0].get('pair'),
-                'refresh': 3,
-                'default_label': self.EXCHANGES[0].get('default_label')
-                }]
-        else:
+        # load from file
+        if isfile(SETTINGS_FILE):
             self.settings = yaml.load(open(SETTINGS_FILE, 'r'))
+
+        # set defaults if settings not defined
+        if not self.settings.get('tickers'):
+            self.settings['tickers'] = [{
+            'exchange': self.EXCHANGES[0].get('code'),
+            'asset_pair': self.assets[self.EXCHANGES[0].get('code')][0].get('pair'),
+            'refresh': 3,
+            'default_label': self.EXCHANGES[0].get('default_label')
+        }]
+
+        if not self.settings.get('recent'):
+            self.settings['recent'] = ['BTC', 'ETH', 'XRP']
         
     # saves settings for each ticker
     def save_settings(self):
@@ -120,6 +120,17 @@ class Coin(object):
                 yaml.dump(self.settings, handle, default_flow_style=False)
         except:
             logging.error('Settings file not writable')
+
+    # Add a new base to the recents settings, and push the last one off the edge
+    def add_new_recent_base(self, base):
+        if base in self.settings['recent']:
+            self.settings['recent'].remove(base)
+
+        self.settings['recent'] = self.settings['recent'][0:4]
+        self.settings['recent'].insert(0, base)
+
+        for instance in self.instances:
+            instance.rebuild_recents_menu()
 
     # Start the main indicator icon and its menu
     def _start_main(self):
@@ -191,6 +202,11 @@ class Coin(object):
 
     # When discovery completes, reload currencies and rebuild menus of all instances
     def update_assets(self):
+        self.discoveries += 1
+        if self.discoveries < len(self.EXCHANGES):
+            return # wait until all exchanges finish discovery
+
+        self.discoveries = 0
         self._load_assets()
         for instance in self.instances:
             instance.rebuild_asset_menu()

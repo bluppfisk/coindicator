@@ -44,10 +44,10 @@ class Bitstamp(Exchange):
     
     return asset_pairs
 
-  def get_ticker(self):
+  def _get_ticker_url(self):
     return self.config.get('ticker') + self.pair
 
-  def _parse_result(self, asset):
+  def _parse_ticker(self, asset):
     cur = asset.get('last')
     bid = asset.get('bid')
     ask = asset.get('ask')

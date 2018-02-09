@@ -127,7 +127,7 @@ class Bxinth(Exchange):
     }
 
     def get_discovery_url(self):
-        return self.get_ticker()
+        return self._get_ticker_url()
 
     def _parse_discovery(self, result):
         asset_pairs = []
@@ -155,10 +155,10 @@ class Bxinth(Exchange):
         
         return asset_pairs
 
-    def get_ticker(self):
+    def _get_ticker_url(self):
         return self.config.get('ticker')
 
-    def _parse_result(self, data):
+    def _parse_ticker(self, data):
         database = []
 
         # convert key value to array 
