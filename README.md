@@ -10,6 +10,7 @@ It currently supports the following exchanges:
 * [Bitstamp](https://www.bitstamp.net)
 * [Gdax](https://www.gdax.com)
 * [Gemini](https://www.gemini.com)
+* [Binance](https://www.binance.com)
 * [Bittrex](https://bittrex.com)
 * [Bitfinex](https://www.bitfinex.com/)
 * [Bx](https://www.bx.in.th/)
