@@ -31,7 +31,7 @@ class Binance(Exchange):
       base = asset.get('baseAsset')
       quote = asset.get('quoteAsset')
 
-      names = {'XZC': 'ZEC', 'BCC': 'BCH'}
+      names = {'XZC': 'ZEC', 'BCC': 'BCH', 'IOTA': 'IOT'}
       if base in names:
         base = names[base]
 

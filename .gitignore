@@ -5,3 +5,4 @@ startmany.yaml
 dist/
 Coin_Price_Indicator.egg-info
 user.conf
+coin/exchanges/*.conf
