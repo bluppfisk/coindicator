@@ -156,11 +156,12 @@ class Exchange(object):
   # Stop exchange, resets errors
   # 
   def stop(self):
+    if self.timeout_id:
+      GLib.source_remove(self.timeout_id)
+
     self.started = False
     self.indicator.alarm.deactivate()
     self.error.reset()
-    if self.timeout_id:
-        GLib.source_remove(self.timeout_id)
 
     return self
 

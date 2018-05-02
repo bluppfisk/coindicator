@@ -71,12 +71,12 @@ class AssetSelectionWindow(Gtk.Window):
         buttonbox = Gtk.Box()
 
         button_set_close = Gtk.Button('Set and Close')
-        button_set_close.connect("clicked", self._update_indicator)
+        button_set_close.connect("clicked", self._update_indicator_close)
         button_set_close.set_can_default(True)
         button_set_close.get_style_context().add_class(Gtk.STYLE_CLASS_SUGGESTED_ACTION)
 
         button_set = Gtk.Button('Set')
-        button_set.connect("clicked", self._close)
+        button_set.connect("clicked", self._update_indicator)
 
         button_cancel = Gtk.Button('Close')
         button_cancel.connect("clicked", self._close)
@@ -140,9 +140,12 @@ class AssetSelectionWindow(Gtk.Window):
         _select_and_scroll(self.quote_store, self.view_quotes, self.parent.exchange.asset_pair.get('quote'))
         _select_and_scroll(self.ex_store, self.view_exchanges, self.parent.exchange.CONFIG.get('name'))
 
+    def _update_indicator_close(self, widget):
+        self._update_indicator(widget)
+        self._close(widget)
+
     def _update_indicator(self, widget):
         self.parent.change_assets(self.current_base, self.current_quote, self.current_exchange)
-        self._close(widget)
 
     def _close(self, widget):
         self.destroy()
