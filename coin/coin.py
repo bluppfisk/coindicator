@@ -27,7 +27,7 @@ class Coin(object):
 
     def __init__(self):
         self.unique_id = 0
-        
+
         self._load_exchanges()
         self._load_assets()
         self._load_settings()
@@ -80,7 +80,7 @@ class Coin(object):
                 
                 if quote not in bases[base]:
                     bases[base][quote] = []
-                
+
                 bases[base][quote].append(self.find_exchange_by_code(exchange))
 
         self.bases = bases
@@ -123,16 +123,16 @@ class Coin(object):
         except:
             logging.error('Settings file not writable')
 
-    # Add a new base to the recents settings, and push the last one off the edge
-    def add_new_recent_base(self, base):
-        if base in self.settings['recent']:
-            self.settings['recent'].remove(base)
+    # # Add a new base to the recents settings, and push the last one off the edge
+    # def add_new_recent_base(self, base):
+    #     if base in self.settings['recent']:
+    #         self.settings['recent'].remove(base)
 
-        self.settings['recent'] = self.settings['recent'][0:4]
-        self.settings['recent'].insert(0, base)
+    #     self.settings['recent'] = self.settings['recent'][0:4]
+    #     self.settings['recent'].insert(0, base)
 
-        for instance in self.instances:
-            instance.rebuild_recents_menu()
+    #     for instance in self.instances:
+    #         instance.rebuild_recents_menu()
 
     # Start the main indicator icon and its menu
     def _start_main(self):
@@ -200,6 +200,10 @@ class Coin(object):
 
     # Menu item to download any new assets from the exchanges
     def _discover_assets(self, widget):
+        for indicator in self.instances:
+            if indicator.asset_selection_window:
+                indicator.asset_selection_window.destroy()
+
         for exchange in self.EXCHANGES:
             exchange.get('class')(None, self).discover_assets()
 
@@ -211,8 +215,6 @@ class Coin(object):
 
         self.discoveries = 0
         self._load_assets()
-        for instance in self.instances:
-            instance.rebuild_asset_menu()
 
     # Handle system resume by refreshing all tickers
     def handle_resume(self, sleeping, *args):
