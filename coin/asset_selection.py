@@ -19,49 +19,20 @@ class AssetSelectionWindow(Gtk.Window):
         grid.set_row_homogeneous(True)
         self.add(grid)
 
-        base_store = Gtk.ListStore(str)
+        self.base_store = Gtk.ListStore(str)
         for item in self.parent.coin.bases:
-            base_store.append([item])
+            self.base_store.append([item])
 
-        quote_store = Gtk.ListStore(str)
-        ex_store = Gtk.ListStore(str, str)
+        self.quote_store = Gtk.ListStore(str)
+        self.ex_store = Gtk.ListStore(str, str)
 
-        def _base_changed(selection):
-            (model, iter) = selection.get_selected()
-            if iter == None:
-                return
+        self.view_bases = Gtk.TreeView(self.base_store)
+        self.view_quotes = Gtk.TreeView(self.quote_store)
+        self.view_exchanges = Gtk.TreeView(self.ex_store)
 
-            quote_store.clear()
-            self.current_base = model[iter][0]
-            for quote in self.parent.coin.bases[self.current_base]:
-                quote_store.append([quote])
-                view_quotes.set_cursor(0)
-
-        def _quote_changed(selection):
-            (model, iter) = selection.get_selected()
-            if iter == None:
-                return
-
-            ex_store.clear()
-            self.current_quote = model[iter][0]
-            for exchange in self.parent.coin.bases[self.current_base][self.current_quote]:
-                ex_store.append([exchange.get('name'), exchange.get('code')])
-                view_exchanges.set_cursor(0)
-
-        def _exchange_changed(selection):
-            (model, iter) = selection.get_selected()
-            if iter == None:
-                return
-
-            self.current_exchange = model[iter][1]
-
-        view_bases = Gtk.TreeView(base_store)
-        view_quotes = Gtk.TreeView(quote_store)
-        view_exchanges = Gtk.TreeView(ex_store)
-
-        view_bases.get_selection().connect("changed", _base_changed)
-        view_quotes.get_selection().connect("changed", _quote_changed)
-        view_exchanges.get_selection().connect("changed", _exchange_changed)
+        self.view_bases.get_selection().connect("changed", self._base_changed)
+        self.view_quotes.get_selection().connect("changed", self._quote_changed)
+        self.view_exchanges.get_selection().connect("changed", self._exchange_changed)
 
         rend_base = Gtk.CellRendererText()
         rend_quote = Gtk.CellRendererText()
@@ -71,23 +42,23 @@ class AssetSelectionWindow(Gtk.Window):
         col_quote = Gtk.TreeViewColumn("Quote", rend_quote, text=0)
         col_exchange = Gtk.TreeViewColumn("Exchange", rend_exchange, text=0)
 
-        view_bases.append_column(col_base)
-        view_quotes.append_column(col_quote)
-        view_exchanges.append_column(col_exchange)
+        self.view_bases.append_column(col_base)
+        self.view_quotes.append_column(col_quote)
+        self.view_exchanges.append_column(col_exchange)
 
         sw = Gtk.ScrolledWindow()
         sw.set_vexpand(True)
-        sw.add(view_bases)
+        sw.add(self.view_bases)
         grid.attach(sw, 0,0,200,400)
 
         sw2 = Gtk.ScrolledWindow()
         sw2.set_vexpand(True)
-        sw2.add(view_quotes)
+        sw2.add(self.view_quotes)
         grid.attach(sw2, 200,0,200,400)
 
         sw3 = Gtk.ScrolledWindow()
         sw3.set_vexpand(True)
-        sw3.add(view_exchanges)
+        sw3.add(self.view_exchanges)
         grid.attach(sw3, 400,0,200,400)
 
         buttonbox = Gtk.Box(spacing=2)
@@ -104,8 +75,54 @@ class AssetSelectionWindow(Gtk.Window):
 
         grid.attach(buttonbox, 0, 400, 200, 50)
 
+        self._select_currents()
+
         self.show_all()
         self.grab_focus()
+
+    def _base_changed(self, selection):
+        (model, iter) = selection.get_selected()
+        if iter == None:
+            return
+
+        self.quote_store.clear()
+        self.current_base = model[iter][0]
+        for quote in self.parent.coin.bases[self.current_base]:
+            self.quote_store.append([quote])
+            self.view_quotes.set_cursor(0)
+
+    def _quote_changed(self, selection):
+        (model, iter) = selection.get_selected()
+        if iter == None:
+            return
+
+        self.ex_store.clear()
+        self.current_quote = model[iter][0]
+        for exchange in self.parent.coin.bases[self.current_base][self.current_quote]:
+            self.ex_store.append([exchange.get('name'), exchange.get('code')])
+            self.view_exchanges.set_cursor(0)
+
+    def _exchange_changed(self, selection):
+        (model, iter) = selection.get_selected()
+        if iter == None:
+            return
+
+        self.current_exchange = model[iter][1]
+
+    ##
+    # Select the currently active values and scroll them into view
+    #
+    def _select_currents(self):
+        def _select_and_scroll(store, view, current_value):
+            for row in store:
+                if row[0] == current_value:
+                    view.set_cursor(row.path)
+                    view.scroll_to_cell(row.path)
+                    break
+
+        _select_and_scroll(self.base_store, self.view_bases, self.parent.exchange.asset_pair.get('base'))
+        _select_and_scroll(self.quote_store, self.view_quotes, self.parent.exchange.asset_pair.get('quote'))
+        _select_and_scroll(self.ex_store, self.view_exchanges, self.parent.exchange.CONFIG.get('name'))
 
     def _update_indicator(self, widget):
         self.parent.change_assets(self.current_base, self.current_quote, self.current_exchange)
