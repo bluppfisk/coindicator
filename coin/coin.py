@@ -26,6 +26,8 @@ class Coin(object):
     config['project_root'] = PROJECT_ROOT
 
     def __init__(self):
+        self.unique_id = 0
+        
         self._load_exchanges()
         self._load_assets()
         self._load_settings()
@@ -171,7 +173,8 @@ class Coin(object):
         refresh = settings.get('refresh')
         asset_pair = settings.get('asset_pair')
         default_label = settings.get('default_label')
-        indicator = Indicator(self, exchange, asset_pair, refresh, default_label)
+        self.unique_id += 1
+        indicator = Indicator(self, self.unique_id, exchange, asset_pair, refresh, default_label)
         self.instances.append(indicator)
         indicator.start()
 
