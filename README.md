@@ -2,16 +2,15 @@
 
 ![Coin Price logo](https://raw.github.com/nilgradisnik/coinprice-indicator/master/resources/logo_124px.png)
 
-Coin Price Indicator is a cryptocurrency (such as Bitcoin and Ethereum) price indicator applet for Ubuntu Linux. It shows various price points in the indicator menu.
+Coin Price Indicator is a graphical cryptocurrency price indicator applet for Linux. It shows various price points in the indicator menu.
 
 ## Features
 
-* See ticker prices at a glance in the status bar
-* See various price points (bid, ask, lowest, highest) in the dropdown menu
-* Get an audiovisual alert when a certain price treshold is reached
-* Choose your own refresh rates
-* Add as many price tickers as you like
-* Pick from over hundreds of crypto assets from the following exchanges:
+* Multiple price tickers in the status bar
+* Additional price points in the dropdown menu
+* Audiovisual price alerts
+* Adjust the refresh rate
+* Hundreds of cryptocurrencies from the following exchanges:
 
 	* [Kraken](https://www.kraken.com)
 	* [Bitstamp](https://www.bitstamp.net)
@@ -21,7 +20,7 @@ Coin Price Indicator is a cryptocurrency (such as Bitcoin and Ethereum) price in
 	* [Bittrex](https://bittrex.com)
 	* [Bitfinex](https://www.bitfinex.com/)
 	* [Bx](https://www.bx.in.th/)
-	* Add your own (See *Extending (Plugins)* below)
+	* Add your own (See **Extending (Plugins)** below)
 
 ![Screenshot](https://raw.githubusercontent.com/nilgradisnik/coinprice-indicator/master/resources/screenshot.png)
 
@@ -32,13 +31,14 @@ Clone the repository and install python dependencies by running the following co
 
 ```
  git clone git@github.com:nilgradisnik/coinprice-indicator
+ cd coinprice-indicator
  make install
 ```
 
 ## Running
 
-* To run the indicator with the default settings or with the previous settings, type `make` to run and the indicator should appear in the notification area.
-* Alternatively, you can run `python3 coin/coin.py &` to start the app
+* Type `make` or `coin/coin.py &` to start the app
+* Alternatively, type `python3 coin/coin.py &` to start the app
 
 ## Configuring
 
@@ -54,8 +54,8 @@ Have a peek at the existing plug-ins (e.g. **kraken.py**) for an example and don
 
 This software was tested and found working on the following configurations:
 * Ubuntu Linux 16.04 (Xenial Xurus) with Unity 7
-* Ubuntu Linux 17.10 with GNOME 3
-* Ubuntu Linux 18.04 (Artful Aardvark) with GNOME 3
+* Ubuntu Linux 17.10 (Artful Aardvark) with GNOME 3
+* Ubuntu Linux 18.04 (Bionic Beaver) with GNOME 3
 
 For GNOME 3 set-ups, you will need to install LibAppIndicator support (see point 3 below).
 
