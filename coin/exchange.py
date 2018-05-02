@@ -193,7 +193,7 @@ class Exchange(object):
     logging.info('Request with TS: ' + str(timestamp))
     if not self.error.is_ok():
       self.timeout_id = None
-    
+
     return self.error.is_ok() # continues the timer if there are no errors
 
   def _handle_error(self, error):
