@@ -23,6 +23,7 @@ class AssetSelectionWindow(Gtk.Window):
         for item in self.parent.coin.bases:
             self.base_store.append([item])
 
+        self.base_store.set_sort_column_id(0, Gtk.SortType.ASCENDING)
         self.quote_store = Gtk.ListStore(str)
         self.ex_store = Gtk.ListStore(str, str)
 
@@ -39,6 +40,7 @@ class AssetSelectionWindow(Gtk.Window):
         rend_exchange = Gtk.CellRendererText()
 
         col_base = Gtk.TreeViewColumn("Base", rend_base, text=0)
+        col_base.set_sort_column_id(0)
         col_quote = Gtk.TreeViewColumn("Quote", rend_quote, text=0)
         col_exchange = Gtk.TreeViewColumn("Exchange", rend_exchange, text=0)
 
@@ -89,7 +91,9 @@ class AssetSelectionWindow(Gtk.Window):
         self.current_base = model[iter][0]
         for quote in self.parent.coin.bases[self.current_base]:
             self.quote_store.append([quote])
-            self.view_quotes.set_cursor(0)
+
+        self.quote_store.set_sort_column_id(0, Gtk.SortType.ASCENDING)
+        self.view_quotes.set_cursor(0)
 
     def _quote_changed(self, selection):
         (model, iter) = selection.get_selected()
@@ -100,7 +104,9 @@ class AssetSelectionWindow(Gtk.Window):
         self.current_quote = model[iter][0]
         for exchange in self.parent.coin.bases[self.current_base][self.current_quote]:
             self.ex_store.append([exchange.get('name'), exchange.get('code')])
-            self.view_exchanges.set_cursor(0)
+
+        self.ex_store.set_sort_column_id(0, Gtk.SortType.ASCENDING)
+        self.view_exchanges.set_cursor(0)
 
     def _exchange_changed(self, selection):
         (model, iter) = selection.get_selected()

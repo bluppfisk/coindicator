@@ -64,7 +64,6 @@ class Coin(object):
     # Creates a structure of available assets (from_currency > to_currency > exchange)
     def _load_assets(self):
         self.assets = {}
-        # self.asset_store = Gtk.TreeStore(str)
 
         for exchange in self.EXCHANGES:
             self.assets[exchange.get('code')] = exchange.get('class')(None, self).get_asset_pairs()
@@ -78,14 +77,11 @@ class Coin(object):
 
                 if base not in bases:
                     bases[base] = {}
-                    # parent_base = self.asset_store.append(None, [base])
                 
                 if quote not in bases[base]:
                     bases[base][quote] = []
-                    # parent_quote = self.asset_store.append(parent_base, [quote])
 
                 bases[base][quote].append(self.find_exchange_by_code(exchange))
-                # self.asset_store.append(parent_quote, [exchange])
 
         self.bases = bases
 
