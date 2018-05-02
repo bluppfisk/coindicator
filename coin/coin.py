@@ -6,8 +6,6 @@
 # Sander Van de Moortel <sander.vandemoortel@gmail.com>
 # 
 
-from asset_selection import AssetSelectionWindow
-
 from os.path import abspath, dirname, isfile, basename
 import signal, yaml, logging, gi, glob, dbus, importlib
 from dbus.mainloop.glib import DBusGMainLoop
@@ -177,8 +175,6 @@ class Coin(object):
         self.instances.append(indicator)
         indicator.start()
 
-        AssetSelectionWindow(indicator)
-
     # adds many tickers
     def _add_many_indicators(self, tickers):
         for ticker in tickers:
@@ -201,6 +197,10 @@ class Coin(object):
 
     # Menu item to download any new assets from the exchanges
     def _discover_assets(self, widget):
+        for indicator in self.instances:
+            if indicator.asset_selection_window:
+                indicator.asset_selection_window.destroy()
+
         for exchange in self.EXCHANGES:
             exchange.get('class')(None, self).discover_assets()
 

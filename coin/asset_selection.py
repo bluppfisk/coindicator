@@ -7,7 +7,7 @@ from gi.repository.Gdk import Color
 
 class AssetSelectionWindow(Gtk.Window):
     def __init__(self, parent):
-        Gtk.Window.__init__(self, title="Select Assets")
+        Gtk.Window.__init__(self, title="Select Asset")
 
         self.parent = parent
         self.set_keep_above(True)
@@ -42,7 +42,9 @@ class AssetSelectionWindow(Gtk.Window):
         col_base = Gtk.TreeViewColumn("Base", rend_base, text=0)
         col_base.set_sort_column_id(0)
         col_quote = Gtk.TreeViewColumn("Quote", rend_quote, text=0)
+        col_quote.set_sort_column_id(0)
         col_exchange = Gtk.TreeViewColumn("Exchange", rend_exchange, text=0)
+        col_exchange.set_sort_column_id(0)
 
         self.view_bases.append_column(col_base)
         self.view_quotes.append_column(col_quote)
@@ -63,19 +65,27 @@ class AssetSelectionWindow(Gtk.Window):
         sw3.add(self.view_exchanges)
         grid.attach(sw3, 400,0,200,400)
 
-        buttonbox = Gtk.Box(spacing=2)
+        lbl_hint = Gtk.Label("Hint: Start typing in a list to search.")
+        grid.attach(lbl_hint, 100, 400, 400, 25)
+
+        buttonbox = Gtk.Box()
+
+        button_set_close = Gtk.Button('Set and Close')
+        button_set_close.connect("clicked", self._update_indicator)
+        button_set_close.set_can_default(True)
+        button_set_close.get_style_context().add_class(Gtk.STYLE_CLASS_SUGGESTED_ACTION)
 
         button_set = Gtk.Button('Set')
-        button_set.connect("clicked", self._update_indicator)
-        button_set.set_can_default(True)
-        button_set.get_style_context().add_class(Gtk.STYLE_CLASS_SUGGESTED_ACTION)
+        button_set.connect("clicked", self._close)
 
-        button_cancel = Gtk.Button('Cancel')
+        button_cancel = Gtk.Button('Close')
         button_cancel.connect("clicked", self._close)
+
+        buttonbox.pack_start(button_set_close, True, True, 0)
         buttonbox.pack_start(button_set, True, True, 0)
         buttonbox.pack_start(button_cancel, True, True, 0)
 
-        grid.attach(buttonbox, 0, 400, 200, 50)
+        grid.attach(buttonbox, 100, 425, 400, 50)
 
         self._select_currents()
 
@@ -132,6 +142,7 @@ class AssetSelectionWindow(Gtk.Window):
 
     def _update_indicator(self, widget):
         self.parent.change_assets(self.current_base, self.current_quote, self.current_exchange)
+        self._close(widget)
 
     def _close(self, widget):
         self.destroy()

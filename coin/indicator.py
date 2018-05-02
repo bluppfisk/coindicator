@@ -38,6 +38,8 @@ class Indicator(object):
         self.exchange.set_asset_pair_from_code(asset_pair)
         self.refresh_frequency = refresh
         self.default_label = default_label
+        self.asset_selection_window = None
+        self.alarm_settings_window = None
 
         self.prices = {}
         self.latest_response = 0 # helps with discarding outdated responses
@@ -146,7 +148,7 @@ class Indicator(object):
         menu.append(Gtk.SeparatorMenuItem())
 
         # settings menu
-        self.settings_menu = Gtk.MenuItem("Settings" + u"\u2026")
+        self.settings_menu = Gtk.MenuItem("Select Asset" + u"\u2026")
         self.settings_menu.connect("activate", self._settings)
         menu.append(self.settings_menu)
 
@@ -216,7 +218,11 @@ class Indicator(object):
         self.coin.remove_ticker(self)
 
     def _alarm_settings(self, widget):
-        AlarmSettingsWindow(self)
+        self.alarm_settings_window = AlarmSettingsWindow(self)
 
     def _settings(self, widget):
-        AssetSelectionWindow(self)
+        for indicator in self.coin.instances:
+            if indicator.asset_selection_window:
+                indicator.asset_selection_window.destroy()
+
+        self.asset_selection_window = AssetSelectionWindow(self)
