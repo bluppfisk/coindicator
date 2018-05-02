@@ -31,8 +31,9 @@ CATEGORIES = [
 ]
 
 class Indicator(object):
-    def __init__(self, coin, exchange, asset_pair, refresh, default_label):
+    def __init__(self, coin, unique_id, exchange, asset_pair, refresh, default_label):
         self.coin = coin # reference to main object
+        self.unique_id = unique_id
         self.alarm = Alarm(self) # alarm
         self.exchange = self.coin.find_exchange_by_code(exchange).get('class')(self)
         self.exchange.set_asset_pair_from_code(asset_pair)
@@ -47,7 +48,7 @@ class Indicator(object):
     # initialisation and start of indicator and exchanges
     def start(self):
         icon = self.coin.config.get('project_root') + '/resources/icon_32px.png'
-        self.indicator_widget = AppIndicator.Indicator.new("CoinPriceIndicator_" + str(len(self.coin.instances)), icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
+        self.indicator_widget = AppIndicator.Indicator.new("CoinPriceIndicator_" + str(self.unique_id), icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.indicator_widget.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.indicator_widget.set_menu(self._menu())
         self._start_exchange()
@@ -172,14 +173,6 @@ class Indicator(object):
         menu.show_all()
 
         return menu
-
-    ##
-    # Gets called by exchange instance when new asset pairs are discovered
-    # 
-    def rebuild_asset_menu(self):
-        self.exchange.stop()
-        self.indicator_widget.set_label('loading...', 'loading')
-        self.exchange.start()
 
     def _menu_refresh(self):
         refresh_menu = Gtk.Menu()

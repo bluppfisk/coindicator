@@ -181,6 +181,9 @@ class Exchange(object):
     timestamp = time.time()
     self._async_get(self._get_ticker_url(), validation=self.asset_pair, timestamp=timestamp, callback=self._handle_result)
     logging.info('Request with TS: ' + str(timestamp))
+    if not self.error.is_ok():
+      self.timeout_id = None
+    
     return self.error.is_ok() # continues the timer if there are no errors
 
   def _handle_error(self, error):
