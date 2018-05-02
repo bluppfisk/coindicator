@@ -148,7 +148,9 @@ class Bxinth(Exchange):
                 'quote': quote,
                 'name': base + ' to ' + quote,
                 'currency': quote.lower(),
-                'volumecurrency': base
+                'volumecurrency': base,
+                'primary_currency': quote,
+                'secondary_currency': base
             }
 
             asset_pairs.append(asset_pair)
@@ -169,7 +171,7 @@ class Bxinth(Exchange):
 
         query_result = [item for item in database 
                         if item['primary_currency'] == selected_asset['primary_currency'] and
-                           item['secondary_currency'] == selected_asset['secondary_currency'] ][0]
+                           item['secondary_currency'] == selected_asset['secondary_currency']][0]
 
         current = float(query_result['last_price'])
 
