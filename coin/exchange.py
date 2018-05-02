@@ -33,6 +33,7 @@ class Exchange(object):
     self.config = self.CONFIG
     self.exchange_name = self.config.get('name')
     self.started = False
+    self.asset_pair = {}
 
   ##
   # Abstract methods to be overwritten by the child classes
@@ -70,11 +71,20 @@ class Exchange(object):
     for ap in self.get_asset_pairs():
       if ap.get('base').upper() == base.upper() and ap.get('quote').upper() == quote.upper():
         self.asset_pair = ap
+    
+    if not self.asset_pair:
+      logging.warning("User.conf specifies unavailable asset pair, trying default. Run Asset Discovery again.")
+      self.asset_pair = ap
 
   def set_asset_pair_from_code(self, code):
     for ap in self.get_asset_pairs():
       if ap.get('pair').upper() == code.upper():
         self.asset_pair = ap
+        break
+
+    if not self.asset_pair:
+      logging.warning("User.conf specifies unavailable asset pair, trying default. Run Asset Discovery again.")
+      self.asset_pair = ap
 
   ##
   # Legacy function to make sure the hard-coded asset
