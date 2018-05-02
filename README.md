@@ -20,7 +20,7 @@ It currently supports the following exchanges:
 ![Screenshot](https://raw.githubusercontent.com/nilgradisnik/coinprice-indicator/master/resources/screenshot.png)
 
 ## Installation
-Tested and working on Ubuntu Linux 16.04 with Unity. On other systems and desktop managers (e.g. Ubuntu 17.10 with Gnome3), you can get the app working by installing Libappindicator support (see troubleshooting below).
+Tested and working on Ubuntu Linux 16.04 with Unity. On other systems and desktop managers (e.g. Ubuntu 17.10 with GNOME 3), you can get the app working by installing Libappindicator support (see troubleshooting below).
 
 Install python dependencies by running the following command:
 ```
@@ -42,7 +42,7 @@ Have a peek at the existing plug-ins for an example and don't forget to contribu
 ## Troubleshooting
 - If you're getting a `SyntaxError: Missing parentheses in call to 'print'.`, you may be using a Python2 library in there somewhere. Look through the error to identify which package it is. If it is `gi`, you can install the correct version with `sudo apt install python3-gi`. Additionally, you may have to uninstall the python2 gi library `pip3 uninstall gi` for it to work.
 
-- If you're not on an Ubuntu Linux or if you're not running the Unity desktop manager, you can still get the app running (depending on the system). Here's how to do it for Ubuntu 17.10 with Gnome3:
+- If you're not on an Ubuntu Linux or if you're not running the Unity desktop manager, you can still get the app running (depending on the system). Here's how to do it for Ubuntu 17.10 and Ubuntu 18.04 with GNOME 3:
 
 	* After running `make install`, run `sudo apt install gir1.2-appindicator3-0.1` to install libappindicator support.
 	* On Ubuntu, install the KStatusNotifierItem/AppIndicator support shell extension for Gnome from the Ubuntu Software Installer OR

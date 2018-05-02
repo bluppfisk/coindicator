@@ -5,6 +5,7 @@
 import logging
 from os.path import isfile
 from alarm import Alarm, AlarmSettingsWindow
+from asset_selection import AssetSelectionWindow
 from gi.repository import Gtk, GLib
 try:
     from gi.repository import AppIndicator3 as AppIndicator
@@ -144,10 +145,10 @@ class Indicator(object):
 
         menu.append(Gtk.SeparatorMenuItem())
 
-        # asset choice menu
-        self.asset_menu = Gtk.MenuItem("Assets")
-        self.asset_menu.set_submenu(self._menu_bases())
-        menu.append(self.asset_menu)
+        # settings menu
+        self.settings_menu = Gtk.MenuItem("Settings" + u"\u2026")
+        self.settings_menu.connect("activate", self._settings)
+        menu.append(self.settings_menu)
 
         # refresh rate choice menu
         self.refresh_menu = Gtk.MenuItem("Refresh")
@@ -176,9 +177,6 @@ class Indicator(object):
     def rebuild_asset_menu(self):
         self.exchange.stop()
         self.indicator_widget.set_label('loading...', 'loading')
-        GLib.idle_add(self.asset_menu.set_submenu, None)
-        GLib.idle_add(self.asset_menu.set_submenu, self._menu_bases())
-        GLib.idle_add(self.asset_menu.show_all)
         self.exchange.start()
 
     def _menu_refresh(self):
@@ -202,165 +200,23 @@ class Indicator(object):
             self.coin.save_settings()
             self.exchange.stop().start()
 
-    def rebuild_recents_menu(self):
-        counter = 0 
-        for item in self._build_recents_menu():
-            self.recent_group['base_group'][counter] = item
-            self.recent_group['base_group'][counter].show()
-            counter += 1
+    def change_assets(self, base, quote, exchange_code):
+        self.exchange.stop()
 
-    def _build_recents_menu(self):
-        recent_group = {
-            'base_group': [],
-            'subgroup_quotes': [],
-            'subgroup_exchanges': []
-        }
+        if self.exchange.get_code() is not exchange_code:
+            exchange_class = self.coin.find_exchange_by_code(exchange_code).get('class')
+            self.exchange = exchange_class(self)
 
-        for i in range(0,5):
-            if i > len(self.coin.settings.get('recent'))-1:
-                base_item = self.create_base_item(None, recent_group, hidden = True)
-            else:
-                base = self.coin.settings.get('recent')[i]
-                base_item = self.create_base_item(base, recent_group)
-            
-            yield base_item
+        self.exchange.set_asset_pair(base, quote)
 
-        self.recent_group = recent_group
-
-    def _menu_bases(self):
-        base_list_menu = Gtk.Menu()
-
-        # these are to keep track of all the option groups across menus
-        all_group = {
-            'base_group': [],
-            'subgroup_quotes': [],
-            'subgroup_exchanges': []
-        }
-
-        # build recents menu atop the assets
-        for item in self._build_recents_menu():
-            base_list_menu.append(item)
-
-        base_list_menu.append(Gtk.SeparatorMenuItem())
-
-        # sorting magic
-        bases = []
-        for base in self.coin.bases:
-            bases.append(base)
-        bases.sort()
-
-        # add all other assets, sorted
-        for base in bases:
-            base_item = self.create_base_item(base, all_group)
-            base_list_menu.append(base_item)
-
-        self.base_list_menu = base_list_menu
-
-        return base_list_menu
-
-    def create_base_item(self, base, group, hidden = False):
-        if hidden:
-            base_item = Gtk.RadioMenuItem.new_with_label(group.get('base_group'), 'hidden')
-            base_item.hide()
-        else:
-            base_item = Gtk.RadioMenuItem.new_with_label(group.get('base_group'), base)
-            base_item.set_submenu(self._menu_quotes(base, group.get('subgroup_quotes'), group.get('subgroup_exchanges')))
-        
-        group.get('base_group').append(base_item)
-
-        if self.exchange.asset_pair.get('base') == base:
-            base_item.set_active(True)
-
-        base_item.connect('toggled', self._handle_toggle, base)
-
-        return base_item
-
-    def _menu_quotes(self, base, subgroup_quotes, subgroup_exchanges):
-        quote_list_menu = Gtk.Menu()
-
-        # sorting magic
-        quotes = []
-        for quote in self.coin.bases[base]:
-            quotes.append(quote)
-        quotes.sort()
-
-        for quote in quotes:
-            quote_item = Gtk.RadioMenuItem.new_with_label(subgroup_quotes, quote)
-            quote_item.set_submenu(self._menu_exchanges(base, quote, subgroup_exchanges))
-            subgroup_quotes.append(quote_item)
-            quote_list_menu.append(quote_item)
-
-            if (self.exchange.asset_pair.get('quote') == quote) and (self.exchange.asset_pair.get('base') == base):
-                quote_item.set_active(True)
-
-            quote_item.connect('toggled', self._handle_toggle, base, quote)
-
-        return quote_list_menu
-
-    def _menu_exchanges(self, base, quote, subgroup_exchanges):
-        exchange_list_menu = Gtk.Menu()
-
-        # some sorting magic
-        exchanges = []
-        for exchange in self.coin.bases[base][quote]:
-            exchanges.append(exchange)        
-        exchanges = sorted(exchanges, key=lambda k: k['name'])
-
-        for exchange in exchanges:
-            exchange_item = Gtk.RadioMenuItem.new_with_label(subgroup_exchanges, exchange.get('name'))
-            subgroup_exchanges.append(exchange_item)
-            exchange_list_menu.append(exchange_item)
-
-            if (self.exchange.get_code() == exchange.get('code')) and (self.exchange.asset_pair.get('quote') == quote) and (self.exchange.asset_pair.get('base') == base):
-                exchange_item.set_active(True)
-
-            exchange_item.connect('activate', self._change_assets, base, quote, exchange.get('code'))
-
-        return exchange_list_menu
-
-    # this eliminates the strange side-effect that an item stays active
-    # when you hover over it and then mouse out
-    def _handle_toggle(self, widget, base=None, quote=None):
-        if base == None:
-            base = self.exchange.asset_pair.get('base')
-        if quote == None:
-            quote = self.exchange.asset_pair.get('quote')
-
-        if (self.exchange.asset_pair.get('quote') == quote) and (self.exchange.asset_pair.get('base') == base):
-            widget.set_active(True)
-        else:
-            widget.set_active(False)
-
-    # if the asset pairs change
-    def _change_assets(self, widget, base, quote, exchangeCode):
-        if widget.get_active():
-            # save for later
-            previous_base = self.exchange.asset_pair.get('base')
-
-            # stop the current exchange
-            self.exchange.stop()
-
-            # There must be an easier way to set the parent menu item active
-            widget.get_parent().get_attach_widget().set_active(True)
-            widget.get_parent().get_attach_widget().get_parent().get_attach_widget().set_active(True)
-
-            # change the exchange class if needed. This needs a factory by the way.
-            if self.exchange.get_code() is not exchangeCode:
-                exchange_class = self.coin.find_exchange_by_code(exchangeCode).get('class')
-                self.exchange = exchange_class(self)
-
-            # change exchange's asset pair
-            self.exchange.set_asset_pair(base, quote)
-
-            # add item to recents menu, recents menu will be rebuilt too
-            if previous_base is not base:
-                self.coin.add_new_recent_base(base)
-
-            self.coin.save_settings()
-            self._start_exchange()
+        self.coin.save_settings()
+        self._start_exchange()
 
     def _remove(self, widget):
         self.coin.remove_ticker(self)
 
     def _alarm_settings(self, widget):
         AlarmSettingsWindow(self)
+
+    def _settings(self, widget):
+        AssetSelectionWindow(self)

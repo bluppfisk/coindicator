@@ -6,6 +6,8 @@
 # Sander Van de Moortel <sander.vandemoortel@gmail.com>
 # 
 
+from asset_selection import AssetSelectionWindow
+
 from os.path import abspath, dirname, isfile, basename
 import signal, yaml, logging, gi, glob, dbus, importlib
 from dbus.mainloop.glib import DBusGMainLoop
@@ -62,6 +64,7 @@ class Coin(object):
     # Creates a structure of available assets (from_currency > to_currency > exchange)
     def _load_assets(self):
         self.assets = {}
+        # self.asset_store = Gtk.TreeStore(str)
 
         for exchange in self.EXCHANGES:
             self.assets[exchange.get('code')] = exchange.get('class')(None, self).get_asset_pairs()
@@ -75,11 +78,14 @@ class Coin(object):
 
                 if base not in bases:
                     bases[base] = {}
+                    # parent_base = self.asset_store.append(None, [base])
                 
                 if quote not in bases[base]:
                     bases[base][quote] = []
-                
+                    # parent_quote = self.asset_store.append(parent_base, [quote])
+
                 bases[base][quote].append(self.find_exchange_by_code(exchange))
+                # self.asset_store.append(parent_quote, [exchange])
 
         self.bases = bases
 
@@ -121,16 +127,16 @@ class Coin(object):
         except:
             logging.error('Settings file not writable')
 
-    # Add a new base to the recents settings, and push the last one off the edge
-    def add_new_recent_base(self, base):
-        if base in self.settings['recent']:
-            self.settings['recent'].remove(base)
+    # # Add a new base to the recents settings, and push the last one off the edge
+    # def add_new_recent_base(self, base):
+    #     if base in self.settings['recent']:
+    #         self.settings['recent'].remove(base)
 
-        self.settings['recent'] = self.settings['recent'][0:4]
-        self.settings['recent'].insert(0, base)
+    #     self.settings['recent'] = self.settings['recent'][0:4]
+    #     self.settings['recent'].insert(0, base)
 
-        for instance in self.instances:
-            instance.rebuild_recents_menu()
+    #     for instance in self.instances:
+    #         instance.rebuild_recents_menu()
 
     # Start the main indicator icon and its menu
     def _start_main(self):
@@ -174,6 +180,8 @@ class Coin(object):
         indicator = Indicator(self, exchange, asset_pair, refresh, default_label)
         self.instances.append(indicator)
         indicator.start()
+
+        AssetSelectionWindow(indicator)
 
     # adds many tickers
     def _add_many_indicators(self, tickers):
