@@ -2,7 +2,7 @@
 
 ![Coin Price logo](https://raw.github.com/nilgradisnik/coinprice-indicator/master/resources/logo_124px.png)
 
-Coin Price Indicator is a graphical cryptocurrency price indicator applet for Linux. It shows various price points in the indicator menu.
+Coin Price Indicator is a cryptocurrency price indicator applet for Linux.
 
 ## Features
 
@@ -69,3 +69,11 @@ For GNOME 3 set-ups, you will need to install LibAppIndicator support (see point
 	* On Ubuntu, install the KStatusNotifierItem/AppIndicator support shell extension for Gnome from the Ubuntu Software Installer OR
 	* On other systems, get the [KStatusNotifierItem/AppIndicator support shell extension for Gnome](https://extensions.gnome.org/extension/615/appindicator-support/) (there's a browser extension to help you; follow the instructions on the page)
 	* The Indicators should now show. If they don't, you may have to `sudo apt install gnome-tweak-tool` to manually activate the extension.
+
+## Sponsorship and Funding
+
+![Gitcoin logo](resources/gitcoin.png)
+
+This project has been funded in the past by generous maecenas @ghettodev through [Gitcoin](https://gitcoin.co/), a platform that directs the attention of bounty hunters (coders) to open issues and feature requests on Github.
+
+If you would like to sponsor a feature request, bug report or just donate to the project, be sure to check out [Gitcoin](https://gitcoin.co/).
