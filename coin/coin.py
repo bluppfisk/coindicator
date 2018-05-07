@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Coin Price indicator
-# 
+#
 # Nil Gradisnik <nil.gradisnik@gmail.com>
 # Sander Van de Moortel <sander.vandemoortel@gmail.com>
-# 
+#
 
 from os.path import abspath, dirname, isfile, basename
 import signal, yaml, logging, gi, glob, dbus, importlib
 from dbus.mainloop.glib import DBusGMainLoop
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
-from gi.repository import Gtk, GdkPixbuf, GObject
+from gi.repository import Gtk, GdkPixbuf
 try:
     from gi.repository import AppIndicator3 as AppIndicator
 except ImportError:
     from gi.repository import AppIndicator
 from indicator import Indicator
 
+
 PROJECT_ROOT = abspath(dirname(dirname(__file__)))
 SETTINGS_FILE = PROJECT_ROOT + '/user.conf'
+
 
 class Coin(object):
     config = yaml.load(open(PROJECT_ROOT + '/config.yaml', 'r'))
@@ -77,7 +79,7 @@ class Coin(object):
 
                 if base not in bases:
                     bases[base] = {}
-                
+
                 if quote not in bases[base]:
                     bases[base][quote] = []
 
@@ -95,15 +97,15 @@ class Coin(object):
         # set defaults if settings not defined
         if not self.settings.get('tickers'):
             self.settings['tickers'] = [{
-            'exchange': self.EXCHANGES[0].get('code'),
-            'asset_pair': self.assets[self.EXCHANGES[0].get('code')][0].get('pair'),
-            'refresh': 3,
-            'default_label': self.EXCHANGES[0].get('default_label')
-        }]
+                'exchange': self.EXCHANGES[0].get('code'),
+                'asset_pair': self.assets[self.EXCHANGES[0].get('code')][0].get('pair'),
+                'refresh': 3,
+                'default_label': self.EXCHANGES[0].get('default_label')
+            }]
 
         if not self.settings.get('recent'):
             self.settings['recent'] = ['BTC', 'ETH', 'XRP']
-        
+
     # saves settings for each ticker
     def save_settings(self):
         tickers = []
@@ -120,7 +122,7 @@ class Coin(object):
         try:
             with open(SETTINGS_FILE, 'w') as handle:
                 yaml.dump(self.settings, handle, default_flow_style=False)
-        except:
+        except IOError:
             logging.error('Settings file not writable')
 
     # # Add a new base to the recents settings, and push the last one off the edge
@@ -152,7 +154,7 @@ class Coin(object):
         self.discover_item = Gtk.MenuItem("Discover Assets")
         self.about_item = Gtk.MenuItem("About")
         self.quit_item = Gtk.MenuItem("Quit")
-        
+
         self.add_item.connect("activate", self._add_ticker)
         self.discover_item.connect("activate", self._discover_assets)
         self.about_item.connect("activate", self._about)
@@ -185,14 +187,14 @@ class Coin(object):
 
     # Menu item to add a ticker
     def _add_ticker(self, widget):
-        self._add_indicator(self.settings.get('tickers')[len(self.settings.get('tickers'))-1])
+        self._add_indicator(self.settings.get('tickers')[len(self.settings.get('tickers')) - 1])
         self.save_settings()
 
     # Remove ticker
     def remove_ticker(self, indicator):
-        if len(self.instances) == 1: # is it the last ticker?
-            Gtk.main_quit() # then quit entirely
-        else: # otherwise just remove this one
+        if len(self.instances) == 1:  # is it the last ticker?
+            Gtk.main_quit()  # then quit entirely
+        else:  # otherwise just remove this one
             indicator.exchange.stop()
             del indicator.indicator_widget
             self.instances.remove(indicator)
@@ -211,7 +213,7 @@ class Coin(object):
     def update_assets(self):
         self.discoveries += 1
         if self.discoveries < len(self.EXCHANGES):
-            return # wait until all exchanges finish discovery
+            return  # wait until all exchanges finish discovery
 
         self.discoveries = 0
         self._load_assets()
@@ -249,9 +251,10 @@ class Coin(object):
     def _quit_all(self, widget):
         Gtk.main_quit()
 
+
 coin = Coin()
 signal.signal(signal.SIGINT, Gtk.main_quit)  # ctrl+c exit
-DBusGMainLoop(set_as_default = True)
+DBusGMainLoop(set_as_default=True)
 bus = dbus.SystemBus()
 bus.add_signal_receiver(
     coin.handle_resume,

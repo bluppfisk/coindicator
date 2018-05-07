@@ -2,8 +2,8 @@
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GdkPixbuf
-from gi.repository.Gdk import Color
+from gi.repository import Gtk
+
 
 class AssetSelectionWindow(Gtk.Window):
     def __init__(self, parent):
@@ -53,17 +53,17 @@ class AssetSelectionWindow(Gtk.Window):
         sw = Gtk.ScrolledWindow()
         sw.set_vexpand(True)
         sw.add(self.view_bases)
-        grid.attach(sw, 0,0,200,400)
+        grid.attach(sw, 0, 0, 200, 400)
 
         sw2 = Gtk.ScrolledWindow()
         sw2.set_vexpand(True)
         sw2.add(self.view_quotes)
-        grid.attach(sw2, 200,0,200,400)
+        grid.attach(sw2, 200, 0, 200, 400)
 
         sw3 = Gtk.ScrolledWindow()
         sw3.set_vexpand(True)
         sw3.add(self.view_exchanges)
-        grid.attach(sw3, 400,0,200,400)
+        grid.attach(sw3, 400, 0, 200, 400)
 
         lbl_hint = Gtk.Label("Hint: Start typing in a list to search.")
         grid.attach(lbl_hint, 100, 400, 400, 25)
@@ -94,7 +94,7 @@ class AssetSelectionWindow(Gtk.Window):
 
     def _base_changed(self, selection):
         (model, iter) = selection.get_selected()
-        if iter == None:
+        if iter is None:
             return
 
         self.quote_store.clear()
@@ -107,7 +107,7 @@ class AssetSelectionWindow(Gtk.Window):
 
     def _quote_changed(self, selection):
         (model, iter) = selection.get_selected()
-        if iter == None:
+        if iter is None:
             return
 
         self.ex_store.clear()
@@ -120,7 +120,7 @@ class AssetSelectionWindow(Gtk.Window):
 
     def _exchange_changed(self, selection):
         (model, iter) = selection.get_selected()
-        if iter == None:
+        if iter is None:
             return
 
         self.current_exchange = model[iter][1]

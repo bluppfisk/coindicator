@@ -10,105 +10,106 @@ Response example
 
 from exchange import Exchange, CURRENCY
 
+
 class Bittrex(Exchange):
-  CONFIG = {
-    'name': 'Bittrex',
-    'ticker': 'https://bittrex.com/api/v1.1/public/getmarketsummary',
-    'discovery': 'https://bittrex.com/api/v1.1/public/getmarkets',
-    'asset_pairs': [
-      {
-        'isocode': 'XXBTZUSD',
-        'pair': 'USDT-BTC',
-        'name': 'BTC to USD',
-        'currency': CURRENCY['usd']
-      },
-      {
-        'isocode': 'XXLTZUSD',
-        'pair': 'USDT-LTC',
-        'name': 'LTC to USD',
-        'currency': CURRENCY['usd']
-      },
-      {
-        'isocode': 'XXETZUSD',
-        'pair': 'USDT-ETH',
-        'name': 'ETH to USD',
-        'currency': CURRENCY['usd']
-      },
-      {
-        'isocode': 'XXBCZBTC',
-        'pair': 'BTC-BCC',
-        'name': 'BCC to BTC',
-        'currency': CURRENCY['btc']
-      },
-      {
-        'isocode': 'XXETZBTC',
-        'pair': 'BTC-ETH',
-        'name': 'ETH to BTC',
-        'currency': CURRENCY['btc']
-      },
-      {
-        'isocode': 'XXRPZBTC',
-        'pair': 'BTC-XRP',
-        'name': 'XRP to BTC',
-        'currency': CURRENCY['btc']
-      },
-      {
-        'isocode': 'XXMRZBTC',
-        'pair': 'BTC-XMR',
-        'name': 'XMR to BTC',
-        'currency': CURRENCY['btc']
-      }
-    ]
-  }
-
-  def get_discovery_url(self):
-    return self.config.get('discovery')
-
-  def _parse_discovery(self, result):
-    asset_pairs = []
-    assets = result.get('result')
-    for asset in assets:
-      base = asset.get('MarketCurrency')
-      quote = asset.get('BaseCurrency')
-
-      names = {'DSH': 'DASH', 'TRST': 'TRUST', 'XZC': 'ZEC', 'GAM': 'GAME', 'BCC': 'BCH'}
-      if base in names:
-        base = names[base]
-
-      if quote in names:
-        quote = names[quote]
-
-      asset_pair = {
-        'pair': asset.get('MarketName'),
-        'base': base,
-        'quote': quote,
-        'name': base + ' to ' + quote,
-        'currency': quote.lower(),
-        'volumecurrency': base
-      }
-
-      asset_pairs.append(asset_pair)
-    
-    return asset_pairs
-
-  def _get_ticker_url(self):
-    return self.config['ticker'] + '?market=' + self.pair
-
-  def _parse_ticker(self, asset):
-    asset = asset['result'][0]
-
-    cur = asset.get('Last')
-    bid = asset.get('Bid')
-    high = asset.get('High')
-    low = asset.get('Low')
-    ask = asset.get('Ask')
-    vol = None
-
-    return {
-      'cur': cur,
-      'bid': bid,
-      'high': high,
-      'low': low,
-      'ask': ask,
-      'vol': vol
+    CONFIG = {
+        'name': 'Bittrex',
+        'ticker': 'https://bittrex.com/api/v1.1/public/getmarketsummary',
+        'discovery': 'https://bittrex.com/api/v1.1/public/getmarkets',
+        'asset_pairs': [
+            {
+                'isocode': 'XXBTZUSD',
+                'pair': 'USDT-BTC',
+                'name': 'BTC to USD',
+                'currency': CURRENCY['usd']
+            },
+            {
+                'isocode': 'XXLTZUSD',
+                'pair': 'USDT-LTC',
+                'name': 'LTC to USD',
+                'currency': CURRENCY['usd']
+            },
+            {
+                'isocode': 'XXETZUSD',
+                'pair': 'USDT-ETH',
+                'name': 'ETH to USD',
+                'currency': CURRENCY['usd']
+            },
+            {
+                'isocode': 'XXBCZBTC',
+                'pair': 'BTC-BCC',
+                'name': 'BCC to BTC',
+                'currency': CURRENCY['btc']
+            },
+            {
+                'isocode': 'XXETZBTC',
+                'pair': 'BTC-ETH',
+                'name': 'ETH to BTC',
+                'currency': CURRENCY['btc']
+            },
+            {
+                'isocode': 'XXRPZBTC',
+                'pair': 'BTC-XRP',
+                'name': 'XRP to BTC',
+                'currency': CURRENCY['btc']
+            },
+            {
+                'isocode': 'XXMRZBTC',
+                'pair': 'BTC-XMR',
+                'name': 'XMR to BTC',
+                'currency': CURRENCY['btc']
+            }
+        ]
     }
+
+    def get_discovery_url(self):
+        return self.config.get('discovery')
+
+    def _parse_discovery(self, result):
+        asset_pairs = []
+        assets = result.get('result')
+        for asset in assets:
+            base = asset.get('MarketCurrency')
+            quote = asset.get('BaseCurrency')
+
+            names = {'DSH': 'DASH', 'TRST': 'TRUST', 'XZC': 'ZEC', 'GAM': 'GAME', 'BCC': 'BCH'}
+            if base in names:
+                base = names[base]
+
+            if quote in names:
+                quote = names[quote]
+
+            asset_pair = {
+                'pair': asset.get('MarketName'),
+                'base': base,
+                'quote': quote,
+                'name': base + ' to ' + quote,
+                'currency': quote.lower(),
+                'volumecurrency': base
+            }
+
+            asset_pairs.append(asset_pair)
+
+        return asset_pairs
+
+    def _get_ticker_url(self):
+        return self.config['ticker'] + '?market=' + self.pair
+
+    def _parse_ticker(self, asset):
+        asset = asset['result'][0]
+
+        cur = asset.get('Last')
+        bid = asset.get('Bid')
+        high = asset.get('High')
+        low = asset.get('Low')
+        ask = asset.get('Ask')
+        vol = None
+
+        return {
+            'cur': cur,
+            'bid': bid,
+            'high': high,
+            'low': low,
+            'ask': ask,
+            'vol': vol
+        }

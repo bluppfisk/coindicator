@@ -14,7 +14,7 @@ except ImportError:
 
 logging.basicConfig(level=logging.ERROR)
 
-REFRESH_TIMES = [ # seconds
+REFRESH_TIMES = [  # seconds
     3,
     5,
     10,
@@ -30,11 +30,12 @@ CATEGORIES = [
     ('low', 'Low:\t\t')
 ]
 
+
 class Indicator(object):
     def __init__(self, coin, unique_id, exchange, asset_pair, refresh, default_label):
-        self.coin = coin # reference to main object
+        self.coin = coin  # reference to main object
         self.unique_id = unique_id
-        self.alarm = Alarm(self) # alarm
+        self.alarm = Alarm(self)  # alarm
         self.exchange = self.coin.find_exchange_by_code(exchange).get('class')(self)
         self.exchange.set_asset_pair_from_code(asset_pair)
         self.refresh_frequency = refresh
@@ -43,7 +44,7 @@ class Indicator(object):
         self.alarm_settings_window = None
 
         self.prices = {}
-        self.latest_response = 0 # helps with discarding outdated responses
+        self.latest_response = 0  # helps with discarding outdated responses
 
     # initialisation and start of indicator and exchanges
     def start(self):
@@ -66,9 +67,9 @@ class Indicator(object):
             label = 'select default label'
 
         self.indicator_widget.set_label(label, label)
-        
+
         for item, name in CATEGORIES:
-            price_menu_item = self.price_menu_items.get(item) # get menu item
+            price_menu_item = self.price_menu_items.get(item)  # get menu item
 
             # assigns prices to the corresponding menu items
             # if such a price value is returned from the exchange
@@ -132,7 +133,7 @@ class Indicator(object):
 
     def _menu(self):
         menu = Gtk.Menu()
-        self.price_group = [] # so that a radio button can be set on the active one
+        self.price_group = []  # so that a radio button can be set on the active one
 
         # hacky way to get every price item on the menu and filled
         self.price_menu_items = {}

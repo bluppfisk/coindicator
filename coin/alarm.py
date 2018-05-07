@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # Alarm
-# 
+#
 
 import gi, pygame, notify2
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
 from gi.repository.Gdk import Color
+
 
 class Alarm(object):
     def __init__(self, parent, ceil=None, floor=None):
@@ -31,7 +32,7 @@ class Alarm(object):
     ##
     # Checks the threshold property against a given price and
     # calls the notification function
-    # 
+    #
     def check(self, price):
         if self.ceil:
             if price > self.ceil:
@@ -48,7 +49,7 @@ class Alarm(object):
     ##
     # Creates a system notification. On Ubuntu 16.04, this is a translucent
     # bubble, of which only one can be shown at the same time.
-    # 
+    #
     def __notify(self, price, direction, threshold):
         exchange_name = self.parent.exchange.get_name()
         asset_name = self.parent.exchange.asset_pair.get('base')
@@ -63,7 +64,7 @@ class Alarm(object):
             logo = GdkPixbuf.Pixbuf.new_from_file(self.parent.coin.config['project_root'] + '/resources/icon_32px.png')
             n = notify2.Notification(title, message)
             n.set_icon_from_pixbuf(logo)
-            n.set_urgency(2) # highest
+            n.set_urgency(2)  # highest
             n.show()
 
 
@@ -123,7 +124,7 @@ class AlarmSettingsWindow(Gtk.Dialog):
         box = self.get_content_area()
         box.add(hbox)
         box.add(buttonbox)
-        entry_price.grab_focus() # focus on entry field
+        entry_price.grab_focus()  # focus on entry field
 
         self.show_all()
         self.grab_focus()
@@ -132,22 +133,22 @@ class AlarmSettingsWindow(Gtk.Dialog):
     # This function strips all but numbers and decimal points from
     # the entry field. If the value cannot be converted to a float,
     # the text colour will turn red.
-    # 
+    #
     def _strip_text(self, widget):
         widget.modify_fg(Gtk.StateFlags.NORMAL, None)
         text = widget.get_text().strip()
         filtered_text = (''.join([i for i in text if i in '0123456789.']))
         widget.set_text(filtered_text)
         try:
-            price = float(filtered_text)
+            float(filtered_text)
         except ValueError:
             widget.modify_fg(Gtk.StateFlags.NORMAL, Color(50000, 0, 0))
 
     ##
     # Sets the alarm threshold
-    # 
+    #
     def _set_alarm(self, widget, radio_over, entry_price):
-        above = radio_over.get_active() # if False, then 'under' must be True
+        above = radio_over.get_active()  # if False, then 'under' must be True
         try:
             price = float(entry_price.get_text())
             if above:
@@ -158,13 +159,13 @@ class AlarmSettingsWindow(Gtk.Dialog):
                 self.parent.alarm.set_ceil(None)
 
             self.destroy()
-        
+
         # if user attempts to set an incorrect value, the dialog box stays
         # and the field is emptied
         except ValueError:
             entry_price.set_text('')
             entry_price.grab_focus()
-    
+
     def _clear_alarm(self, widget):
         self.parent.alarm.deactivate()
         self.destroy()
