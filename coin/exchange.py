@@ -76,6 +76,7 @@ class Exchange(object):
         for ap in self.get_asset_pairs():
             if ap.get('base').upper() == base.upper() and ap.get('quote').upper() == quote.upper():
                 self.asset_pair = ap
+                break
 
         if not self.asset_pair:
             logging.warning("User.conf specifies unavailable asset pair, trying default. Run Asset Discovery again.")
