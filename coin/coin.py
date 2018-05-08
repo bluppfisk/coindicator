@@ -142,7 +142,8 @@ class Coin(object):
 
         icon = self.config['project_root'] + '/resources/icon_32px.png'
         self.logo_124px = GdkPixbuf.Pixbuf.new_from_file(self.config['project_root'] + '/resources/icon_32px.png')
-        self.main_item = AppIndicator.Indicator.new(self.config['app']['name'], icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
+        self.main_item = AppIndicator.Indicator.new(
+            self.config['app']['name'], icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.main_item.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.main_item.set_menu(self._menu())
 

@@ -49,7 +49,9 @@ class Indicator(object):
     # initialisation and start of indicator and exchanges
     def start(self):
         icon = self.coin.config.get('project_root') + '/resources/icon_32px.png'
-        self.indicator_widget = AppIndicator.Indicator.new("CoinPriceIndicator_" + str(self.unique_id), icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
+        self.indicator_widget = AppIndicator.Indicator.new(
+            "CoinPriceIndicator_" + str(self.unique_id),
+            icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.indicator_widget.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.indicator_widget.set_menu(self._menu())
         self._start_exchange()
@@ -95,7 +97,10 @@ class Indicator(object):
 
     # (re)starts the exchange logic and its timer
     def _start_exchange(self):
-        logging.info("Loading " + self.exchange.asset_pair.get('pair') + " from " + self.exchange.get_name() + " (" + str(self.refresh_frequency) + "s)")
+        logging.info(
+            "Loading " +
+            self.exchange.asset_pair.get('pair') + " from " +
+            self.exchange.get_name() + " (" + str(self.refresh_frequency) + "s)")
 
         # don't show any data until first response is in
         GLib.idle_add(self.indicator_widget.set_label, 'loading', 'loading')
@@ -109,9 +114,11 @@ class Indicator(object):
         currency = self.exchange.asset_pair.get('base').lower()
 
         if isfile(self.coin.config.get('project_root') + '/resources/' + currency + '.png'):
-            self.indicator_widget.set_icon(self.coin.config.get('project_root') + '/resources/' + currency + '.png')
+            self.indicator_widget.set_icon(
+                self.coin.config.get('project_root') + '/resources/' + currency + '.png')
         else:
-            self.indicator_widget.set_icon(self.coin.config.get('project_root') + '/resources/unknown-coin.png')
+            self.indicator_widget.set_icon(
+                self.coin.config.get('project_root') + '/resources/unknown-coin.png')
 
         self._make_default_label(self.default_label)
 
@@ -138,7 +145,8 @@ class Indicator(object):
         # hacky way to get every price item on the menu and filled
         self.price_menu_items = {}
         for price_type, name in CATEGORIES:
-            self.price_menu_items[price_type] = Gtk.RadioMenuItem.new_with_label(self.price_group, 'loading...')
+            self.price_menu_items[price_type] = Gtk.RadioMenuItem.new_with_label(
+                self.price_group, 'loading...')
             self.price_menu_items[price_type].connect('toggled', self._menu_make_label, price_type)
             self.price_group.append(self.price_menu_items.get(price_type))
             menu.append(self.price_menu_items.get(price_type))

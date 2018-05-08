@@ -195,7 +195,8 @@ class Exchange(object):
     def _check_price(self):
         self.pair = self.asset_pair.get('pair')
         timestamp = time.time()
-        self._async_get(self._get_ticker_url(), validation=self.asset_pair, timestamp=timestamp, callback=self._handle_result)
+        self._async_get(self._get_ticker_url(),
+                        validation=self.asset_pair, timestamp=timestamp, callback=self._handle_result)
         logging.info('Request with TS: ' + str(timestamp))
         if not self.error.is_ok():
             self.timeout_id = None
@@ -236,7 +237,9 @@ class Exchange(object):
 
         results = self._parse_ticker(asset)
         self.indicator.latest_response = timestamp
-        logging.info('Requests comes in with timestamp ' + str(timestamp) + ', last response at ' + str(self.indicator.latest_response))
+        logging.info(
+            'Requests comes in with timestamp ' + str(timestamp) +
+            ', last response at ' + str(self.indicator.latest_response))
 
         for item in CATEGORY:
             if results.get(item):
