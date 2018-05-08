@@ -197,6 +197,7 @@ class Exchange(object):
         timestamp = time.time()
         self._async_get(self._get_ticker_url(),
                         validation=self.asset_pair, timestamp=timestamp, callback=self._handle_result)
+
         logging.info('Request with TS: ' + str(timestamp))
         if not self.error.is_ok():
             self.timeout_id = None
@@ -271,17 +272,17 @@ class Exchange(object):
     # `callback` function when request returns.
     #
     def _async_get(self, *args, callback=None, timeout=5, validation=None, timestamp=None, **kwargs):
+        def _get_with_exception(*args, **kwargs):
+            try:
+                r = requests.get(*args, **kwargs)  # probably should do error code handling here
+                return r
+            except requests.exceptions.RequestException:
+                self._handle_error('Connection error')
+
         if callback:
             def _callback_with_args(response, *args, **kwargs):
                 callback(response, validation, timestamp)
             kwargs['hooks'] = {'response': _callback_with_args}
         kwargs['timeout'] = timeout
-        thread = Thread(target=self._get_with_exception, args=args, kwargs=kwargs)
+        thread = Thread(target=_get_with_exception, args=args, kwargs=kwargs)
         thread.start()
-
-    def _get_with_exception(self, *args, **kwargs):
-        try:
-            r = requests.get(*args, **kwargs)  # probably should do error code handling here
-            return r
-        except requests.exceptions.RequestException:
-            self._handle_error('Connection error')
