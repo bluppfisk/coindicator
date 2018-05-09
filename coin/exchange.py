@@ -1,7 +1,6 @@
 from gi.repository import GLib
 import logging, requests, time, pickle
 from error import Error
-from threading import Thread
 
 CURRENCY = {
     'usd': '$',
@@ -26,9 +25,10 @@ CATEGORY = {
 
 
 class Exchange(object):
-    def __init__(self, indicator=None, coin=None):
-        self.indicator = indicator
+    def __init__(self, coin=None, indicator=None):
         self.coin = coin
+        self.downloader = coin.downloader
+        self.indicator = indicator
         self.timeout_id = None
         self.error = Error(self)
         self.config = self.CONFIG
@@ -111,7 +111,7 @@ class Exchange(object):
     #
     def get_asset_pairs(self):
         try:
-            with open('./coin/exchanges/' + self.get_code() + '.conf', 'rb') as handle:
+            with open('./coin/exchanges/data/' + self.get_code() + '.conf', 'rb') as handle:
                 asset_pairs = pickle.loads(handle.read())
                 return asset_pairs
 
@@ -125,7 +125,7 @@ class Exchange(object):
     #
     def store_asset_pairs(self, asset_pairs):
         try:
-            with open('./coin/exchanges/' + self.get_code() + '.conf', 'wb') as handle:
+            with open('./coin/exchanges/data/' + self.get_code() + '.conf', 'wb') as handle:
                 pickle.dump(asset_pairs, handle)
         except IOError:
             logging.error('Could not write to config file')
@@ -135,7 +135,10 @@ class Exchange(object):
     # through the instance-specific method _get_discovery_url()
     #
     def discover_assets(self):
-        self._async_get(self.get_discovery_url(), callback=self._handle_discovery_result)
+        self.downloader.download(
+            self.get_discovery_url(),
+            callback=self._handle_discovery_result,
+            error=self._handle_error)
 
     ##
     # Deals with the result from the discovery HTTP request
@@ -169,7 +172,7 @@ class Exchange(object):
         return self
 
     ##
-    # Stop exchange, resets errors
+    # Stop exchange, reset errors
     #
     def stop(self):
         if self.timeout_id:
@@ -195,8 +198,10 @@ class Exchange(object):
     def _check_price(self):
         self.pair = self.asset_pair.get('pair')
         timestamp = time.time()
-        self._async_get(self._get_ticker_url(),
-                        validation=self.asset_pair, timestamp=timestamp, callback=self._handle_result)
+        self.downloader.download(
+            self._get_ticker_url(), validation=self.asset_pair,
+            timestamp=timestamp, callback=self._handle_result,
+            error=self._handle_error)
 
         logging.info('Request with TS: ' + str(timestamp))
         if not self.error.is_ok():
@@ -239,7 +244,7 @@ class Exchange(object):
         results = self._parse_ticker(asset)
         self.indicator.latest_response = timestamp
         logging.info(
-            'Requests comes in with timestamp ' + str(timestamp) +
+            'Response comes in with timestamp ' + str(timestamp) +
             ', last response at ' + str(self.indicator.latest_response))
 
         for item in CATEGORY:
@@ -266,23 +271,3 @@ class Exchange(object):
             i = -1
 
         return ('{0:.' + str(i + 2) + 'f}').format(number)
-
-    ##
-    # Makes request on a different thread, and optionally passes response to a
-    # `callback` function when request returns.
-    #
-    def _async_get(self, *args, callback=None, timeout=5, validation=None, timestamp=None, **kwargs):
-        def _get_with_exception(*args, **kwargs):
-            try:
-                r = requests.get(*args, **kwargs)  # probably should do error code handling here
-                return r
-            except requests.exceptions.RequestException:
-                self._handle_error('Connection error')
-
-        if callback:
-            def _callback_with_args(response, *args, **kwargs):
-                callback(response, validation, timestamp)
-            kwargs['hooks'] = {'response': _callback_with_args}
-        kwargs['timeout'] = timeout
-        thread = Thread(target=_get_with_exception, args=args, kwargs=kwargs)
-        thread.start()

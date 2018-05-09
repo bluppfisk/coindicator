@@ -8,6 +8,8 @@
 
 from os.path import abspath, dirname, isfile, basename
 import signal, yaml, logging, gi, glob, dbus, importlib
+from indicator import Indicator
+from async_downloader import AsyncDownloader
 from dbus.mainloop.glib import DBusGMainLoop
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
@@ -16,7 +18,6 @@ try:
     from gi.repository import AppIndicator3 as AppIndicator
 except ImportError:
     from gi.repository import AppIndicator
-from indicator import Indicator
 
 
 PROJECT_ROOT = abspath(dirname(dirname(__file__)))
@@ -28,6 +29,7 @@ class Coin(object):
     config['project_root'] = PROJECT_ROOT
 
     def __init__(self):
+        self.downloader = AsyncDownloader()
         self.unique_id = 0
 
         self._load_exchanges()
@@ -68,7 +70,7 @@ class Coin(object):
         self.assets = {}
 
         for exchange in self.EXCHANGES:
-            self.assets[exchange.get('code')] = exchange.get('class')(None, self).get_asset_pairs()
+            self.assets[exchange.get('code')] = exchange.get('class')(self, None).get_asset_pairs()
 
         # inverse the hierarchy for easier asset selection
         bases = {}
@@ -208,7 +210,7 @@ class Coin(object):
                 indicator.asset_selection_window.destroy()
 
         for exchange in self.EXCHANGES:
-            exchange.get('class')(None, self).discover_assets()
+            exchange.get('class')(self, None).discover_assets()
 
     # When discovery completes, reload currencies and rebuild menus of all instances
     def update_assets(self):

@@ -2,11 +2,12 @@
 # Ubuntu App indicator
 # https://unity.ubuntu.com/projects/appindicators/
 
-import logging
+import logging, gi
 from os.path import isfile
 from alarm import Alarm, AlarmSettingsWindow
 from asset_selection import AssetSelectionWindow
 from gi.repository import Gtk, GLib
+gi.require_version('AppIndicator3', '0.1')
 try:
     from gi.repository import AppIndicator3 as AppIndicator
 except ImportError:
@@ -36,7 +37,7 @@ class Indicator(object):
         self.coin = coin  # reference to main object
         self.unique_id = unique_id
         self.alarm = Alarm(self)  # alarm
-        self.exchange = self.coin.find_exchange_by_code(exchange).get('class')(self)
+        self.exchange = self.coin.find_exchange_by_code(exchange).get('class')(coin, self)
         self.exchange.set_asset_pair_from_code(asset_pair)
         self.refresh_frequency = refresh
         self.default_label = default_label
@@ -209,7 +210,7 @@ class Indicator(object):
 
         if self.exchange.get_code() is not exchange_code:
             exchange_class = self.coin.find_exchange_by_code(exchange_code).get('class')
-            self.exchange = exchange_class(self)
+            self.exchange = exchange_class(self.coin, self)
 
         self.exchange.set_asset_pair(base, quote)
 

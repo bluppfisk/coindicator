@@ -68,15 +68,16 @@ class Alarm(object):
             n.show()
 
 
-class AlarmSettingsWindow(Gtk.Dialog):
+class AlarmSettingsWindow(Gtk.Window):
     def __init__(self, parent):
-        Gtk.Dialog.__init__(self, "Set price alert", None, 0)
+        Gtk.Window.__init__(self, title="Set price alert")
 
         self.parent = parent
         self.set_keep_above(True)
         self.set_border_width(5)
         self.set_modal(True)
 
+        self.grid = Gtk.Grid()
         label = Gtk.Label("Alert if the active price is")
 
         hbox = Gtk.Box(spacing=2)
@@ -121,9 +122,9 @@ class AlarmSettingsWindow(Gtk.Dialog):
         buttonbox.pack_start(button_cancel, True, True, 0)
 
         # Display in content area
-        box = self.get_content_area()
-        box.add(hbox)
-        box.add(buttonbox)
+        self.grid.attach(hbox, 0, 0, 200, 50)
+        self.grid.attach(buttonbox, 0, 50, 200, 50)
+        self.add(self.grid)
         entry_price.grab_focus()  # focus on entry field
 
         self.show_all()
