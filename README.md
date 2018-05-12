@@ -30,7 +30,7 @@ You will need Git and Python 3.5 or higher.
 Clone the repository and install python dependencies by running the following commands:
 
 ```
- git clone git@github.com:nilgradisnik/coinprice-indicator
+ git clone https://github.com/nilgradisnik/coinprice-indicator.git
  cd coinprice-indicator
  make install
 ```
