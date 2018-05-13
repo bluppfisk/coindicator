@@ -7,7 +7,7 @@
 #
 
 from os.path import abspath, dirname, isfile, basename
-import signal, yaml, logging, gi, glob, dbus, importlib
+import signal, yaml, logging, gi, glob, dbus, importlib, notify2
 from indicator import Indicator
 from async_downloader import AsyncDownloader
 from dbus.mainloop.glib import DBusGMainLoop
@@ -40,6 +40,7 @@ class Coin(object):
         self.instances = []
         self.discoveries = 0
         self._add_many_indicators(self.settings.get('tickers'))
+        self._start_gui()
 
     # Load exchange 'plug-ins' from exchanges dir
     def _load_exchanges(self):
@@ -142,12 +143,23 @@ class Coin(object):
     def _start_main(self):
         print(self.config.get('app').get('name') + ' v' + self.config['app']['version'] + " running!")
 
-        icon = self.config['project_root'] + '/resources/icon_32px.png'
-        self.logo_124px = GdkPixbuf.Pixbuf.new_from_file(self.config['project_root'] + '/resources/icon_32px.png')
+        self.icon = self.config['project_root'] + '/resources/icon_32px.png'
         self.main_item = AppIndicator.Indicator.new(
-            self.config['app']['name'], icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
+            self.config['app']['name'], self.icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.main_item.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.main_item.set_menu(self._menu())
+
+    def _start_gui(self):
+        signal.signal(signal.SIGINT, Gtk.main_quit)  # ctrl+c exit
+        DBusGMainLoop(set_as_default=True)
+        bus = dbus.SystemBus()
+        bus.add_signal_receiver(
+            self.handle_resume,
+            None,
+            'org.freedesktop.login1.Manager',
+            'org.freedesktop.login1'
+        )
+        Gtk.main()
 
     # Program main menu
     def _menu(self):
@@ -205,6 +217,8 @@ class Coin(object):
 
     # Menu item to download any new assets from the exchanges
     def _discover_assets(self, widget):
+        self.main_item.set_icon(self.config['project_root'] + '/resources/loading.png')
+
         for indicator in self.instances:
             if indicator.asset_selection_window:
                 indicator.asset_selection_window.destroy()
@@ -221,6 +235,14 @@ class Coin(object):
         self.discoveries = 0
         self._load_assets()
 
+        if notify2.init(self.config['app']['name']):
+            n = notify2.Notification(self.config['app']['name'], "Finished discovering new assets", self.icon)
+            n.set_urgency(1)
+            n.timeout = 2000
+            n.show()
+
+        self.main_item.set_icon(self.icon)
+
     # Handle system resume by refreshing all tickers
     def handle_resume(self, sleeping, *args):
         if not sleeping:
@@ -229,6 +251,7 @@ class Coin(object):
 
     # Shows an About dialog
     def _about(self, widget):
+        logo_124px = GdkPixbuf.Pixbuf.new_from_file(self.config['project_root'] + '/resources/icon_32px.png')
         about = Gtk.AboutDialog()
         about.set_program_name(self.config['app']['name'])
         about.set_comments(self.config['app']['description'])
@@ -244,7 +267,7 @@ class Coin(object):
         about.add_credit_section('Exchange plugins', contributors)
         about.set_artists([self.config['artist']['name'] + ' <' + self.config['artist']['email'] + '>'])
         about.set_license_type(Gtk.License.MIT_X11)
-        about.set_logo(self.logo_124px)
+        about.set_logo(logo_124px)
         about.set_keep_above(True)
         res = about.run()
         if res == -4 or -6:  # close events
@@ -256,13 +279,3 @@ class Coin(object):
 
 
 coin = Coin()
-signal.signal(signal.SIGINT, Gtk.main_quit)  # ctrl+c exit
-DBusGMainLoop(set_as_default=True)
-bus = dbus.SystemBus()
-bus.add_signal_receiver(
-    coin.handle_resume,
-    None,
-    'org.freedesktop.login1.Manager',
-    'org.freedesktop.login1'
-)
-Gtk.main()

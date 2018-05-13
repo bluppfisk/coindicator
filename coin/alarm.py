@@ -47,8 +47,8 @@ class Alarm(object):
         return False
 
     ##
-    # Creates a system notification. On Ubuntu 16.04, this is a translucent
-    # bubble, of which only one can be shown at the same time.
+    # Creates a system notification. On Ubuntu 16.04 with Unity 7, this is a
+    # translucent bubble, of which only one can be shown at the same time.
     #
     def __notify(self, price, direction, threshold):
         exchange_name = self.parent.exchange.get_name()
