@@ -58,17 +58,20 @@ class Coin():
             class_name = plugin.capitalize()
             class_ = getattr(importlib.import_module('exchanges.' + plugin), class_name)
 
-            self.EXCHANGES.append({
-                'code': plugin,
-                'name': class_name,
-                'class': class_,
-                'default_label': class_.get_default_label()
-            })
+            self.EXCHANGES.append(class_)
+
+            # self.EXCHANGES.append({
+            #     'code': plugin,
+            #     'name': class_name,
+            #     'class': class_,
+            #     'default_label': class_.get_default_label()
+            # })
 
     # find an exchange
     def find_exchange_by_code(self, code):
         for exchange in self.EXCHANGES:
-            if exchange.get('code').lower() == code.lower():
+            if exchange.get_code() == code.lower():
+            # if exchange.get('code').lower() == code.lower():
                 return exchange
 
     # Creates a structure of available assets (from_currency > to_currency > exchange)
@@ -76,7 +79,7 @@ class Coin():
         self.assets = {}
 
         for exchange in self.EXCHANGES:
-            self.assets[exchange.get('code')] = exchange.get('class').get_asset_pairs()
+            self.assets[exchange.get_code()] = exchange.get_asset_pairs()
 
         # inverse the hierarchy for easier asset selection
         bases = {}
@@ -105,10 +108,10 @@ class Coin():
         # set defaults if settings not defined
         if not self.settings.get('tickers'):
             self.settings['tickers'] = [{
-                'exchange': self.EXCHANGES[0].get('code'),
-                'asset_pair': self.assets[self.EXCHANGES[0].get('code')][0].get('pair'),
+                'exchange': self.EXCHANGES[0].get_code(),
+                'asset_pair': self.assets[self.EXCHANGES[0].get_code()][0].get('pair'),
                 'refresh': 3,
-                'default_label': self.EXCHANGES[0].get('default_label')
+                'default_label': self.EXCHANGES[0].get_default_label()
             }]
 
         if not self.settings.get('recent'):
@@ -148,9 +151,9 @@ class Coin():
     def _start_main(self):
         print(self.config.get('app').get('name') + ' v' + self.config['app']['version'] + " running!")
 
-        self.icon = self.config['project_root'] + '/resources/icon_32px.png'
+        self.icon = self.config.get('project_root') + '/resources/icon_32px.png'
         self.main_item = AppIndicator.Indicator.new(
-            self.config['app']['name'], self.icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
+            self.config.get('app').get('name'), self.icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.main_item.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.main_item.set_menu(self._menu())
 
@@ -222,14 +225,14 @@ class Coin():
 
     # Menu item to download any new assets from the exchanges
     def _discover_assets(self, widget):
-        self.main_item.set_icon(self.config['project_root'] + '/resources/loading.png')
+        self.main_item.set_icon(self.config.get('project_root') + '/resources/loading.png')
 
         for indicator in self.instances:
             if indicator.asset_selection_window:
                 indicator.asset_selection_window.destroy()
 
         for exchange in self.EXCHANGES:
-            exchange.get('class').discover_assets(AsyncCommandDownloader(), self.update_assets)
+            exchange.discover_assets(AsyncCommandDownloader(), self.update_assets)
 
     # When discovery completes, reload currencies and rebuild menus of all instances
     def update_assets(self):
@@ -240,8 +243,8 @@ class Coin():
         self.discoveries = 0
         self._load_assets()
 
-        if notify2.init(self.config['app']['name']):
-            n = notify2.Notification(self.config['app']['name'], "Finished discovering new assets", self.icon)
+        if notify2.init(self.config.get('app').get('name')):
+            n = notify2.Notification(self.config.get('app').get('name'), "Finished discovering new assets", self.icon)
             n.set_urgency(1)
             n.timeout = 2000
             n.show()
@@ -256,21 +259,21 @@ class Coin():
 
     # Shows an About dialog
     def _about(self, widget):
-        logo_124px = GdkPixbuf.Pixbuf.new_from_file(self.config['project_root'] + '/resources/icon_32px.png')
+        logo_124px = GdkPixbuf.Pixbuf.new_from_file(self.config.get('project_root') + '/resources/icon_32px.png')
         about = Gtk.AboutDialog()
-        about.set_program_name(self.config['app']['name'])
-        about.set_comments(self.config['app']['description'])
-        about.set_version(self.config['app']['version'])
-        about.set_website(self.config['app']['url'])
+        about.set_program_name(self.config.get('app').get('name'))
+        about.set_comments(self.config.get('app').get('description'))
+        about.set_version(self.config.get('app').get('version'))
+        about.set_website(self.config.get('app').get('url'))
         authors = []
-        for author in self.config['authors']:
-            authors.append(author['name'] + ' <' + author['email'] + '>')
+        for author in self.config.get('authors'):
+            authors.append(author['name'] + ' <' + author.get('email') + '>')
         about.set_authors(authors)
         contributors = []
-        for contributor in self.config['contributors']:
-            contributors.append(contributor['name'] + ' <' + contributor['email'] + '>')
+        for contributor in self.config.get('contributors'):
+            contributors.append(contributor.get('name') + ' <' + contributor.get('email') + '>')
         about.add_credit_section('Exchange plugins', contributors)
-        about.set_artists([self.config['artist']['name'] + ' <' + self.config['artist']['email'] + '>'])
+        about.set_artists([self.config.get('artist').get('name') + ' <' + self.config.get('artist').get('email') + '>'])
         about.set_license_type(Gtk.License.MIT_X11)
         about.set_logo(logo_124px)
         about.set_keep_above(True)

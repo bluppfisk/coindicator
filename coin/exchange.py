@@ -29,10 +29,9 @@ CATEGORY = {
 
 
 class Exchange(object):
-    def __init__(self, coin=None, indicator=None):
-        self.coin = coin
-        self.downloader = coin.downloader
+    def __init__(self, indicator=None):
         self.indicator = indicator
+        self.downloader = indicator.coin.downloader
         self.timeout_id = None
         self.error = Error(self)
         self.started = False

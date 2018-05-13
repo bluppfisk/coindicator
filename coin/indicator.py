@@ -41,7 +41,7 @@ class Indicator(object):
         self.coin = coin  # reference to main object
         self.unique_id = unique_id
         self.alarm = Alarm(self)  # alarm
-        self.exchange = self.coin.find_exchange_by_code(exchange).get('class')(coin, self)
+        self.exchange = self.coin.find_exchange_by_code(exchange)(self)
         self.exchange.set_asset_pair_from_code(asset_pair)
         self.refresh_frequency = refresh
         self.default_label = default_label
@@ -213,8 +213,8 @@ class Indicator(object):
         self.exchange.stop()
 
         if self.exchange.get_code() is not exchange_code:
-            exchange_class = self.coin.find_exchange_by_code(exchange_code).get('class')
-            self.exchange = exchange_class(self.coin, self)
+            exchange_class = self.coin.find_exchange_by_code(exchange_code)
+            self.exchange = exchange_class(self)
 
         self.exchange.set_asset_pair(base, quote)
 
@@ -225,7 +225,7 @@ class Indicator(object):
         self.coin.remove_ticker(self)
 
     def _alarm_settings(self, widget):
-        self.alarm_settings_window = AlarmSettingsWindow(self)
+        self.alarm_settings_window = AlarmSettingsWindow(self, self.prices.get(self.default_label))
 
     def _settings(self, widget):
         for indicator in self.coin.instances:

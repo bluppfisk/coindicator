@@ -14,7 +14,7 @@ from gi.repository.Gdk import Color
 class Alarm(object):
     def __init__(self, parent, ceil=None, floor=None):
         self.parent = parent
-        self.app_name = parent.coin.config['app']['name']
+        self.app_name = parent.coin.config.get('app').get('name')
         self.ceil = ceil
         self.floor = floor
         self.active = False
@@ -62,9 +62,9 @@ class Alarm(object):
 
         if notify2.init(self.app_name):
             if pygame.init():
-                pygame.mixer.music.load(self.parent.coin.config['project_root'] + '/resources/ca-ching.wav')
+                pygame.mixer.music.load(self.parent.coin.config.get('project_root') + '/resources/ca-ching.wav')
                 pygame.mixer.music.play()
-            logo = GdkPixbuf.Pixbuf.new_from_file(self.parent.coin.config['project_root'] + '/resources/icon_32px.png')
+            logo = GdkPixbuf.Pixbuf.new_from_file(self.parent.coin.config.get('project_root') + '/resources/icon_32px.png')
             n = notify2.Notification(title, message)
             n.set_icon_from_pixbuf(logo)
             n.set_urgency(2)  # highest
@@ -72,7 +72,7 @@ class Alarm(object):
 
 
 class AlarmSettingsWindow(Gtk.Window):
-    def __init__(self, parent):
+    def __init__(self, parent, price):
         Gtk.Window.__init__(self, title="Set price alert")
 
         self.parent = parent
@@ -86,8 +86,6 @@ class AlarmSettingsWindow(Gtk.Window):
         hbox = Gtk.Box(spacing=2)
         radio_over = Gtk.RadioButton.new_with_label(None, 'above')
         radio_under = Gtk.RadioButton.new_with_label_from_widget(radio_over, 'below')
-
-        price = 0
 
         # Get existing alarm settings
         if self.parent.alarm.active:
