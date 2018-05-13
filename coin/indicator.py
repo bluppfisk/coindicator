@@ -1,17 +1,21 @@
-# -*- coding: utf-8 -*-
 # Ubuntu App indicator
 # https://unity.ubuntu.com/projects/appindicators/
 
-import logging, gi
+import logging
+import gi
+
 from os.path import isfile
 from alarm import Alarm, AlarmSettingsWindow
 from asset_selection import AssetSelectionWindow
 from gi.repository import Gtk, GLib
+
 gi.require_version('AppIndicator3', '0.1')
+
 try:
     from gi.repository import AppIndicator3 as AppIndicator
 except ImportError:
     from gi.repository import AppIndicator
+
 
 logging.basicConfig(level=logging.ERROR)
 

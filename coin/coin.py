@@ -1,19 +1,24 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # Coin Price indicator
 #
 # Nil Gradisnik <nil.gradisnik@gmail.com>
 # Sander Van de Moortel <sander.vandemoortel@gmail.com>
 #
 
+import signal
+import yaml
+import logging
+import glob
+import dbus
+import importlib
+import notify2
+
 from os.path import abspath, dirname, isfile, basename
-import signal, yaml, logging, gi, glob, dbus, importlib, notify2
 from indicator import Indicator
 from async_downloader import AsyncDownloader
 from dbus.mainloop.glib import DBusGMainLoop
-gi.require_version('Gtk', '3.0')
-gi.require_version('AppIndicator3', '0.1')
 from gi.repository import Gtk, GdkPixbuf
+
 try:
     from gi.repository import AppIndicator3 as AppIndicator
 except ImportError:

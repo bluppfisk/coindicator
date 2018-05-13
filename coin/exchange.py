@@ -1,5 +1,8 @@
+import logging
+import time
+import pickle
+
 from gi.repository import GLib
-import logging, requests, time, pickle
 from error import Error
 
 CURRENCY = {

@@ -1,9 +1,12 @@
-# -*- coding: utf-8 -*-
 # Alarm
 #
 
-import gi, pygame, notify2
+import gi
+import pygame
+import notify2
+
 gi.require_version('Gtk', '3.0')
+
 from gi.repository import Gtk, GdkPixbuf
 from gi.repository.Gdk import Color
 
