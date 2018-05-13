@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Binance
 # https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md
 # By Lari Taskula <lari@taskula.fi>
@@ -34,13 +32,15 @@ class Binance(Exchange):
     #     ]
     # }
 
-    def _get_discovery_url(self):
-        return self.discovery
+    @classmethod
+    def _get_discovery_url(cls):
+        return cls.discovery
 
     def _get_ticker_url(self):
         return self.ticker + '?symbol=' + self.pair
 
-    def _parse_discovery(self, result):
+    @staticmethod
+    def _parse_discovery(result):
         asset_pairs = []
         assets = result.get('symbols')
         for asset in assets:

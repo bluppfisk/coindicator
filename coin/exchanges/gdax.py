@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Gdax
 # https://api.gdax.com/
 # By Sander Van de Moortel <sander.vandemoortel@gmail.com>
@@ -89,13 +87,15 @@ class Gdax(Exchange):
     #     ]
     # }
 
-    def _get_discovery_url(self):
-        return self.discovery
+    @classmethod
+    def _get_discovery_url(cls):
+        return cls.discovery
 
     def _get_ticker_url(self):
         return self.ticker + self.pair + '/ticker'
 
-    def _parse_discovery(self, result):
+    @staticmethod
+    def _parse_discovery(result):
         asset_pairs = []
         for asset in result:
             base = asset.get('base_currency')

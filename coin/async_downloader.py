@@ -2,7 +2,7 @@ import requests
 from threading import Thread
 
 
-class AsyncDownloader(object):
+class AsyncDownloader():
     def __init__(self):
         pass
 
@@ -13,8 +13,7 @@ class AsyncDownloader(object):
     def download(self, *args, error=None, callback=None, timeout=5, validation=None, timestamp=None, **kwargs):
         def _get_with_exception(*args, **kwargs):
             try:
-                r = requests.get(*args, **kwargs)  # probably should do error code handling here
-                return r
+                requests.get(*args, **kwargs)  # probably should do error code handling _handle_error
             except requests.exceptions.RequestException:
                 error('Connection error')
                 # self._handle_error('Connection error')
@@ -26,3 +25,40 @@ class AsyncDownloader(object):
         kwargs['timeout'] = timeout
         thread = Thread(target=_get_with_exception, args=args, kwargs=kwargs)
         thread.start()
+
+
+class DownloadCommand():
+    def __init__(self, url, callback):
+        self.callback = callback
+        self.timeout = 5
+        self.timestamp = None
+        self.error = None
+        self.url = url
+        self.response = None
+
+
+class AsyncCommandDownloader():
+    def execute(self, command, callback):
+        def _callback_with_args(response, **kwargs):
+            command.response = response
+            callback(command)
+
+        kwargs = {
+            'command': command,
+            'callback': _callback_with_args
+        }
+
+        thread = Thread(target=AsyncCommandDownloader.download, kwargs=kwargs)
+        thread.start()
+
+    @staticmethod
+    def download(command, callback):
+        kwargs = {
+            'timeout': command.timeout,
+            'hooks': {'response': callback}
+        }
+
+        try:
+            requests.get(command.url, **kwargs)
+        except requests.exceptions.RequestException:
+            command.error("Connection error")

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Gemini
 # https://docs.gemini.com/rest-api/
 # By Rick Ramstetter <rick@anteaterllc.com>
@@ -51,13 +49,15 @@ class Gemini(Exchange):
     #     ]
     # }
 
-    def _get_discovery_url(self):
-        return self.discovery
+    @classmethod
+    def _get_discovery_url(cls):
+        return cls.discovery
 
     def _get_ticker_url(self):
         return self.ticker + self.pair
 
-    def _parse_discovery(self, result):
+    @staticmethod
+    def _parse_discovery(result):
         asset_pairs = []
         for asset in result:
             base = asset[0:3].upper()

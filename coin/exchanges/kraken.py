@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Kraken
 # https://www.kraken.com/help/api#public-market-data
 # By Nil Gradisnik <nil.gradisnik@gmail.com>
@@ -84,13 +82,15 @@ class Kraken(Exchange):
     #     ]
     # }
 
-    def _get_discovery_url(self):
-        return self.discovery
+    @classmethod
+    def _get_discovery_url(cls):
+        return cls.discovery
 
     def _get_ticker_url(self):
         return self.ticker + '?pair=' + self.pair
 
-    def _parse_discovery(self, result):
+    @staticmethod
+    def _parse_discovery(result):
         asset_pairs = []
         assets = result.get('result')
         for asset in assets:

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Bittrex
 # https://bittrex.com/Home/Api
 # By "Sir Paul" <wizzard94@github.com>
@@ -80,13 +78,15 @@ class Bittrex(Exchange):
     #     ]
     # }
 
-    def _get_discovery_url(self):
-        return self.discovery
+    @classmethod
+    def _get_discovery_url(cls):
+        return cls.discovery
 
     def _get_ticker_url(self):
         return self.ticker + '?market=' + self.pair
 
-    def _parse_discovery(self, result):
+    @staticmethod
+    def _parse_discovery(result):
         asset_pairs = []
         assets = result.get('result')
         for asset in assets:

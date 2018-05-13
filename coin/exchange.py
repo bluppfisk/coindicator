@@ -4,6 +4,7 @@ import pickle
 
 from gi.repository import GLib
 from error import Error
+from async_downloader import DownloadCommand
 
 CURRENCY = {
     'usd': '$',
@@ -34,23 +35,24 @@ class Exchange(object):
         self.indicator = indicator
         self.timeout_id = None
         self.error = Error(self)
-        # self.config = self.CONFIG
-        # self.exchange_name = self.name
         self.started = False
         self.asset_pair = {}
 
     ##
     # Abstract methods to be overwritten by the child classes
     #
-    def _get_discovery_url(self):
+    @classmethod
+    def _get_discovery_url():
         pass
 
-    def _parse_discovery(self, data):
+    @classmethod
+    def _parse_discovery(data):
         pass
 
     def _get_ticker_url(self):
         pass
 
+    @classmethod
     def _parse_ticker(self, data):
         pass
 
@@ -146,29 +148,40 @@ class Exchange(object):
     # Discovers assets from the exchange's API url retrieved
     # through the instance-specific method _get_discovery_url()
     #
-    def discover_assets(self):
-        self.downloader.download(
-            self._get_discovery_url(),
-            callback=self._handle_discovery_result,
-            error=self._handle_error)
+    @classmethod
+    def discover_assets(cls, downloader, callback):
+        command = DownloadCommand(cls._get_discovery_url(), callback)
+        command.error = cls._handle_discovery_error
+        downloader.execute(command, cls._handle_discovery_result)
+
+            # cls._get_discovery_url(),
+            # callback=cls._handle_discovery_result,
+            # error=cls._handle_discovery_error,
+            # caller=caller)
 
     ##
     # Deals with the result from the discovery HTTP request
     # Should probably be merged with _handle_result() later
     #
-    def _handle_discovery_result(self, data, *args, **kwargs):
+    @classmethod
+    def _handle_discovery_result(cls, command):
+        data = command.response
         if data.status_code is not 200:
-            self._handle_error('API server returned an error: ' + str(data.status_code))
+            cls._handle_discovery_error('API server returned an error: ' + str(data.status_code))
 
         try:
             result = data.json()
-            asset_pairs = self._parse_discovery(result)
-            self.normalise_assets()
-            self.store_asset_pairs(asset_pairs)
+            asset_pairs = cls._parse_discovery(result)
+            cls.normalise_assets()
+            cls.store_asset_pairs(asset_pairs)
         except Exception as e:
-            self._handle_error(e)
+            cls._handle_discovery_error(str(e))
 
-        self.coin.update_assets()  # update the asset menus of all instances
+        command.callback()  # update the asset menus of all instances
+
+    @classmethod
+    def _handle_discovery_error(cls, msg):
+        logging.warning("Asset Discovery: " + msg)
 
     ##
     # Start exchange
@@ -210,10 +223,15 @@ class Exchange(object):
     def _check_price(self):
         self.pair = self.asset_pair.get('pair')
         timestamp = time.time()
-        self.downloader.download(
-            self._get_ticker_url(), validation=self.asset_pair,
-            timestamp=timestamp, callback=self._handle_result,
-            error=self._handle_error)
+        command = DownloadCommand(self._get_ticker_url(), self.indicator.update_gui)
+        command.timestamp = timestamp
+        command.error = self._handle_error
+        command.validation = self.asset_pair
+        self.downloader.execute(command, self._handle_result)
+        # self.downloader.download(
+        #     self._get_ticker_url(), validation=self.asset_pair,
+        #     timestamp=timestamp, callback=self._handle_result,
+        #     error=self._handle_error)
 
         logging.info('Request with TS: ' + str(timestamp))
         if not self.error.is_ok():
@@ -225,19 +243,21 @@ class Exchange(object):
         self.error.log(str(error))
         self.error.increment()
 
-    def _handle_result(self, data, validation, timestamp):
+    # def _handle_result(self, data, validation, timestamp):
+    def _handle_result(self, command):
+        data = command.response
         # Check to see if the returning response is still valid
         # (user may have changed exchanges before the request finished)
         if not self.started:
             logging.info("Discarding packet for inactive exchange")
             return
 
-        if validation is not self.asset_pair:  # we've already moved on.
+        if command.validation is not self.asset_pair:  # we've already moved on.
             logging.info("Discarding packet for wrong asset pair or exchange")
             return
 
         # also check if a newer response hasn't already been returned
-        if timestamp < self.indicator.latest_response:  # this is an older request
+        if command.timestamp < self.indicator.latest_response:  # this is an older request
             logging.info("Discarding outdated packet")
             return
 
@@ -254,9 +274,9 @@ class Exchange(object):
             return
 
         results = self._parse_ticker(asset)
-        self.indicator.latest_response = timestamp
+        self.indicator.latest_response = command.timestamp
         logging.info(
-            'Response comes in with timestamp ' + str(timestamp) +
+            'Response comes in with timestamp ' + str(command.timestamp) +
             ', last response at ' + str(self.indicator.latest_response))
 
         for item in CATEGORY:
@@ -265,7 +285,8 @@ class Exchange(object):
 
         self.error.reset()
 
-        GLib.idle_add(self.indicator.update_gui)
+        # GLib.idle_add(self.indicator.update_gui)
+        GLib.idle_add(command.callback)
 
     ##
     # Rounds a number to a meaningful number of decimal places

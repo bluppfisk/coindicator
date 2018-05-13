@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Bitstamp
 # https://www.bitstamp.net/api/
 # By Nil Gradisnik <nil.gradisnik@gmail.com>
@@ -34,13 +32,15 @@ class Bitstamp(Exchange):
     #     ]
     # }
 
-    def _get_discovery_url(self):
-        return self.discovery
+    @classmethod
+    def _get_discovery_url(cls):
+        return cls.discovery
 
     def _get_ticker_url(self):
         return self.ticker + self.pair
 
-    def _parse_discovery(self, result):
+    @staticmethod
+    def _parse_discovery(result):
         asset_pairs = []
         for asset in result:
             basequote = asset.get('name').split('/')

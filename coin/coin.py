@@ -15,7 +15,7 @@ import notify2
 
 from os.path import abspath, dirname, isfile, basename
 from indicator import Indicator
-from async_downloader import AsyncDownloader
+from async_downloader import AsyncDownloader, AsyncCommandDownloader
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import Gtk, GdkPixbuf
 
@@ -34,7 +34,7 @@ class Coin():
     config['project_root'] = PROJECT_ROOT
 
     def __init__(self):
-        self.downloader = AsyncDownloader()
+        self.downloader = AsyncCommandDownloader()
         self.unique_id = 0
 
         self._load_exchanges()
@@ -229,7 +229,7 @@ class Coin():
                 indicator.asset_selection_window.destroy()
 
         for exchange in self.EXCHANGES:
-            exchange.get('class')(self, None).discover_assets()
+            exchange.get('class').discover_assets(AsyncCommandDownloader(), self.update_assets)
 
     # When discovery completes, reload currencies and rebuild menus of all instances
     def update_assets(self):

@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-
-# Bx.in.th Api
+# Bx.in.th
 # https://bx.in.th/api/
 # By Theppasith N. <tutorgaming@gmail.com>
 
@@ -149,13 +147,15 @@ class Bxinth(Exchange):
     #     ]
     # }
 
-    def _get_discovery_url(self):
-        return self.discovery
+    @classmethod
+    def _get_discovery_url(cls):
+        return cls.discovery
 
     def _get_ticker_url(self):
         return self.ticker
 
-    def _parse_discovery(self, result):
+    @staticmethod
+    def _parse_discovery(result):
         asset_pairs = []
         for asset in result:
             base = result[asset].get('secondary_currency')
