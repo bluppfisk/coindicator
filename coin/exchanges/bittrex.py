@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Bittrex
 # https://bittrex.com/Home/Api
 # By "Sir Paul" <wizzard94@github.com>
@@ -12,60 +10,83 @@ from exchange import Exchange, CURRENCY
 
 
 class Bittrex(Exchange):
-    CONFIG = {
-        'name': 'Bittrex',
-        'ticker': 'https://bittrex.com/api/v1.1/public/getmarketsummary',
-        'discovery': 'https://bittrex.com/api/v1.1/public/getmarkets',
-        'asset_pairs': [
-            {
-                'isocode': 'XXBTZUSD',
-                'pair': 'USDT-BTC',
-                'name': 'BTC to USD',
-                'currency': CURRENCY['usd']
-            },
-            {
-                'isocode': 'XXLTZUSD',
-                'pair': 'USDT-LTC',
-                'name': 'LTC to USD',
-                'currency': CURRENCY['usd']
-            },
-            {
-                'isocode': 'XXETZUSD',
-                'pair': 'USDT-ETH',
-                'name': 'ETH to USD',
-                'currency': CURRENCY['usd']
-            },
-            {
-                'isocode': 'XXBCZBTC',
-                'pair': 'BTC-BCC',
-                'name': 'BCC to BTC',
-                'currency': CURRENCY['btc']
-            },
-            {
-                'isocode': 'XXETZBTC',
-                'pair': 'BTC-ETH',
-                'name': 'ETH to BTC',
-                'currency': CURRENCY['btc']
-            },
-            {
-                'isocode': 'XXRPZBTC',
-                'pair': 'BTC-XRP',
-                'name': 'XRP to BTC',
-                'currency': CURRENCY['btc']
-            },
-            {
-                'isocode': 'XXMRZBTC',
-                'pair': 'BTC-XMR',
-                'name': 'XMR to BTC',
-                'currency': CURRENCY['btc']
-            }
-        ]
-    }
+    name = "Bittrex"
+    code = "bittrex"
 
-    def get_discovery_url(self):
-        return self.config.get('discovery')
+    ticker = "https://bittrex.com/api/v1.1/public/getmarketsummary"
+    discovery = "https://bittrex.com/api/v1.1/public/getmarkets"
 
-    def _parse_discovery(self, result):
+    default_label = "cur"
+
+    asset_pairs = [
+        {'isocode': 'XXBTZUSD', 'pair': 'USDT-BTC', 'name': 'BTC to USD', 'currency': CURRENCY['usd']},
+        {'isocode': 'XXLTZUSD', 'pair': 'USDT-LTC', 'name': 'LTC to USD', 'currency': CURRENCY['usd']},
+        {'isocode': 'XXETZUSD', 'pair': 'USDT-ETH', 'name': 'ETH to USD', 'currency': CURRENCY['usd']},
+        {'isocode': 'XXBCZBTC', 'pair': 'BTC-BCC', 'name': 'BCC to BTC', 'currency': CURRENCY['btc']},
+        {'isocode': 'XXETZBTC', 'pair': 'BTC-ETH', 'name': 'ETH to BTC', 'currency': CURRENCY['btc']},
+        {'isocode': 'XXRPZBTC', 'pair': 'BTC-XRP', 'name': 'XRP to BTC', 'currency': CURRENCY['btc']},
+        {'isocode': 'XXMRZBTC', 'pair': 'BTC-XMR', 'name': 'XMR to BTC', 'currency': CURRENCY['btc']}
+    ]
+
+    # CONFIG = {
+    #     'name': 'Bittrex',
+    #     'ticker': 'https://bittrex.com/api/v1.1/public/getmarketsummary',
+    #     'discovery': 'https://bittrex.com/api/v1.1/public/getmarkets',
+    #     'asset_pairs': [
+    #         {
+    #             'isocode': 'XXBTZUSD',
+    #             'pair': 'USDT-BTC',
+    #             'name': 'BTC to USD',
+    #             'currency': CURRENCY['usd']
+    #         },
+    #         {
+    #             'isocode': 'XXLTZUSD',
+    #             'pair': 'USDT-LTC',
+    #             'name': 'LTC to USD',
+    #             'currency': CURRENCY['usd']
+    #         },
+    #         {
+    #             'isocode': 'XXETZUSD',
+    #             'pair': 'USDT-ETH',
+    #             'name': 'ETH to USD',
+    #             'currency': CURRENCY['usd']
+    #         },
+    #         {
+    #             'isocode': 'XXBCZBTC',
+    #             'pair': 'BTC-BCC',
+    #             'name': 'BCC to BTC',
+    #             'currency': CURRENCY['btc']
+    #         },
+    #         {
+    #             'isocode': 'XXETZBTC',
+    #             'pair': 'BTC-ETH',
+    #             'name': 'ETH to BTC',
+    #             'currency': CURRENCY['btc']
+    #         },
+    #         {
+    #             'isocode': 'XXRPZBTC',
+    #             'pair': 'BTC-XRP',
+    #             'name': 'XRP to BTC',
+    #             'currency': CURRENCY['btc']
+    #         },
+    #         {
+    #             'isocode': 'XXMRZBTC',
+    #             'pair': 'BTC-XMR',
+    #             'name': 'XMR to BTC',
+    #             'currency': CURRENCY['btc']
+    #         }
+    #     ]
+    # }
+
+    @classmethod
+    def _get_discovery_url(cls):
+        return cls.discovery
+
+    def _get_ticker_url(self):
+        return self.ticker + '?market=' + self.pair
+
+    @staticmethod
+    def _parse_discovery(result):
         asset_pairs = []
         assets = result.get('result')
         for asset in assets:
@@ -91,9 +112,6 @@ class Bittrex(Exchange):
             asset_pairs.append(asset_pair)
 
         return asset_pairs
-
-    def _get_ticker_url(self):
-        return self.config['ticker'] + '?market=' + self.pair
 
     def _parse_ticker(self, asset):
         asset = asset['result'][0]

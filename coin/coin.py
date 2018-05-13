@@ -1,33 +1,40 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # Coin Price indicator
 #
 # Nil Gradisnik <nil.gradisnik@gmail.com>
 # Sander Van de Moortel <sander.vandemoortel@gmail.com>
 #
 
+import signal
+import yaml
+import logging
+import glob
+import dbus
+import importlib
+import notify2
+
 from os.path import abspath, dirname, isfile, basename
-import signal, yaml, logging, gi, glob, dbus, importlib
+from indicator import Indicator
+from async_downloader import AsyncDownloader, AsyncCommandDownloader
 from dbus.mainloop.glib import DBusGMainLoop
-gi.require_version('Gtk', '3.0')
-gi.require_version('AppIndicator3', '0.1')
 from gi.repository import Gtk, GdkPixbuf
+
 try:
     from gi.repository import AppIndicator3 as AppIndicator
 except ImportError:
     from gi.repository import AppIndicator
-from indicator import Indicator
 
 
 PROJECT_ROOT = abspath(dirname(dirname(__file__)))
 SETTINGS_FILE = PROJECT_ROOT + '/user.conf'
 
 
-class Coin(object):
+class Coin():
     config = yaml.load(open(PROJECT_ROOT + '/config.yaml', 'r'))
     config['project_root'] = PROJECT_ROOT
 
     def __init__(self):
+        self.downloader = AsyncCommandDownloader()
         self.unique_id = 0
 
         self._load_exchanges()
@@ -38,6 +45,7 @@ class Coin(object):
         self.instances = []
         self.discoveries = 0
         self._add_many_indicators(self.settings.get('tickers'))
+        self._start_gui()
 
     # Load exchange 'plug-ins' from exchanges dir
     def _load_exchanges(self):
@@ -50,17 +58,20 @@ class Coin(object):
             class_name = plugin.capitalize()
             class_ = getattr(importlib.import_module('exchanges.' + plugin), class_name)
 
-            self.EXCHANGES.append({
-                'code': plugin,
-                'name': class_name,
-                'class': class_,
-                'default_label': class_.CONFIG.get('default_label') or 'cur'
-            })
+            self.EXCHANGES.append(class_)
+
+            # self.EXCHANGES.append({
+            #     'code': plugin,
+            #     'name': class_name,
+            #     'class': class_,
+            #     'default_label': class_.get_default_label()
+            # })
 
     # find an exchange
     def find_exchange_by_code(self, code):
         for exchange in self.EXCHANGES:
-            if exchange.get('code').lower() == code.lower():
+            if exchange.get_code() == code.lower():
+            # if exchange.get('code').lower() == code.lower():
                 return exchange
 
     # Creates a structure of available assets (from_currency > to_currency > exchange)
@@ -68,7 +79,7 @@ class Coin(object):
         self.assets = {}
 
         for exchange in self.EXCHANGES:
-            self.assets[exchange.get('code')] = exchange.get('class')(None, self).get_asset_pairs()
+            self.assets[exchange.get_code()] = exchange.get_asset_pairs()
 
         # inverse the hierarchy for easier asset selection
         bases = {}
@@ -97,10 +108,10 @@ class Coin(object):
         # set defaults if settings not defined
         if not self.settings.get('tickers'):
             self.settings['tickers'] = [{
-                'exchange': self.EXCHANGES[0].get('code'),
-                'asset_pair': self.assets[self.EXCHANGES[0].get('code')][0].get('pair'),
+                'exchange': self.EXCHANGES[0].get_code(),
+                'asset_pair': self.assets[self.EXCHANGES[0].get_code()][0].get('pair'),
                 'refresh': 3,
-                'default_label': self.EXCHANGES[0].get('default_label')
+                'default_label': self.EXCHANGES[0].get_default_label()
             }]
 
         if not self.settings.get('recent'):
@@ -140,12 +151,23 @@ class Coin(object):
     def _start_main(self):
         print(self.config.get('app').get('name') + ' v' + self.config['app']['version'] + " running!")
 
-        icon = self.config['project_root'] + '/resources/icon_32px.png'
-        self.logo_124px = GdkPixbuf.Pixbuf.new_from_file(self.config['project_root'] + '/resources/icon_32px.png')
+        self.icon = self.config.get('project_root') + '/resources/icon_32px.png'
         self.main_item = AppIndicator.Indicator.new(
-            self.config['app']['name'], icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
+            self.config.get('app').get('name'), self.icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.main_item.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.main_item.set_menu(self._menu())
+
+    def _start_gui(self):
+        signal.signal(signal.SIGINT, Gtk.main_quit)  # ctrl+c exit
+        DBusGMainLoop(set_as_default=True)
+        bus = dbus.SystemBus()
+        bus.add_signal_receiver(
+            self.handle_resume,
+            None,
+            'org.freedesktop.login1.Manager',
+            'org.freedesktop.login1'
+        )
+        Gtk.main()
 
     # Program main menu
     def _menu(self):
@@ -203,12 +225,14 @@ class Coin(object):
 
     # Menu item to download any new assets from the exchanges
     def _discover_assets(self, widget):
+        self.main_item.set_icon(self.config.get('project_root') + '/resources/loading.png')
+
         for indicator in self.instances:
             if indicator.asset_selection_window:
                 indicator.asset_selection_window.destroy()
 
         for exchange in self.EXCHANGES:
-            exchange.get('class')(None, self).discover_assets()
+            exchange.discover_assets(AsyncCommandDownloader(), self.update_assets)
 
     # When discovery completes, reload currencies and rebuild menus of all instances
     def update_assets(self):
@@ -219,6 +243,14 @@ class Coin(object):
         self.discoveries = 0
         self._load_assets()
 
+        if notify2.init(self.config.get('app').get('name')):
+            n = notify2.Notification(self.config.get('app').get('name'), "Finished discovering new assets", self.icon)
+            n.set_urgency(1)
+            n.timeout = 2000
+            n.show()
+
+        self.main_item.set_icon(self.icon)
+
     # Handle system resume by refreshing all tickers
     def handle_resume(self, sleeping, *args):
         if not sleeping:
@@ -227,22 +259,23 @@ class Coin(object):
 
     # Shows an About dialog
     def _about(self, widget):
+        logo_124px = GdkPixbuf.Pixbuf.new_from_file(self.config.get('project_root') + '/resources/icon_32px.png')
         about = Gtk.AboutDialog()
-        about.set_program_name(self.config['app']['name'])
-        about.set_comments(self.config['app']['description'])
-        about.set_version(self.config['app']['version'])
-        about.set_website(self.config['app']['url'])
+        about.set_program_name(self.config.get('app').get('name'))
+        about.set_comments(self.config.get('app').get('description'))
+        about.set_version(self.config.get('app').get('version'))
+        about.set_website(self.config.get('app').get('url'))
         authors = []
-        for author in self.config['authors']:
-            authors.append(author['name'] + ' <' + author['email'] + '>')
+        for author in self.config.get('authors'):
+            authors.append(author['name'] + ' <' + author.get('email') + '>')
         about.set_authors(authors)
         contributors = []
-        for contributor in self.config['contributors']:
-            contributors.append(contributor['name'] + ' <' + contributor['email'] + '>')
+        for contributor in self.config.get('contributors'):
+            contributors.append(contributor.get('name') + ' <' + contributor.get('email') + '>')
         about.add_credit_section('Exchange plugins', contributors)
-        about.set_artists([self.config['artist']['name'] + ' <' + self.config['artist']['email'] + '>'])
+        about.set_artists([self.config.get('artist').get('name') + ' <' + self.config.get('artist').get('email') + '>'])
         about.set_license_type(Gtk.License.MIT_X11)
-        about.set_logo(self.logo_124px)
+        about.set_logo(logo_124px)
         about.set_keep_above(True)
         res = about.run()
         if res == -4 or -6:  # close events
@@ -254,13 +287,3 @@ class Coin(object):
 
 
 coin = Coin()
-signal.signal(signal.SIGINT, Gtk.main_quit)  # ctrl+c exit
-DBusGMainLoop(set_as_default=True)
-bus = dbus.SystemBus()
-bus.add_signal_receiver(
-    coin.handle_resume,
-    None,
-    'org.freedesktop.login1.Manager',
-    'org.freedesktop.login1'
-)
-Gtk.main()

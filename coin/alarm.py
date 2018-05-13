@@ -1,9 +1,12 @@
-# -*- coding: utf-8 -*-
 # Alarm
 #
 
-import gi, pygame, notify2
+import gi
+import pygame
+import notify2
+
 gi.require_version('Gtk', '3.0')
+
 from gi.repository import Gtk, GdkPixbuf
 from gi.repository.Gdk import Color
 
@@ -11,7 +14,7 @@ from gi.repository.Gdk import Color
 class Alarm(object):
     def __init__(self, parent, ceil=None, floor=None):
         self.parent = parent
-        self.app_name = parent.coin.config['app']['name']
+        self.app_name = parent.coin.config.get('app').get('name')
         self.ceil = ceil
         self.floor = floor
         self.active = False
@@ -47,8 +50,8 @@ class Alarm(object):
         return False
 
     ##
-    # Creates a system notification. On Ubuntu 16.04, this is a translucent
-    # bubble, of which only one can be shown at the same time.
+    # Creates a system notification. On Ubuntu 16.04 with Unity 7, this is a
+    # translucent bubble, of which only one can be shown at the same time.
     #
     def __notify(self, price, direction, threshold):
         exchange_name = self.parent.exchange.get_name()
@@ -59,31 +62,30 @@ class Alarm(object):
 
         if notify2.init(self.app_name):
             if pygame.init():
-                pygame.mixer.music.load(self.parent.coin.config['project_root'] + '/resources/ca-ching.wav')
+                pygame.mixer.music.load(self.parent.coin.config.get('project_root') + '/resources/ca-ching.wav')
                 pygame.mixer.music.play()
-            logo = GdkPixbuf.Pixbuf.new_from_file(self.parent.coin.config['project_root'] + '/resources/icon_32px.png')
+            logo = GdkPixbuf.Pixbuf.new_from_file(self.parent.coin.config.get('project_root') + '/resources/icon_32px.png')
             n = notify2.Notification(title, message)
             n.set_icon_from_pixbuf(logo)
             n.set_urgency(2)  # highest
             n.show()
 
 
-class AlarmSettingsWindow(Gtk.Dialog):
-    def __init__(self, parent):
-        Gtk.Dialog.__init__(self, "Set price alert", None, 0)
+class AlarmSettingsWindow(Gtk.Window):
+    def __init__(self, parent, price):
+        Gtk.Window.__init__(self, title="Set price alert")
 
         self.parent = parent
         self.set_keep_above(True)
         self.set_border_width(5)
         self.set_modal(True)
 
+        self.grid = Gtk.Grid()
         label = Gtk.Label("Alert if the active price is")
 
         hbox = Gtk.Box(spacing=2)
         radio_over = Gtk.RadioButton.new_with_label(None, 'above')
         radio_under = Gtk.RadioButton.new_with_label_from_widget(radio_over, 'below')
-
-        price = 0
 
         # Get existing alarm settings
         if self.parent.alarm.active:
@@ -121,9 +123,9 @@ class AlarmSettingsWindow(Gtk.Dialog):
         buttonbox.pack_start(button_cancel, True, True, 0)
 
         # Display in content area
-        box = self.get_content_area()
-        box.add(hbox)
-        box.add(buttonbox)
+        self.grid.attach(hbox, 0, 0, 200, 50)
+        self.grid.attach(buttonbox, 0, 50, 200, 50)
+        self.add(self.grid)
         entry_price.grab_focus()  # focus on entry field
 
         self.show_all()

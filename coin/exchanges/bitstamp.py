@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Bitstamp
 # https://www.bitstamp.net/api/
 # By Nil Gradisnik <nil.gradisnik@gmail.com>
@@ -8,24 +6,41 @@ from exchange import Exchange, CURRENCY
 
 
 class Bitstamp(Exchange):
-    CONFIG = {
-        'name': 'Bitstamp',
-        'ticker': 'https://www.bitstamp.net/api/v2/ticker/',
-        'discovery': 'https://www.bitstamp.net/api/v2/trading-pairs-info/',
-        'asset_pairs': [
-            {
-                'isocode': 'XXBTZUSD',
-                'pair': 'XXBTZUSD',
-                'name': 'BTC to USD',
-                'currency': CURRENCY['usd']
-            }
-        ]
-    }
+    name = "Bitstamp"
+    code = "bitstamp"
 
-    def get_discovery_url(self):
-        return self.config.get('discovery')
+    ticker = "https://www.bitstamp.net/api/v2/ticker/"
+    discovery = "https://www.bitstamp.net/api/v2/trading-pairs-info/"
 
-    def _parse_discovery(self, result):
+    default_label = "cur"
+
+    asset_pairs = [
+        {'isocode': 'XXBTZUSD', 'pair': 'XXBTZUSD', 'name': 'BTC to USD', 'currency': CURRENCY['usd']}
+    ]
+
+    # CONFIG = {
+    #     'name': 'Bitstamp',
+    #     'ticker': 'https://www.bitstamp.net/api/v2/ticker/',
+    #     'discovery': 'https://www.bitstamp.net/api/v2/trading-pairs-info/',
+    #     'asset_pairs': [
+    #         {
+    #             'isocode': 'XXBTZUSD',
+    #             'pair': 'XXBTZUSD',
+    #             'name': 'BTC to USD',
+    #             'currency': CURRENCY['usd']
+    #         }
+    #     ]
+    # }
+
+    @classmethod
+    def _get_discovery_url(cls):
+        return cls.discovery
+
+    def _get_ticker_url(self):
+        return self.ticker + self.pair
+
+    @staticmethod
+    def _parse_discovery(result):
         asset_pairs = []
         for asset in result:
             basequote = asset.get('name').split('/')
@@ -44,9 +59,6 @@ class Bitstamp(Exchange):
             asset_pairs.append(asset_pair)
 
         return asset_pairs
-
-    def _get_ticker_url(self):
-        return self.config.get('ticker') + self.pair
 
     def _parse_ticker(self, asset):
         cur = asset.get('last')

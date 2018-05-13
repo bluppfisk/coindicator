@@ -1,9 +1,8 @@
 *.pyc
-.idea/
 node_modules
-startmany.yaml
 dist/
 Coin_Price_Indicator.egg-info
 user.conf
-coin/exchanges/*.conf
 *.conf_
+build/
+__pycache__

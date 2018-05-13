@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Gemini
 # https://docs.gemini.com/rest-api/
 # By Rick Ramstetter <rick@anteaterllc.com>
@@ -8,39 +6,58 @@ from exchange import Exchange, CURRENCY
 
 
 class Gemini(Exchange):
-    CONFIG = {
-        'name': 'Gemini',
-        'ticker': 'https://api.gemini.com/v1/pubticker/',
-        'discovery': 'https://api.gemini.com/v1/symbols',
-        'asset_pairs': [
-            {
-                'isocode': 'XXBTZUSD',
-                'pair': 'btcusd',
-                'name': 'BTC to USD',
-                'currency': CURRENCY['usd'],
-                'volumelabel': 'BTC'
-            },
-            {
-                'isocode': 'XXETZUSD',
-                'pair': 'ethusd',
-                'name': 'ETH to USD',
-                'currency': CURRENCY['usd'],
-                'volumelabel': 'ETH'
-            },
-            {
-                'isocode': 'XXETZXBT',
-                'pair': 'ethbtc',
-                'name': 'ETH to BTC',
-                'currency': CURRENCY['btc'],
-                'volumelabel': 'ETH'
-            }
-        ]
-    }
+    name = "Gemini"
+    code = "gemini"
 
-    def get_discovery_url(self):
-        return self.config.get('discovery')
+    ticker = "https://api.gemini.com/v1/pubticker/"
+    discovery = "https://api.gemini.com/v1/symbols"
 
-    def _parse_discovery(self, result):
+    default_label = "cur"
+
+    asset_pairs = [
+        {'isocode': 'XXBTZUSD', 'pair': 'btcusd', 'name': 'BTC to USD', 'currency': CURRENCY['usd'], 'volumelabel': 'BTC'},
+        {'isocode': 'XXETZUSD', 'pair': 'ethusd', 'name': 'ETH to USD', 'currency': CURRENCY['usd'], 'volumelabel': 'ETH'},
+        {'isocode': 'XXETZXBT', 'pair': 'ethbtc', 'name': 'ETH to BTC', 'currency': CURRENCY['btc'], 'volumelabel': 'ETH'}
+    ]
+
+    # CONFIG = {
+    #     'name': 'Gemini',
+    #     'ticker': 'https://api.gemini.com/v1/pubticker/',
+    #     'discovery': 'https://api.gemini.com/v1/symbols',
+    #     'asset_pairs': [
+    #         {
+    #             'isocode': 'XXBTZUSD',
+    #             'pair': 'btcusd',
+    #             'name': 'BTC to USD',
+    #             'currency': CURRENCY['usd'],
+    #             'volumelabel': 'BTC'
+    #         },
+    #         {
+    #             'isocode': 'XXETZUSD',
+    #             'pair': 'ethusd',
+    #             'name': 'ETH to USD',
+    #             'currency': CURRENCY['usd'],
+    #             'volumelabel': 'ETH'
+    #         },
+    #         {
+    #             'isocode': 'XXETZXBT',
+    #             'pair': 'ethbtc',
+    #             'name': 'ETH to BTC',
+    #             'currency': CURRENCY['btc'],
+    #             'volumelabel': 'ETH'
+    #         }
+    #     ]
+    # }
+
+    @classmethod
+    def _get_discovery_url(cls):
+        return cls.discovery
+
+    def _get_ticker_url(self):
+        return self.ticker + self.pair
+
+    @staticmethod
+    def _parse_discovery(result):
         asset_pairs = []
         for asset in result:
             base = asset[0:3].upper()
@@ -58,9 +75,6 @@ class Gemini(Exchange):
             asset_pairs.append(asset_pair)
 
         return asset_pairs
-
-    def _get_ticker_url(self):
-        return self.config['ticker'] + self.pair
 
     def _parse_ticker(self, asset):
         volumelabel = [item for item in self.config['asset_pairs'] if item['pair'] == self.pair][0]['volumelabel']

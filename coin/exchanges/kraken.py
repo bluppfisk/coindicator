@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Kraken
 # https://www.kraken.com/help/api#public-market-data
 # By Nil Gradisnik <nil.gradisnik@gmail.com>
@@ -8,70 +6,91 @@ from exchange import Exchange, CURRENCY
 
 
 class Kraken(Exchange):
-    CONFIG = {
-        'name': 'Kraken',
-        'default_label': 'cur',
-        'ticker': 'https://api.kraken.com/0/public/Ticker',
-        'discovery': 'https://api.kraken.com/0/public/AssetPairs',
-        'asset_pairs': [
-            {
-                'isocode': 'XXBTZUSD',
-                'pair': 'XXBTZUSD',
-                'name': 'BTC to USD',
-                'currency': CURRENCY['usd']
-            },
-            {
-                'isocode': 'XXBTZEUR',
-                'pair': 'XXBTZEUR',
-                'name': 'BTC to EUR',
-                'currency': CURRENCY['eur']
-            },
-            {
-                'isocode': 'XXLTZUSD',
-                'pair': 'XLTCZUSD',
-                'name': 'LTC to USD',
-                'currency': CURRENCY['usd']
-            },
-            {
-                'isocode': 'XXLTZEUR',
-                'pair': 'XLTCZEUR',
-                'name': 'LTC to EUR',
-                'currency': CURRENCY['eur']
-            },
-            {
-                'isocode': 'XXETZUSD',
-                'pair': 'XETHZUSD',
-                'name': 'ETH to USD',
-                'currency': CURRENCY['usd']
-            },
-            {
-                'isocode': 'XXETZEUR',
-                'pair': 'XETHZEUR',
-                'name': 'ETH to EUR',
-                'currency': CURRENCY['eur']
-            },
-            {
-                'isocode': 'XXBCZEUR',
-                'pair': 'BCHEUR',
-                'name': 'BCH to EUR',
-                'currency': CURRENCY['eur']
-            },
-            {
-                'isocode': 'XXRPZEUR',
-                'pair': 'XXRPZEUR',
-                'name': 'XRP to EUR',
-                'currency': CURRENCY['eur']
-            }
-        ]
-    }
+    name = "Kraken"
+    code = "kraken"
 
-    def get_discovery_url(self):
-        return self.config.get('discovery')
+    ticker = "https://api.kraken.com/0/public/Ticker"
+    discovery = "https://api.kraken.com/0/public/AssetPairs"
+
+    default_label = "cur"
+
+    asset_pairs = [
+        {'isocode': 'XXBTZUSD', 'pair': 'XXBTZUSD', 'name': 'BTC to USD', 'currency': CURRENCY['usd']},
+        {'isocode': 'XXBTZEUR', 'pair': 'XXBTZEUR', 'name': 'BTC to EUR', 'currency': CURRENCY['eur']},
+        {'isocode': 'XXLTZUSD', 'pair': 'XLTCZUSD', 'name': 'LTC to USD', 'currency': CURRENCY['usd']},
+        {'isocode': 'XXLTZEUR', 'pair': 'XLTCZEUR', 'name': 'LTC to EUR', 'currency': CURRENCY['eur']},
+        {'isocode': 'XXETZUSD', 'pair': 'XETHZUSD', 'name': 'ETH to USD', 'currency': CURRENCY['usd']},
+        {'isocode': 'XXETZEUR', 'pair': 'XETHZEUR', 'name': 'ETH to EUR', 'currency': CURRENCY['eur']},
+        {'isocode': 'XXBCZEUR', 'pair': 'BCHEUR', 'name': 'BCH to EUR', 'currency': CURRENCY['eur']},
+        {'isocode': 'XXRPZEUR', 'pair': 'XXRPZEUR', 'name': 'XRP to EUR', 'currency': CURRENCY['eur']}
+    ]
+
+    # CONFIG = {
+    #     'name': 'Kraken',
+    #     'default_label': 'cur',
+    #     'ticker': 'https://api.kraken.com/0/public/Ticker',
+    #     'discovery': 'https://api.kraken.com/0/public/AssetPairs',
+    #     'asset_pairs': [
+    #         {
+    #             'isocode': 'XXBTZUSD',
+    #             'pair': 'XXBTZUSD',
+    #             'name': 'BTC to USD',
+    #             'currency': CURRENCY['usd']
+    #         },
+    #         {
+    #             'isocode': 'XXBTZEUR',
+    #             'pair': 'XXBTZEUR',
+    #             'name': 'BTC to EUR',
+    #             'currency': CURRENCY['eur']
+    #         },
+    #         {
+    #             'isocode': 'XXLTZUSD',
+    #             'pair': 'XLTCZUSD',
+    #             'name': 'LTC to USD',
+    #             'currency': CURRENCY['usd']
+    #         },
+    #         {
+    #             'isocode': 'XXLTZEUR',
+    #             'pair': 'XLTCZEUR',
+    #             'name': 'LTC to EUR',
+    #             'currency': CURRENCY['eur']
+    #         },
+    #         {
+    #             'isocode': 'XXETZUSD',
+    #             'pair': 'XETHZUSD',
+    #             'name': 'ETH to USD',
+    #             'currency': CURRENCY['usd']
+    #         },
+    #         {
+    #             'isocode': 'XXETZEUR',
+    #             'pair': 'XETHZEUR',
+    #             'name': 'ETH to EUR',
+    #             'currency': CURRENCY['eur']
+    #         },
+    #         {
+    #             'isocode': 'XXBCZEUR',
+    #             'pair': 'BCHEUR',
+    #             'name': 'BCH to EUR',
+    #             'currency': CURRENCY['eur']
+    #         },
+    #         {
+    #             'isocode': 'XXRPZEUR',
+    #             'pair': 'XXRPZEUR',
+    #             'name': 'XRP to EUR',
+    #             'currency': CURRENCY['eur']
+    #         }
+    #     ]
+    # }
+
+    @classmethod
+    def _get_discovery_url(cls):
+        return cls.discovery
 
     def _get_ticker_url(self):
-        return self.config.get('ticker') + '?pair=' + self.pair
+        return self.ticker + '?pair=' + self.pair
 
-    def _parse_discovery(self, result):
+    @staticmethod
+    def _parse_discovery(result):
         asset_pairs = []
         assets = result.get('result')
         for asset in assets:

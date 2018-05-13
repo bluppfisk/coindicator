@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-
-# Bx.in.th Api
+# Bx.in.th
 # https://bx.in.th/api/
 # By Theppasith N. <tutorgaming@gmail.com>
 
@@ -8,129 +6,156 @@ from exchange import Exchange, CURRENCY
 
 
 class Bxinth(Exchange):
-    CONFIG = {
-        'name': 'BX.in.th',
-        'code': 'bxinth',
-        'default_label': 'cur',
-        'ticker': 'https://bx.in.th/api/',
-        'asset_pairs': [
-            {
-                'isocode': 'XXBTCZTHB',
-                'pair': 'XXBTCZTHB',
-                'name': 'BTC to THB',
-                'volumelabel': 'BTC',
-                'currency': CURRENCY['thb'],
-                'pairing_id': 1,
-                'primary_currency': 'THB',
-                'secondary_currency': 'BTC'
-            },
-            {
-                'isocode': 'XXETHZTHB',
-                'pair': 'XXETHZTHB',
-                'name': 'ETH to THB',
-                'volumelabel': 'ETH',
-                'currency': CURRENCY['thb'],
-                'pairing_id': 21,
-                'primary_currency': 'THB',
-                'secondary_currency': 'ETH'
-            },
-            {
-                'isocode': 'XXDASZTHB',
-                'pair': 'XXDASZTHB',
-                'name': 'DASH to THB',
-                'volumelabel': 'DAS',
-                'currency': CURRENCY['thb'],
-                'pairing_id': 22,
-                'primary_currency': 'THB',
-                'secondary_currency': 'DAS'
-            },
-            {
-                'isocode': 'XXREPZTHB',
-                'pair': 'XXREPZTHB',
-                'name': 'REP to THB',
-                'volumelabel': 'REP',
-                'currency': CURRENCY['thb'],
-                'pairing_id': 23,
-                'primary_currency': 'THB',
-                'secondary_currency': 'REP'
-            },
-            {
-                'isocode': 'XXGNOZTHB',
-                'pair': 'XXGNOZTHB',
-                'name': 'GNO to THB',
-                'volumelabel': 'GNO',
-                'currency': CURRENCY['thb'],
-                'pairing_id': 24,
-                'primary_currency': 'THB',
-                'secondary_currency': 'GNO'
-            },
-            {
-                'isocode': 'XXRPZTHB',
-                'pair': 'XXRPZTHB',
-                'name': 'XRP to THB',
-                'volumelabel': 'XRP',
-                'currency': CURRENCY['thb'],
-                'pairing_id': 25,
-                'primary_currency': 'THB',
-                'secondary_currency': 'XRP'
-            },
-            {
-                'isocode': 'XXOMGZTHB',
-                'pair': 'XXOMGZTHB',
-                'name': 'OMG to THB',
-                'volumelabel': 'OMG',
-                'currency': CURRENCY['thb'],
-                'pairing_id': 26,
-                'primary_currency': 'THB',
-                'secondary_currency': 'OMG'
-            },
-            {
-                'isocode': 'XXBCHZTHB',
-                'pair': 'XXBCHZTHB',
-                'name': 'BCH to THB',
-                'volumelabel': 'BCH',
-                'currency': CURRENCY['thb'],
-                'pairing_id': 27,
-                'primary_currency': 'THB',
-                'secondary_currency': 'BCH'
-            },
-            {
-                'isocode': 'XXEVXZTHB',
-                'pair': 'XXEVXZTHB',
-                'name': 'EVX to THB',
-                'volumelabel': 'EVX',
-                'currency': CURRENCY['thb'],
-                'pairing_id': 28,
-                'primary_currency': 'THB',
-                'secondary_currency': 'EVX'
-            },
-            {
-                'isocode': 'XXXZCZTHB',
-                'pair': 'XXXZCZTHB',
-                'name': 'XZC to THB',
-                'volumelabel': 'XZC',
-                'currency': CURRENCY['thb'],
-                'pairing_id': 29,
-                'primary_currency': 'THB',
-                'secondary_currency': 'XZC'
-            },
-            {
-                'isocode': 'XXLTCZTHB',
-                'pair': 'XXLTCZTHB',
-                'name': 'LTC to THB',
-                'volumelabel': 'LTC',
-                'currency': CURRENCY['thb'],
-                'pairing_id': 30,
-                'primary_currency': 'THB',
-                'secondary_currency': 'LTC'
-            }
-        ]
-    }
+    name = "BX.in.th"
+    code = "bxinth"
 
-    def get_discovery_url(self):
-        return self._get_ticker_url()
+    ticker = "https://bx.in.th/api/"
+    discovery = "https://bx.in.th/api/"
 
-    def _parse_discovery(self, result):
+    default_label = "cur"
+
+    asset_pairs = [
+        {'isocode': 'XXBTCZTHB', 'pair': 'XXBTCZTHB', 'name': 'BTC to THB', 'volumelabel': 'BTC', 'currency': CURRENCY['thb'], 'pairing_id': 1, 'primary_currency': 'THB', 'secondary_currency': 'BTC'},
+        {'isocode': 'XXETHZTHB', 'pair': 'XXETHZTHB', 'name': 'ETH to THB', 'volumelabel': 'ETH', 'currency': CURRENCY['thb'], 'pairing_id': 21, 'primary_currency': 'THB', 'secondary_currency': 'ETH'},
+        {'isocode': 'XXDASZTHB', 'pair': 'XXDASZTHB', 'name': 'DASH to THB', 'volumelabel': 'DAS', 'currency': CURRENCY['thb'], 'pairing_id': 22, 'primary_currency': 'THB', 'secondary_currency': 'DAS'},
+        {'isocode': 'XXREPZTHB', 'pair': 'XXREPZTHB', 'name': 'REP to THB', 'volumelabel': 'REP', 'currency': CURRENCY['thb'], 'pairing_id': 23, 'primary_currency': 'THB', 'secondary_currency': 'REP'},
+        {'isocode': 'XXGNOZTHB', 'pair': 'XXGNOZTHB', 'name': 'GNO to THB', 'volumelabel': 'GNO', 'currency': CURRENCY['thb'], 'pairing_id': 24, 'primary_currency': 'THB', 'secondary_currency': 'GNO'},
+        {'isocode': 'XXRPZTHB', 'pair': 'XXRPZTHB', 'name': 'XRP to THB', 'volumelabel': 'XRP', 'currency': CURRENCY['thb'], 'pairing_id': 25, 'primary_currency': 'THB', 'secondary_currency': 'XRP'},
+        {'isocode': 'XXOMGZTHB', 'pair': 'XXOMGZTHB', 'name': 'OMG to THB', 'volumelabel': 'OMG', 'currency': CURRENCY['thb'], 'pairing_id': 26, 'primary_currency': 'THB', 'secondary_currency': 'OMG'},
+        {'isocode': 'XXBCHZTHB', 'pair': 'XXBCHZTHB', 'name': 'BCH to THB', 'volumelabel': 'BCH', 'currency': CURRENCY['thb'], 'pairing_id': 27, 'primary_currency': 'THB', 'secondary_currency': 'BCH'},
+        {'isocode': 'XXEVXZTHB', 'pair': 'XXEVXZTHB', 'name': 'EVX to THB', 'volumelabel': 'EVX', 'currency': CURRENCY['thb'], 'pairing_id': 28, 'primary_currency': 'THB', 'secondary_currency': 'EVX'},
+        {'isocode': 'XXXZCZTHB', 'pair': 'XXXZCZTHB', 'name': 'XZC to THB', 'volumelabel': 'XZC', 'currency': CURRENCY['thb'], 'pairing_id': 29, 'primary_currency': 'THB', 'secondary_currency': 'XZC'},
+        {'isocode': 'XXLTCZTHB', 'pair': 'XXLTCZTHB', 'name': 'LTC to THB', 'volumelabel': 'LTC', 'currency': CURRENCY['thb'], 'pairing_id': 30, 'primary_currency': 'THB', 'secondary_currency': 'LTC'}
+    ]
+
+    # CONFIG = {
+    #     'name': 'BX.in.th',
+    #     'code': 'bxinth',
+    #     'default_label': 'cur',
+    #     'ticker': 'https://bx.in.th/api/',
+    #     'asset_pairs': [
+    #         {
+    #             'isocode': 'XXBTCZTHB',
+    #             'pair': 'XXBTCZTHB',
+    #             'name': 'BTC to THB',
+    #             'volumelabel': 'BTC',
+    #             'currency': CURRENCY['thb'],
+    #             'pairing_id': 1,
+    #             'primary_currency': 'THB',
+    #             'secondary_currency': 'BTC'
+    #         },
+    #         {
+    #             'isocode': 'XXETHZTHB',
+    #             'pair': 'XXETHZTHB',
+    #             'name': 'ETH to THB',
+    #             'volumelabel': 'ETH',
+    #             'currency': CURRENCY['thb'],
+    #             'pairing_id': 21,
+    #             'primary_currency': 'THB',
+    #             'secondary_currency': 'ETH'
+    #         },
+    #         {
+    #             'isocode': 'XXDASZTHB',
+    #             'pair': 'XXDASZTHB',
+    #             'name': 'DASH to THB',
+    #             'volumelabel': 'DAS',
+    #             'currency': CURRENCY['thb'],
+    #             'pairing_id': 22,
+    #             'primary_currency': 'THB',
+    #             'secondary_currency': 'DAS'
+    #         },
+    #         {
+    #             'isocode': 'XXREPZTHB',
+    #             'pair': 'XXREPZTHB',
+    #             'name': 'REP to THB',
+    #             'volumelabel': 'REP',
+    #             'currency': CURRENCY['thb'],
+    #             'pairing_id': 23,
+    #             'primary_currency': 'THB',
+    #             'secondary_currency': 'REP'
+    #         },
+    #         {
+    #             'isocode': 'XXGNOZTHB',
+    #             'pair': 'XXGNOZTHB',
+    #             'name': 'GNO to THB',
+    #             'volumelabel': 'GNO',
+    #             'currency': CURRENCY['thb'],
+    #             'pairing_id': 24,
+    #             'primary_currency': 'THB',
+    #             'secondary_currency': 'GNO'
+    #         },
+    #         {
+    #             'isocode': 'XXRPZTHB',
+    #             'pair': 'XXRPZTHB',
+    #             'name': 'XRP to THB',
+    #             'volumelabel': 'XRP',
+    #             'currency': CURRENCY['thb'],
+    #             'pairing_id': 25,
+    #             'primary_currency': 'THB',
+    #             'secondary_currency': 'XRP'
+    #         },
+    #         {
+    #             'isocode': 'XXOMGZTHB',
+    #             'pair': 'XXOMGZTHB',
+    #             'name': 'OMG to THB',
+    #             'volumelabel': 'OMG',
+    #             'currency': CURRENCY['thb'],
+    #             'pairing_id': 26,
+    #             'primary_currency': 'THB',
+    #             'secondary_currency': 'OMG'
+    #         },
+    #         {
+    #             'isocode': 'XXBCHZTHB',
+    #             'pair': 'XXBCHZTHB',
+    #             'name': 'BCH to THB',
+    #             'volumelabel': 'BCH',
+    #             'currency': CURRENCY['thb'],
+    #             'pairing_id': 27,
+    #             'primary_currency': 'THB',
+    #             'secondary_currency': 'BCH'
+    #         },
+    #         {
+    #             'isocode': 'XXEVXZTHB',
+    #             'pair': 'XXEVXZTHB',
+    #             'name': 'EVX to THB',
+    #             'volumelabel': 'EVX',
+    #             'currency': CURRENCY['thb'],
+    #             'pairing_id': 28,
+    #             'primary_currency': 'THB',
+    #             'secondary_currency': 'EVX'
+    #         },
+    #         {
+    #             'isocode': 'XXXZCZTHB',
+    #             'pair': 'XXXZCZTHB',
+    #             'name': 'XZC to THB',
+    #             'volumelabel': 'XZC',
+    #             'currency': CURRENCY['thb'],
+    #             'pairing_id': 29,
+    #             'primary_currency': 'THB',
+    #             'secondary_currency': 'XZC'
+    #         },
+    #         {
+    #             'isocode': 'XXLTCZTHB',
+    #             'pair': 'XXLTCZTHB',
+    #             'name': 'LTC to THB',
+    #             'volumelabel': 'LTC',
+    #             'currency': CURRENCY['thb'],
+    #             'pairing_id': 30,
+    #             'primary_currency': 'THB',
+    #             'secondary_currency': 'LTC'
+    #         }
+    #     ]
+    # }
+
+    @classmethod
+    def _get_discovery_url(cls):
+        return cls.discovery
+
+    def _get_ticker_url(self):
+        return self.ticker
+
+    @staticmethod
+    def _parse_discovery(result):
         asset_pairs = []
         for asset in result:
             base = result[asset].get('secondary_currency')
@@ -157,9 +182,6 @@ class Bxinth(Exchange):
             asset_pairs.append(asset_pair)
 
         return asset_pairs
-
-    def _get_ticker_url(self):
-        return self.config.get('ticker')
 
     def _parse_ticker(self, data):
         database = []

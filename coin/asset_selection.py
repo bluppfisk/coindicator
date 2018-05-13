@@ -113,7 +113,7 @@ class AssetSelectionWindow(Gtk.Window):
         self.ex_store.clear()
         self.current_quote = model[iter][0]
         for exchange in self.parent.coin.bases[self.current_base][self.current_quote]:
-            self.ex_store.append([exchange.get('name'), exchange.get('code')])
+            self.ex_store.append([exchange.get_name(), exchange.get_code()])
 
         self.ex_store.set_sort_column_id(0, Gtk.SortType.ASCENDING)
         self.view_exchanges.set_cursor(0)
@@ -138,7 +138,7 @@ class AssetSelectionWindow(Gtk.Window):
 
         _select_and_scroll(self.base_store, self.view_bases, self.parent.exchange.asset_pair.get('base'))
         _select_and_scroll(self.quote_store, self.view_quotes, self.parent.exchange.asset_pair.get('quote'))
-        _select_and_scroll(self.ex_store, self.view_exchanges, self.parent.exchange.CONFIG.get('name'))
+        _select_and_scroll(self.ex_store, self.view_exchanges, self.parent.exchange.get_name())
 
     def _update_indicator_close(self, widget):
         self._update_indicator(widget)

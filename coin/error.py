@@ -1,11 +1,8 @@
-# -*- coding: utf-8 -*-
-
-# Echange error handling
+# Exchange error handling
 
 import logging
 from gi.repository import GLib
 
-__author__ = "nil.gradisnik@gmail.com"
 
 MAX_ERRORS = 5  # maximum number of errors before chilling
 REFRESH_INTERVAL = 60  # chill refresh frequency in seconds
@@ -33,7 +30,7 @@ class Error:
             self.chill = False
 
     def log(self, message):
-        logging.warning(self.exchange.exchange_name + ": " + str(message))
+        logging.warning(self.exchange.name + ": " + str(message))
 
     def is_ok(self):
         max = self.count <= MAX_ERRORS

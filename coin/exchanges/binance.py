@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Binance
 # https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md
 # By Lari Taskula <lari@taskula.fi>
@@ -8,24 +6,41 @@ from exchange import Exchange, CURRENCY
 
 
 class Binance(Exchange):
-    CONFIG = {
-        'name': 'Binance',
-        'ticker': 'https://www.binance.com/api/v1/ticker/24hr',
-        'discovery': 'https://www.binance.com/api/v1/exchangeInfo',
-        'asset_pairs': [
-            {
-                'isocode': 'XXBTZUSD',
-                'pair': 'BTCUSDT',
-                'name': 'BTC to USD',
-                'currency': CURRENCY['usd']
-            }
-        ]
-    }
+    name = "Binance"
+    code = "binance"
 
-    def get_discovery_url(self):
-        return self.config.get('discovery')
+    ticker = "https://www.binance.com/api/v1/ticker/24hr"
+    discovery = "https://www.binance.com/api/v1/exchangeInfo"
 
-    def _parse_discovery(self, result):
+    default_label = "cur"
+
+    asset_pairs = [
+        {'isocode': 'XXBTZUSD', 'pair': 'BTCUSDT', 'name': 'BTC to USD', 'currency': CURRENCY['usd']}
+    ]
+
+    # CONFIG = {
+    #     'name': 'Binance',
+    #     'ticker': 'https://www.binance.com/api/v1/ticker/24hr',
+    #     'discovery': 'https://www.binance.com/api/v1/exchangeInfo',
+    #     'asset_pairs': [
+    #         {
+    #             'isocode': 'XXBTZUSD',
+    #             'pair': 'BTCUSDT',
+    #             'name': 'BTC to USD',
+    #             'currency': CURRENCY['usd']
+    #         }
+    #     ]
+    # }
+
+    @classmethod
+    def _get_discovery_url(cls):
+        return cls.discovery
+
+    def _get_ticker_url(self):
+        return self.ticker + '?symbol=' + self.pair
+
+    @staticmethod
+    def _parse_discovery(result):
         asset_pairs = []
         assets = result.get('symbols')
         for asset in assets:
@@ -51,9 +66,6 @@ class Binance(Exchange):
             asset_pairs.append(asset_pair)
 
         return asset_pairs
-
-    def _get_ticker_url(self):
-        return self.config['ticker'] + '?symbol=' + self.pair
 
     def _parse_ticker(self, asset):
         cur = asset.get('lastPrice')
