@@ -34,15 +34,15 @@ class Exchange(object):
         self.indicator = indicator
         self.timeout_id = None
         self.error = Error(self)
-        self.config = self.CONFIG
-        self.exchange_name = self.config.get('name')
+        # self.config = self.CONFIG
+        # self.exchange_name = self.name
         self.started = False
         self.asset_pair = {}
 
     ##
     # Abstract methods to be overwritten by the child classes
     #
-    def get_discovery_url(self):
+    def _get_discovery_url(self):
         pass
 
     def _parse_discovery(self, data):
@@ -65,8 +65,9 @@ class Exchange(object):
     def get_code(cls):
         return cls.code
 
-    def get_default_label(self):
-        return self.config.get('default_label', 'cur')
+    @classmethod
+    def get_default_label(cls):
+        return cls.default_label
 
     def get_currency(self):
         return self.asset_pair.get('quote').lower()
@@ -147,7 +148,7 @@ class Exchange(object):
     #
     def discover_assets(self):
         self.downloader.download(
-            self.get_discovery_url(),
+            self._get_discovery_url(),
             callback=self._handle_discovery_result,
             error=self._handle_error)
 

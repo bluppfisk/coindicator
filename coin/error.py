@@ -30,7 +30,7 @@ class Error:
             self.chill = False
 
     def log(self, message):
-        logging.warning(self.exchange.exchange_name + ": " + str(message))
+        logging.warning(self.exchange.name + ": " + str(message))
 
     def is_ok(self):
         max = self.count <= MAX_ERRORS

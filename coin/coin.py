@@ -62,7 +62,7 @@ class Coin():
                 'code': plugin,
                 'name': class_name,
                 'class': class_,
-                'default_label': class_.CONFIG.get('default_label') or 'cur'
+                'default_label': class_.get_default_label()
             })
 
     # find an exchange

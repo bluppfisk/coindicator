@@ -11,31 +11,34 @@ class Binance(Exchange):
     name = "Binance"
     code = "binance"
 
+    ticker = "https://www.binance.com/api/v1/ticker/24hr"
+    discovery = "https://www.binance.com/api/v1/exchangeInfo"
+
+    default_label = "cur"
+
     asset_pairs = [
-        {
-            'isocode': 'XXBTZUSD',
-            'pair': 'BTCUSDT',
-            'name': 'BTC to USD',
-            'currency': CURRENCY['usd']
-        }
+        {'isocode': 'XXBTZUSD', 'pair': 'BTCUSDT', 'name': 'BTC to USD', 'currency': CURRENCY['usd']}
     ]
 
-    CONFIG = {
-        'name': 'Binance',
-        'ticker': 'https://www.binance.com/api/v1/ticker/24hr',
-        'discovery': 'https://www.binance.com/api/v1/exchangeInfo',
-        'asset_pairs': [
-            {
-                'isocode': 'XXBTZUSD',
-                'pair': 'BTCUSDT',
-                'name': 'BTC to USD',
-                'currency': CURRENCY['usd']
-            }
-        ]
-    }
+    # CONFIG = {
+    #     'name': 'Binance',
+    #     'ticker': 'https://www.binance.com/api/v1/ticker/24hr',
+    #     'discovery': 'https://www.binance.com/api/v1/exchangeInfo',
+    #     'asset_pairs': [
+    #         {
+    #             'isocode': 'XXBTZUSD',
+    #             'pair': 'BTCUSDT',
+    #             'name': 'BTC to USD',
+    #             'currency': CURRENCY['usd']
+    #         }
+    #     ]
+    # }
 
-    def get_discovery_url(self):
-        return self.config.get('discovery')
+    def _get_discovery_url(self):
+        return self.discovery
+
+    def _get_ticker_url(self):
+        return self.ticker + '?symbol=' + self.pair
 
     def _parse_discovery(self, result):
         asset_pairs = []
@@ -63,9 +66,6 @@ class Binance(Exchange):
             asset_pairs.append(asset_pair)
 
         return asset_pairs
-
-    def _get_ticker_url(self):
-        return self.config['ticker'] + '?symbol=' + self.pair
 
     def _parse_ticker(self, asset):
         cur = asset.get('lastPrice')

@@ -11,22 +11,34 @@ class Bitstamp(Exchange):
     name = "Bitstamp"
     code = "bitstamp"
 
-    CONFIG = {
-        'name': 'Bitstamp',
-        'ticker': 'https://www.bitstamp.net/api/v2/ticker/',
-        'discovery': 'https://www.bitstamp.net/api/v2/trading-pairs-info/',
-        'asset_pairs': [
-            {
-                'isocode': 'XXBTZUSD',
-                'pair': 'XXBTZUSD',
-                'name': 'BTC to USD',
-                'currency': CURRENCY['usd']
-            }
-        ]
-    }
+    ticker = "https://www.bitstamp.net/api/v2/ticker/"
+    discovery = "https://www.bitstamp.net/api/v2/trading-pairs-info/"
 
-    def get_discovery_url(self):
-        return self.config.get('discovery')
+    default_label = "cur"
+
+    asset_pairs = [
+        {'isocode': 'XXBTZUSD', 'pair': 'XXBTZUSD', 'name': 'BTC to USD', 'currency': CURRENCY['usd']}
+    ]
+
+    # CONFIG = {
+    #     'name': 'Bitstamp',
+    #     'ticker': 'https://www.bitstamp.net/api/v2/ticker/',
+    #     'discovery': 'https://www.bitstamp.net/api/v2/trading-pairs-info/',
+    #     'asset_pairs': [
+    #         {
+    #             'isocode': 'XXBTZUSD',
+    #             'pair': 'XXBTZUSD',
+    #             'name': 'BTC to USD',
+    #             'currency': CURRENCY['usd']
+    #         }
+    #     ]
+    # }
+
+    def _get_discovery_url(self):
+        return self.discovery
+
+    def _get_ticker_url(self):
+        return self.ticker + self.pair
 
     def _parse_discovery(self, result):
         asset_pairs = []
@@ -47,9 +59,6 @@ class Bitstamp(Exchange):
             asset_pairs.append(asset_pair)
 
         return asset_pairs
-
-    def _get_ticker_url(self):
-        return self.config.get('ticker') + self.pair
 
     def _parse_ticker(self, asset):
         cur = asset.get('last')
