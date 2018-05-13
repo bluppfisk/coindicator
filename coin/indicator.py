@@ -1,4 +1,4 @@
-# Ubuntu App indicator
+# The App Indicator that sits in the top bar
 # https://unity.ubuntu.com/projects/appindicators/
 
 import logging

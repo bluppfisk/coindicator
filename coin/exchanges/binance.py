@@ -18,20 +18,6 @@ class Binance(Exchange):
         {'isocode': 'XXBTZUSD', 'pair': 'BTCUSDT', 'name': 'BTC to USD', 'currency': CURRENCY['usd']}
     ]
 
-    # CONFIG = {
-    #     'name': 'Binance',
-    #     'ticker': 'https://www.binance.com/api/v1/ticker/24hr',
-    #     'discovery': 'https://www.binance.com/api/v1/exchangeInfo',
-    #     'asset_pairs': [
-    #         {
-    #             'isocode': 'XXBTZUSD',
-    #             'pair': 'BTCUSDT',
-    #             'name': 'BTC to USD',
-    #             'currency': CURRENCY['usd']
-    #         }
-    #     ]
-    # }
-
     @classmethod
     def _get_discovery_url(cls):
         return cls.discovery

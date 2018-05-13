@@ -18,20 +18,6 @@ class Bitstamp(Exchange):
         {'isocode': 'XXBTZUSD', 'pair': 'XXBTZUSD', 'name': 'BTC to USD', 'currency': CURRENCY['usd']}
     ]
 
-    # CONFIG = {
-    #     'name': 'Bitstamp',
-    #     'ticker': 'https://www.bitstamp.net/api/v2/ticker/',
-    #     'discovery': 'https://www.bitstamp.net/api/v2/trading-pairs-info/',
-    #     'asset_pairs': [
-    #         {
-    #             'isocode': 'XXBTZUSD',
-    #             'pair': 'XXBTZUSD',
-    #             'name': 'BTC to USD',
-    #             'currency': CURRENCY['usd']
-    #         }
-    #     ]
-    # }
-
     @classmethod
     def _get_discovery_url(cls):
         return cls.discovery

@@ -15,7 +15,7 @@ import notify2
 
 from os.path import abspath, dirname, isfile, basename
 from indicator import Indicator
-from async_downloader import AsyncDownloader, AsyncCommandDownloader
+from async_downloader import AsyncDownloadService
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import Gtk, GdkPixbuf
 
@@ -34,7 +34,7 @@ class Coin():
     config['project_root'] = PROJECT_ROOT
 
     def __init__(self):
-        self.downloader = AsyncCommandDownloader()
+        self.downloader = AsyncDownloadService()
         self.unique_id = 0
 
         self._load_exchanges()
@@ -57,21 +57,12 @@ class Coin():
         for plugin in plugins:
             class_name = plugin.capitalize()
             class_ = getattr(importlib.import_module('exchanges.' + plugin), class_name)
-
             self.EXCHANGES.append(class_)
 
-            # self.EXCHANGES.append({
-            #     'code': plugin,
-            #     'name': class_name,
-            #     'class': class_,
-            #     'default_label': class_.get_default_label()
-            # })
-
-    # find an exchange
+    # Find an exchange
     def find_exchange_by_code(self, code):
         for exchange in self.EXCHANGES:
             if exchange.get_code() == code.lower():
-            # if exchange.get('code').lower() == code.lower():
                 return exchange
 
     # Creates a structure of available assets (from_currency > to_currency > exchange)
@@ -149,7 +140,7 @@ class Coin():
 
     # Start the main indicator icon and its menu
     def _start_main(self):
-        print(self.config.get('app').get('name') + ' v' + self.config['app']['version'] + " running!")
+        print(self.config.get('app').get('name') + ' v' + self.config.get('app').get('version') + " running!")
 
         self.icon = self.config.get('project_root') + '/resources/icon_32px.png'
         self.main_item = AppIndicator.Indicator.new(
@@ -232,7 +223,7 @@ class Coin():
                 indicator.asset_selection_window.destroy()
 
         for exchange in self.EXCHANGES:
-            exchange.discover_assets(AsyncCommandDownloader(), self.update_assets)
+            exchange.discover_assets(self.downloader, self.update_assets)
 
     # When discovery completes, reload currencies and rebuild menus of all instances
     def update_assets(self):
@@ -267,7 +258,7 @@ class Coin():
         about.set_website(self.config.get('app').get('url'))
         authors = []
         for author in self.config.get('authors'):
-            authors.append(author['name'] + ' <' + author.get('email') + '>')
+            authors.append(author.get('name') + ' <' + author.get('email') + '>')
         about.set_authors(authors)
         contributors = []
         for contributor in self.config.get('contributors'):

@@ -1,4 +1,4 @@
-# Asset Selection window
+# Asset selection window
 
 import gi
 gi.require_version('Gtk', '3.0')

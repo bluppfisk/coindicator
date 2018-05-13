@@ -28,56 +28,6 @@ class Bittrex(Exchange):
         {'isocode': 'XXMRZBTC', 'pair': 'BTC-XMR', 'name': 'XMR to BTC', 'currency': CURRENCY['btc']}
     ]
 
-    # CONFIG = {
-    #     'name': 'Bittrex',
-    #     'ticker': 'https://bittrex.com/api/v1.1/public/getmarketsummary',
-    #     'discovery': 'https://bittrex.com/api/v1.1/public/getmarkets',
-    #     'asset_pairs': [
-    #         {
-    #             'isocode': 'XXBTZUSD',
-    #             'pair': 'USDT-BTC',
-    #             'name': 'BTC to USD',
-    #             'currency': CURRENCY['usd']
-    #         },
-    #         {
-    #             'isocode': 'XXLTZUSD',
-    #             'pair': 'USDT-LTC',
-    #             'name': 'LTC to USD',
-    #             'currency': CURRENCY['usd']
-    #         },
-    #         {
-    #             'isocode': 'XXETZUSD',
-    #             'pair': 'USDT-ETH',
-    #             'name': 'ETH to USD',
-    #             'currency': CURRENCY['usd']
-    #         },
-    #         {
-    #             'isocode': 'XXBCZBTC',
-    #             'pair': 'BTC-BCC',
-    #             'name': 'BCC to BTC',
-    #             'currency': CURRENCY['btc']
-    #         },
-    #         {
-    #             'isocode': 'XXETZBTC',
-    #             'pair': 'BTC-ETH',
-    #             'name': 'ETH to BTC',
-    #             'currency': CURRENCY['btc']
-    #         },
-    #         {
-    #             'isocode': 'XXRPZBTC',
-    #             'pair': 'BTC-XRP',
-    #             'name': 'XRP to BTC',
-    #             'currency': CURRENCY['btc']
-    #         },
-    #         {
-    #             'isocode': 'XXMRZBTC',
-    #             'pair': 'BTC-XMR',
-    #             'name': 'XMR to BTC',
-    #             'currency': CURRENCY['btc']
-    #         }
-    #     ]
-    # }
-
     @classmethod
     def _get_discovery_url(cls):
         return cls.discovery

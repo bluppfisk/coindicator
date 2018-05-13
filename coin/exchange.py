@@ -1,3 +1,5 @@
+# Abstract class that provides functionality for the various exchange classes
+
 import logging
 import time
 import pickle
@@ -153,11 +155,6 @@ class Exchange(object):
         command.error = cls._handle_discovery_error
         downloader.execute(command, cls._handle_discovery_result)
 
-            # cls._get_discovery_url(),
-            # callback=cls._handle_discovery_result,
-            # error=cls._handle_discovery_error,
-            # caller=caller)
-
     ##
     # Deals with the result from the discovery HTTP request
     # Should probably be merged with _handle_result() later
@@ -227,10 +224,6 @@ class Exchange(object):
         command.error = self._handle_error
         command.validation = self.asset_pair
         self.downloader.execute(command, self._handle_result)
-        # self.downloader.download(
-        #     self._get_ticker_url(), validation=self.asset_pair,
-        #     timestamp=timestamp, callback=self._handle_result,
-        #     error=self._handle_error)
 
         logging.info('Request with TS: ' + str(timestamp))
         if not self.error.is_ok():
@@ -284,7 +277,6 @@ class Exchange(object):
 
         self.error.reset()
 
-        # GLib.idle_add(self.indicator.update_gui)
         GLib.idle_add(command.callback)
 
     ##

@@ -20,35 +20,6 @@ class Gemini(Exchange):
         {'isocode': 'XXETZXBT', 'pair': 'ethbtc', 'name': 'ETH to BTC', 'currency': CURRENCY['btc'], 'volumelabel': 'ETH'}
     ]
 
-    # CONFIG = {
-    #     'name': 'Gemini',
-    #     'ticker': 'https://api.gemini.com/v1/pubticker/',
-    #     'discovery': 'https://api.gemini.com/v1/symbols',
-    #     'asset_pairs': [
-    #         {
-    #             'isocode': 'XXBTZUSD',
-    #             'pair': 'btcusd',
-    #             'name': 'BTC to USD',
-    #             'currency': CURRENCY['usd'],
-    #             'volumelabel': 'BTC'
-    #         },
-    #         {
-    #             'isocode': 'XXETZUSD',
-    #             'pair': 'ethusd',
-    #             'name': 'ETH to USD',
-    #             'currency': CURRENCY['usd'],
-    #             'volumelabel': 'ETH'
-    #         },
-    #         {
-    #             'isocode': 'XXETZXBT',
-    #             'pair': 'ethbtc',
-    #             'name': 'ETH to BTC',
-    #             'currency': CURRENCY['btc'],
-    #             'volumelabel': 'ETH'
-    #         }
-    #     ]
-    # }
-
     @classmethod
     def _get_discovery_url(cls):
         return cls.discovery
