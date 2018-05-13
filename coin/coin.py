@@ -29,7 +29,7 @@ PROJECT_ROOT = abspath(dirname(dirname(__file__)))
 SETTINGS_FILE = PROJECT_ROOT + '/user.conf'
 
 
-class Coin(object):
+class Coin():
     config = yaml.load(open(PROJECT_ROOT + '/config.yaml', 'r'))
     config['project_root'] = PROJECT_ROOT
 
@@ -76,7 +76,7 @@ class Coin(object):
         self.assets = {}
 
         for exchange in self.EXCHANGES:
-            self.assets[exchange.get('code')] = exchange.get('class')(self, None).get_asset_pairs()
+            self.assets[exchange.get('code')] = exchange.get('class').get_asset_pairs()
 
         # inverse the hierarchy for easier asset selection
         bases = {}

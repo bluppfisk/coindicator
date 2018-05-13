@@ -8,6 +8,9 @@ from exchange import Exchange, CURRENCY
 
 
 class Bitstamp(Exchange):
+    name = "Bitstamp"
+    code = "bitstamp"
+
     CONFIG = {
         'name': 'Bitstamp',
         'ticker': 'https://www.bitstamp.net/api/v2/ticker/',

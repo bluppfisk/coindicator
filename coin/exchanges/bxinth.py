@@ -8,6 +8,9 @@ from exchange import Exchange, CURRENCY
 
 
 class Bxinth(Exchange):
+    name = "BX.in.th"
+    code = "bxinth"
+
     CONFIG = {
         'name': 'BX.in.th',
         'code': 'bxinth',

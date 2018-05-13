@@ -8,6 +8,9 @@ from exchange import Exchange, CURRENCY
 
 
 class Kraken(Exchange):
+    name = "Kraken"
+    code = "kraken"
+
     CONFIG = {
         'name': 'Kraken',
         'default_label': 'cur',

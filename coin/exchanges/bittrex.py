@@ -12,6 +12,11 @@ from exchange import Exchange, CURRENCY
 
 
 class Bittrex(Exchange):
+    name = "Bittrex"
+    code = "bittrex"
+
+    asset_pairs = 
+
     CONFIG = {
         'name': 'Bittrex',
         'ticker': 'https://bittrex.com/api/v1.1/public/getmarketsummary',

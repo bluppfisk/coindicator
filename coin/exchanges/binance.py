@@ -8,6 +8,18 @@ from exchange import Exchange, CURRENCY
 
 
 class Binance(Exchange):
+    name = "Binance"
+    code = "binance"
+
+    asset_pairs = [
+        {
+            'isocode': 'XXBTZUSD',
+            'pair': 'BTCUSDT',
+            'name': 'BTC to USD',
+            'currency': CURRENCY['usd']
+        }
+    ]
+
     CONFIG = {
         'name': 'Binance',
         'ticker': 'https://www.binance.com/api/v1/ticker/24hr',

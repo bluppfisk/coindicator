@@ -57,11 +57,13 @@ class Exchange(object):
     ##
     # Getters and setters follow
     #
-    def get_name(self):
-        return self.config.get('name')
+    @classmethod
+    def get_name(cls):
+        return cls.name
 
-    def get_code(self):
-        return self.config.get('code', self.config.get('name').lower())
+    @classmethod
+    def get_code(cls):
+        return cls.code
 
     def get_default_label(self):
         return self.config.get('default_label', 'cur')
@@ -99,8 +101,11 @@ class Exchange(object):
     # Legacy function to make sure the hard-coded asset
     # configuration is consistent with the new format
     #
-    def normalise_assets(self):
-        for ap in self.config['asset_pairs']:
+    @classmethod
+    def normalise_assets(cls):
+        asset_pairs = cls.asset_pairs
+
+        for ap in asset_pairs:
             if not ap.get('base'):
                 ap['base'] = ap.get('name').split(' ')[0]
             if not ap.get('quote'):
@@ -108,27 +113,30 @@ class Exchange(object):
             if not ap.get('volumecurrency'):
                 ap['volumecurrency'] = ap.get('base')
 
+        return asset_pairs
+
     ##
     # Loads asset pairs from the config files or,
     # failing that, from the hard-coded lines
     #
-    def get_asset_pairs(self):
+    @classmethod
+    def get_asset_pairs(cls):
         try:
-            with open('./coin/exchanges/data/' + self.get_code() + '.conf', 'rb') as handle:
+            with open('./coin/exchanges/data/' + cls.get_code() + '.conf', 'rb') as handle:
                 asset_pairs = pickle.loads(handle.read())
                 return asset_pairs
 
         except IOError:
             # no CONF file, return predefined from config
-            self.normalise_assets()
-            return self.config.get('asset_pairs')
+            return cls.normalise_assets()
 
     ##
     # Saves asset pairs to disk
     #
-    def store_asset_pairs(self, asset_pairs):
+    @classmethod
+    def store_asset_pairs(cls, asset_pairs):
         try:
-            with open('./coin/exchanges/data/' + self.get_code() + '.conf', 'wb') as handle:
+            with open('./coin/exchanges/data/' + cls.get_code() + '.conf', 'wb') as handle:
                 pickle.dump(asset_pairs, handle)
         except IOError:
             logging.error('Could not write to config file')

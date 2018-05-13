@@ -8,6 +8,9 @@ from exchange import Exchange, CURRENCY
 
 
 class Bitfinex(Exchange):
+    name = "Bitfinex"
+    code = "bitfinex"
+
     CONFIG = {
         'name': 'Bitfinex',
         'ticker': 'https://api.bitfinex.com/v2/ticker/',
