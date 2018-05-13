@@ -58,6 +58,7 @@ class Indicator(object):
             "CoinPriceIndicator_" + str(self.unique_id),
             icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.indicator_widget.set_status(AppIndicator.IndicatorStatus.ACTIVE)
+        self.indicator_widget.set_ordering_index(0)
         self.indicator_widget.set_menu(self._menu())
         self._start_exchange()
 

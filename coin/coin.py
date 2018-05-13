@@ -146,6 +146,7 @@ class Coin():
         self.main_item = AppIndicator.Indicator.new(
             self.config.get('app').get('name'), self.icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.main_item.set_status(AppIndicator.IndicatorStatus.ACTIVE)
+        self.main_item.set_ordering_index(0)
         self.main_item.set_menu(self._menu())
 
     def _start_gui(self):
