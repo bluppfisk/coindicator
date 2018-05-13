@@ -4,6 +4,5 @@ dist/
 Coin_Price_Indicator.egg-info
 user.conf
 *.conf_
-coin/exchanges/data/*
 build/
 __pycache__
