@@ -1,7 +1,6 @@
 # Asset selection window
 
 import gi
-import signal
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
@@ -92,11 +91,9 @@ class AssetSelectionWindow(Gtk.Window):
 
         grid.attach(buttonbox, 100, 425, 400, 50)
 
-        self.set_accept_focus(True)
-        self.present()
-        self.show_all()
-        self.grab_focus()
         self._select_currents()
+        self.show_all()
+        self.present()
 
     def _base_changed(self, selection):
         (model, iter) = selection.get_selected()
