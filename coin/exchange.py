@@ -72,6 +72,9 @@ class Exchange(object):
     def get_default_label(cls):
         return cls.default_label
 
+    def get_asset_pair(self):
+        return self.asset_pair
+
     def get_currency(self):
         return self.asset_pair.get('quote').lower()
 
@@ -100,6 +103,12 @@ class Exchange(object):
         if not self.asset_pair:
             logging.warning("User.conf specifies unavailable asset pair, trying default. Run Asset Discovery again.")
             self.asset_pair = ap
+
+    @classmethod
+    def find_asset_pair_by_code(cls, code):
+        for ap in cls.get_asset_pairs():
+            if ap.get('pair') == code:
+                return ap
 
     ##
     # Legacy function to make sure the hard-coded asset

@@ -106,7 +106,7 @@ class Coin():
             }]
 
         if not self.settings.get('recent'):
-            self.settings['recent'] = ['BTC', 'ETH', 'XRP']
+            self.settings['recent'] = []
 
     # saves settings for each ticker
     def save_settings(self):
@@ -127,16 +127,23 @@ class Coin():
         except IOError:
             logging.error('Settings file not writable')
 
-    # # Add a new base to the recents settings, and push the last one off the edge
-    # def add_new_recent_base(self, base):
-    #     if base in self.settings['recent']:
-    #         self.settings['recent'].remove(base)
+    # Add a new base to the recents settings, and push the last one off the edge
+    def add_new_recent(self, asset_pair, exchange_code):
+        for recent in self.settings['recent']:
+            if recent.get('asset_pair') == asset_pair and recent.get('exchange') == exchange_code:
+                self.settings['recent'].remove(recent)
 
-    #     self.settings['recent'] = self.settings['recent'][0:4]
-    #     self.settings['recent'].insert(0, base)
+        self.settings['recent'] = self.settings['recent'][0:4]
 
-    #     for instance in self.instances:
-    #         instance.rebuild_recents_menu()
+        new_recent = {
+            'asset_pair': asset_pair,
+            'exchange': exchange_code
+        }
+
+        self.settings['recent'].insert(0, new_recent)
+
+        for instance in self.instances:
+            instance.rebuild_recents_menu()
 
     # Start the main indicator icon and its menu
     def _start_main(self):

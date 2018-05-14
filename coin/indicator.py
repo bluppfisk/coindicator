@@ -5,6 +5,7 @@ import logging
 import gi
 
 from os.path import isfile
+from math import floor
 from alarm import Alarm, AlarmSettingsWindow
 from asset_selection import AssetSelectionWindow
 from gi.repository import Gtk, GLib
@@ -88,7 +89,7 @@ class Indicator(object):
                         if self.alarm.check(float(self.prices.get(item))):
                             self.alarm.deactivate()
 
-                price_menu_item.set_label(name + ':\t\t' + self.symbol + self.prices.get(item))
+                price_menu_item.set_label(name + ':\t\t' + self.symbol + " " + self.prices.get(item))
                 price_menu_item.show()
             # if no such price value is returned, hide the menu item
             else:
@@ -96,7 +97,7 @@ class Indicator(object):
 
         # slightly different behaviour for volume menu item
         if self.prices.get('vol'):
-            self.volume_item.set_label('Vol (' + self.volumecurrency + '):\t' + self.prices.get('vol'))
+            self.volume_item.set_label('Vol:\t\t' + self.prices.get('vol') + " " + self.volumecurrency)
             self.volume_item.show()
         else:
             self.volume_item.hide()
@@ -105,18 +106,18 @@ class Indicator(object):
     def _start_exchange(self):
         state_string = self.exchange.get_name()[0:8] \
             + ":\t" + self.exchange.asset_pair.get('base') \
-            + "-" + self.exchange.asset_pair.get('quote')
+            + " - " + self.exchange.asset_pair.get('quote')
         logging.info(
             "Loading " + state_string + " (" + str(self.refresh_frequency) + "s)")
 
         # don't show any data until first response is in
-        GLib.idle_add(self.indicator_widget.set_label, 'loading', 'loading')
+        GLib.idle_add(self.indicator_widget.set_label, 'loading' + u"\u2026", 'loading' + u"\u2026")
         GLib.idle_add(self.state_item.set_label, state_string)
         for item in self.price_group:
             GLib.idle_add(item.set_active, False)
-            GLib.idle_add(item.set_label, 'loading')
+            GLib.idle_add(item.set_label, 'loading' + u"\u2026")
 
-        self.volume_item.set_label('loading')
+        self.volume_item.set_label('loading' + u"\u2026")
 
         # set icon for asset if it exists
         currency = self.exchange.asset_pair.get('base').lower()
@@ -148,8 +149,9 @@ class Indicator(object):
 
     def _menu(self):
         menu = Gtk.Menu()
-        self.state_item = Gtk.MenuItem('loading...')
+        self.state_item = Gtk.MenuItem("loading" + u"\u2026")
         menu.append(self.state_item)
+
         menu.append(Gtk.SeparatorMenuItem())
 
         self.price_group = []  # so that a radio button can be set on the active one
@@ -158,16 +160,21 @@ class Indicator(object):
         self.price_menu_items = {}
         for price_type, name in CATEGORIES:
             self.price_menu_items[price_type] = Gtk.RadioMenuItem.new_with_label(
-                self.price_group, 'loading...')
+                self.price_group, 'loading' + u"\u2026")
             self.price_menu_items[price_type].connect('toggled', self._menu_make_label, price_type)
             self.price_group.append(self.price_menu_items.get(price_type))
             menu.append(self.price_menu_items.get(price_type))
 
         # trading volume display
-        self.volume_item = Gtk.MenuItem('loading...')
+        self.volume_item = Gtk.MenuItem('loading' + u"\u2026")
         menu.append(self.volume_item)
 
         menu.append(Gtk.SeparatorMenuItem())
+
+        # recents menu
+        self.recents_menu = Gtk.MenuItem("Recents")
+        self.recents_menu.set_submenu(self._menu_recents())
+        menu.append(self.recents_menu)
 
         # settings menu
         self.settings_menu = Gtk.MenuItem("Select Asset" + u"\u2026")
@@ -195,6 +202,34 @@ class Indicator(object):
 
         return menu
 
+    def _menu_recents(self):
+        recent_menu = Gtk.Menu()
+
+        if len(self.coin.settings['recent']) == 0:
+            return
+
+        for recent in self.coin.settings['recent']:
+            exchange = self.coin.find_exchange_by_code(recent.get('exchange'))
+            asset_pair = exchange.find_asset_pair_by_code(recent.get('asset_pair'))
+            base = asset_pair.get('base')
+            quote = asset_pair.get('quote')
+            tabs = "\t" * (floor(abs((len(exchange.get_name()) - 8)) / 4) + 1)  # 1 tab for every 4 chars less than 8
+            recent_string = exchange.get_name()[0:8] + ":" + tabs + base + " - " + quote
+            recent_item = Gtk.MenuItem(recent_string)
+            recent_item.connect("activate", self._recent_change, base, quote, exchange)
+            recent_menu.append(recent_item)
+
+        recent_menu.show_all()
+        return recent_menu
+
+    def _recent_change(self, widget, base, quote, exchange):
+        self.change_assets(base, quote, exchange)
+
+    def rebuild_recents_menu(self):
+        if self.recents_menu.get_submenu():
+            self.recents_menu.get_submenu().destroy()
+        self.recents_menu.set_submenu(self._menu_recents())
+
     def _menu_refresh(self):
         refresh_menu = Gtk.Menu()
 
@@ -216,14 +251,14 @@ class Indicator(object):
             self.coin.save_settings()
             self.exchange.stop().start()
 
-    def change_assets(self, base, quote, exchange_code):
+    def change_assets(self, base, quote, exchange):
         self.exchange.stop()
 
-        if self.exchange.get_code() is not exchange_code:
-            exchange_class = self.coin.find_exchange_by_code(exchange_code)
-            self.exchange = exchange_class(self)
+        if self.exchange is not exchange:
+            self.exchange = exchange(self)
 
         self.exchange.set_asset_pair(base, quote)
+        self.coin.add_new_recent(self.exchange.get_asset_pair().get('pair'), self.exchange.get_code())
 
         self.coin.save_settings()
         self._start_exchange()
