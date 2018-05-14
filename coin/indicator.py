@@ -28,11 +28,11 @@ REFRESH_TIMES = [  # seconds
 ]
 
 CATEGORIES = [
-    ('cur', 'Now:\t\t'),
-    ('bid', 'Bid:\t\t'),
-    ('ask', 'Ask:\t\t'),
-    ('high', 'High:\t\t'),
-    ('low', 'Low:\t\t')
+    ('cur', 'Now'),
+    ('bid', 'Bid'),
+    ('ask', 'Ask'),
+    ('high', 'High'),
+    ('low', 'Low')
 ]
 
 
@@ -88,7 +88,7 @@ class Indicator(object):
                         if self.alarm.check(float(self.prices.get(item))):
                             self.alarm.deactivate()
 
-                price_menu_item.set_label(name + self.symbol + self.prices.get(item))
+                price_menu_item.set_label(name + ':\t\t' + self.symbol + self.prices.get(item))
                 price_menu_item.show()
             # if no such price value is returned, hide the menu item
             else:
