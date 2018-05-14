@@ -111,7 +111,7 @@ class Indicator(object):
             "Loading " + state_string + " (" + str(self.refresh_frequency) + "s)")
 
         # don't show any data until first response is in
-        GLib.idle_add(self.indicator_widget.set_label, 'loading' + u"\u2026", 'loading' + u"\u2026")
+        GLib.idle_add(self.indicator_widget.set_label, 'loading', 'loading')
         GLib.idle_add(self.state_item.set_label, state_string)
         for item in self.price_group:
             GLib.idle_add(item.set_active, False)
@@ -171,15 +171,15 @@ class Indicator(object):
 
         menu.append(Gtk.SeparatorMenuItem())
 
-        # recents menu
-        self.recents_menu = Gtk.MenuItem("Recents")
-        self.recents_menu.set_submenu(self._menu_recents())
-        menu.append(self.recents_menu)
-
         # settings menu
         self.settings_menu = Gtk.MenuItem("Select Asset" + u"\u2026")
         self.settings_menu.connect("activate", self._settings)
         menu.append(self.settings_menu)
+
+        # recents menu
+        self.recents_menu = Gtk.MenuItem("Recents")
+        self.recents_menu.set_submenu(self._menu_recents())
+        menu.append(self.recents_menu)
 
         # refresh rate choice menu
         self.refresh_menu = Gtk.MenuItem("Refresh")

@@ -1,6 +1,7 @@
 # Asset selection window
 
 import gi
+import signal
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
@@ -12,7 +13,7 @@ class AssetSelectionWindow(Gtk.Window):
         self.parent = parent
         self.set_keep_above(True)
         self.set_border_width(5)
-        self.set_modal(True)
+        # self.set_modal(True)
 
         grid = Gtk.Grid()
         grid.set_column_homogeneous(True)
@@ -49,6 +50,9 @@ class AssetSelectionWindow(Gtk.Window):
         self.view_bases.append_column(col_base)
         self.view_quotes.append_column(col_quote)
         self.view_exchanges.append_column(col_exchange)
+        self.view_exchanges.connect("row-activated", self._update_indicator)
+
+        self.set_focus_child(self.view_bases)
 
         sw = Gtk.ScrolledWindow()
         sw.set_vexpand(True)
@@ -72,14 +76,15 @@ class AssetSelectionWindow(Gtk.Window):
 
         button_set_close = Gtk.Button('Set and Close')
         button_set_close.connect("clicked", self._update_indicator_close)
-        button_set_close.set_can_default(True)
-        button_set_close.get_style_context().add_class(Gtk.STYLE_CLASS_SUGGESTED_ACTION)
 
         button_set = Gtk.Button('Set')
         button_set.connect("clicked", self._update_indicator)
+        button_set.set_can_default(True)
+        button_set.get_style_context().add_class(Gtk.STYLE_CLASS_SUGGESTED_ACTION)
 
         button_cancel = Gtk.Button('Close')
         button_cancel.connect("clicked", self._close)
+        button_cancel.get_style_context().add_class(Gtk.STYLE_CLASS_DESTRUCTIVE_ACTION)
 
         buttonbox.pack_start(button_set_close, True, True, 0)
         buttonbox.pack_start(button_set, True, True, 0)
@@ -87,10 +92,11 @@ class AssetSelectionWindow(Gtk.Window):
 
         grid.attach(buttonbox, 100, 425, 400, 50)
 
-        self._select_currents()
-
+        self.set_accept_focus(True)
+        self.present()
         self.show_all()
         self.grab_focus()
+        self._select_currents()
 
     def _base_changed(self, selection):
         (model, iter) = selection.get_selected()
@@ -144,7 +150,7 @@ class AssetSelectionWindow(Gtk.Window):
         self._update_indicator(widget)
         self._close(widget)
 
-    def _update_indicator(self, widget):
+    def _update_indicator(self, widget, *args):
         exchange = self.parent.coin.find_exchange_by_code(self.current_exchange)
         self.parent.change_assets(self.current_base, self.current_quote, exchange)
 

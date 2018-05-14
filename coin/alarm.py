@@ -77,7 +77,6 @@ class AlarmSettingsWindow(Gtk.Window):
         self.parent = parent
         self.set_keep_above(True)
         self.set_border_width(5)
-        self.set_modal(True)
 
         self.grid = Gtk.Grid()
         label = Gtk.Label("Alert if the active price is")
@@ -125,10 +124,10 @@ class AlarmSettingsWindow(Gtk.Window):
         self.grid.attach(hbox, 0, 0, 200, 50)
         self.grid.attach(buttonbox, 0, 50, 200, 50)
         self.add(self.grid)
-        entry_price.grab_focus()  # focus on entry field
 
+        self.set_accept_focus(True)
         self.show_all()
-        self.grab_focus()
+        entry_price.grab_focus()  # focus on entry field
 
     ##
     # This function strips all but numbers and decimal points from
