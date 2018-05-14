@@ -103,13 +103,15 @@ class Indicator(object):
 
     # (re)starts the exchange logic and its timer
     def _start_exchange(self):
+        state_string = self.exchange.get_name()[0:8] \
+            + ":\t" + self.exchange.asset_pair.get('base') \
+            + "-" + self.exchange.asset_pair.get('quote')
         logging.info(
-            "Loading " +
-            self.exchange.asset_pair.get('pair') + " from " +
-            self.exchange.get_name() + " (" + str(self.refresh_frequency) + "s)")
+            "Loading " + state_string + " (" + str(self.refresh_frequency) + "s)")
 
         # don't show any data until first response is in
         GLib.idle_add(self.indicator_widget.set_label, 'loading', 'loading')
+        GLib.idle_add(self.state_item.set_label, state_string)
         for item in self.price_group:
             GLib.idle_add(item.set_active, False)
             GLib.idle_add(item.set_label, 'loading')
@@ -146,6 +148,10 @@ class Indicator(object):
 
     def _menu(self):
         menu = Gtk.Menu()
+        self.state_item = Gtk.MenuItem('loading...')
+        menu.append(self.state_item)
+        menu.append(Gtk.SeparatorMenuItem())
+
         self.price_group = []  # so that a radio button can be set on the active one
 
         # hacky way to get every price item on the menu and filled
