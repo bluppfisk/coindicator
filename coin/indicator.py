@@ -172,7 +172,7 @@ class Indicator(object):
         menu.append(Gtk.SeparatorMenuItem())
 
         # settings menu
-        self.settings_menu = Gtk.MenuItem("Select Asset" + u"\u2026")
+        self.settings_menu = Gtk.MenuItem("Change Asset" + u"\u2026")
         self.settings_menu.connect("activate", self._settings)
         menu.append(self.settings_menu)
 
