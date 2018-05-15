@@ -2,7 +2,8 @@
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
+gi.require_version('Gdk', '3.0')
+from gi.repository import Gtk, Gdk
 
 
 class AssetSelectionWindow(Gtk.Window):
@@ -12,6 +13,7 @@ class AssetSelectionWindow(Gtk.Window):
         self.parent = parent
         self.set_keep_above(True)
         self.set_border_width(5)
+        self.connect('key-release-event', self._on_key_release)
         # self.set_modal(True)
 
         grid = Gtk.Grid()
@@ -71,7 +73,7 @@ class AssetSelectionWindow(Gtk.Window):
         lbl_hint = Gtk.Label("Hint: Start typing in a list to search.")
         grid.attach(lbl_hint, 100, 400, 400, 25)
 
-        buttonbox = Gtk.Box()
+        buttonbox = Gtk.Box(spacing=2)
 
         button_set_close = Gtk.Button('Set and Close')
         button_set_close.connect("clicked", self._update_indicator_close)
@@ -151,5 +153,9 @@ class AssetSelectionWindow(Gtk.Window):
         exchange = self.parent.coin.find_exchange_by_code(self.current_exchange)
         self.parent.change_assets(self.current_base, self.current_quote, exchange)
 
-    def _close(self, widget):
+    def _on_key_release(self, widget, ev, data=None):
+        if ev.keyval == Gdk.KEY_Escape:
+            self._close()
+
+    def _close(self, widget=None):
         self.destroy()

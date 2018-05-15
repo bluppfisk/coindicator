@@ -5,8 +5,9 @@ import pygame
 import notify2
 
 gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
 
-from gi.repository import Gtk, GdkPixbuf
+from gi.repository import Gdk, Gtk, GdkPixbuf
 from gi.repository.Gdk import Color
 
 
@@ -77,6 +78,7 @@ class AlarmSettingsWindow(Gtk.Window):
         self.parent = parent
         self.set_keep_above(True)
         self.set_border_width(5)
+        self.connect('key-release-event', self._on_key_release)
 
         self.grid = Gtk.Grid()
         label = Gtk.Label("Alert if the active price is")
@@ -109,12 +111,13 @@ class AlarmSettingsWindow(Gtk.Window):
         # Set and Cancel buttons
         buttonbox = Gtk.Box(spacing=2)
         button_set = Gtk.Button('Set Alert')
-        button_clear = Gtk.Button('Clear Alert')
-        button_cancel = Gtk.Button('Cancel')
+        button_clear = Gtk.Button('Delete Alert')
+        button_cancel = Gtk.Button('Close')
         button_set.connect("clicked", self._set_alarm, radio_over, entry_price)
         button_set.set_can_default(True)
         button_set.get_style_context().add_class(Gtk.STYLE_CLASS_SUGGESTED_ACTION)
         button_clear.connect("clicked", self._clear_alarm)
+        button_clear.get_style_context().add_class(Gtk.STYLE_CLASS_DESTRUCTIVE_ACTION)
         button_cancel.connect("clicked", self._close)
         buttonbox.pack_start(button_set, True, True, 0)
         buttonbox.pack_start(button_clear, True, True, 0)
@@ -127,6 +130,7 @@ class AlarmSettingsWindow(Gtk.Window):
 
         self.set_accept_focus(True)
         self.show_all()
+        self.present()
         entry_price.grab_focus()  # focus on entry field
 
     ##
@@ -166,9 +170,13 @@ class AlarmSettingsWindow(Gtk.Window):
             entry_price.set_text('')
             entry_price.grab_focus()
 
-    def _clear_alarm(self, widget):
+    def _on_key_release(self, widget, ev, data=None):
+        if ev.keyval == Gdk.KEY_Escape:
+            self._close()
+
+    def _clear_alarm(self, widget=None):
         self.parent.alarm.deactivate()
         self.destroy()
 
-    def _close(self, widget):
+    def _close(self, widget=None):
         self.destroy()
