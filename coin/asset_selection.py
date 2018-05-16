@@ -13,6 +13,7 @@ class AssetSelectionWindow(Gtk.Window):
         self.parent = parent
         self.set_keep_above(True)
         self.set_border_width(5)
+        self.set_position(Gtk.WindowPosition.MOUSE)
         self.connect('key-release-event', self._on_key_release)
         # self.set_modal(True)
 
@@ -85,7 +86,6 @@ class AssetSelectionWindow(Gtk.Window):
 
         button_cancel = Gtk.Button('Close')
         button_cancel.connect("clicked", self._close)
-        button_cancel.get_style_context().add_class(Gtk.STYLE_CLASS_DESTRUCTIVE_ACTION)
 
         buttonbox.pack_start(button_set_close, True, True, 0)
         buttonbox.pack_start(button_set, True, True, 0)

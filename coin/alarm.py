@@ -78,6 +78,7 @@ class AlarmSettingsWindow(Gtk.Window):
         self.parent = parent
         self.set_keep_above(True)
         self.set_border_width(5)
+        self.set_position(Gtk.WindowPosition.MOUSE)
         self.connect('key-release-event', self._on_key_release)
 
         self.grid = Gtk.Grid()
@@ -117,15 +118,14 @@ class AlarmSettingsWindow(Gtk.Window):
         button_set.set_can_default(True)
         button_set.get_style_context().add_class(Gtk.STYLE_CLASS_SUGGESTED_ACTION)
         button_clear.connect("clicked", self._clear_alarm)
-        button_clear.get_style_context().add_class(Gtk.STYLE_CLASS_DESTRUCTIVE_ACTION)
         button_cancel.connect("clicked", self._close)
         buttonbox.pack_start(button_set, True, True, 0)
         buttonbox.pack_start(button_clear, True, True, 0)
         buttonbox.pack_start(button_cancel, True, True, 0)
 
         # Display in content area
-        self.grid.attach(hbox, 0, 0, 200, 50)
-        self.grid.attach(buttonbox, 0, 50, 200, 50)
+        self.grid.attach(hbox, 0, 0, 200, 100)
+        self.grid.attach(buttonbox, 0, 100, 200, 100)
         self.add(self.grid)
 
         self.set_accept_focus(True)

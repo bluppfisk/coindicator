@@ -110,6 +110,12 @@ class Exchange(object):
             if ap.get('pair') == code:
                 return ap
 
+    @classmethod
+    def find_asset_pair(cls, quote, base):
+        for ap in cls.get_asset_pairs():
+            if ap.get('quote') == quote and ap.get('base') == base:
+                return ap
+
     ##
     # Legacy function to make sure the hard-coded asset
     # configuration is consistent with the new format

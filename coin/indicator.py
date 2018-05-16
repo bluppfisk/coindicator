@@ -1,4 +1,4 @@
-# The App Indicator that sits in the top bar
+# The ticker AppIndicator item that sits in the tray
 # https://unity.ubuntu.com/projects/appindicators/
 
 import logging
@@ -275,3 +275,12 @@ class Indicator(object):
                 indicator.asset_selection_window.destroy()
 
         self.asset_selection_window = AssetSelectionWindow(self)
+
+    # def convert_to_fiat(self, crypto, fiat):
+    #     for exchange in self.coin.EXCHANGES:
+    #         ap = exchange.find_asset_pair(crypto, fiat)
+    #         if ap:
+    #             break
+
+    #     self.fiat_converter = exchange(self).set_asset_pair(crypto, fiat)
+    #     self.fiat_converter.start(15)
