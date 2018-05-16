@@ -91,7 +91,8 @@ class Exchange(object):
                 break
 
         if not self.asset_pair:
-            logging.warning("User.conf specifies unavailable asset pair, trying default. Run Asset Discovery again.")
+            logging.warning("User.conf specifies unavailable asset pair, trying default. \
+                Run Asset Discovery again.")
             self.asset_pair = ap
 
     def set_asset_pair_from_code(self, code):
@@ -101,7 +102,8 @@ class Exchange(object):
                 break
 
         if not self.asset_pair:
-            logging.warning("User.conf specifies unavailable asset pair, trying default. Run Asset Discovery again.")
+            logging.warning("User.conf specifies unavailable asset pair, trying default. \
+                Run Asset Discovery again.")
             self.asset_pair = ap
 
     @classmethod

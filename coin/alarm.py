@@ -64,7 +64,9 @@ class Alarm(object):
             if pygame.init():
                 pygame.mixer.music.load(self.parent.coin.config.get('project_root') + '/resources/ca-ching.wav')
                 pygame.mixer.music.play()
-            logo = GdkPixbuf.Pixbuf.new_from_file(self.parent.coin.config.get('project_root') + '/resources/icon_32px.png')
+            logo = GdkPixbuf.Pixbuf.new_from_file(
+                self.parent.coin.config.get('project_root') + '/resources/icon_32px.png')
+
             n = notify2.Notification(title, message)
             n.set_icon_from_pixbuf(logo)
             n.set_urgency(2)  # highest
