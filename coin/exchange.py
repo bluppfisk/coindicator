@@ -4,6 +4,7 @@ import logging
 import time
 import pickle
 
+from os.path import isfile
 from gi.repository import GLib
 from error import Error
 from async_downloader import DownloadCommand
@@ -31,6 +32,8 @@ CATEGORY = {
 
 
 class Exchange(object):
+    active = True
+
     def __init__(self, indicator=None):
         self.indicator = indicator
         self.downloader = indicator.coin.downloader
@@ -80,6 +83,16 @@ class Exchange(object):
 
     def get_symbol(self):
         return CURRENCY.get(self.get_currency(), self.get_currency().upper())
+
+    def get_icon(self):
+        # set icon for asset if it exists
+        asset = self.asset_pair.get('base').lower()
+        asset_dir = self.indicator.coin.config.get('project_root') + '/resources/'
+
+        if isfile(asset_dir + asset + '.png'):
+            return asset_dir + asset + '.png'
+
+        return asset_dir + 'unknown-coin.png'
 
     def get_volume_currency(self):
         return self.asset_pair.get('volumecurrency', self.asset_pair.get('base'))

@@ -15,6 +15,7 @@ import notify2
 
 from os.path import abspath, dirname, isfile, basename
 from indicator import Indicator
+from plugin_selection import PluginSelectionWindow
 from async_downloader import AsyncDownloadService
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import Gtk, GdkPixbuf
@@ -70,7 +71,8 @@ class Coin():
         self.assets = {}
 
         for exchange in self.EXCHANGES:
-            self.assets[exchange.get_code()] = exchange.get_asset_pairs()
+            if exchange.active:
+                self.assets[exchange.get_code()] = exchange.get_asset_pairs()
 
         # inverse the hierarchy for easier asset selection
         bases = {}
@@ -96,6 +98,11 @@ class Coin():
         if isfile(SETTINGS_FILE):
             self.settings = yaml.load(open(SETTINGS_FILE, 'r'))
 
+        if 'plugins' in self.settings:
+            for ex in self.EXCHANGES:
+                if ex.get_code() not in self.settings.get('plugins'):
+                    ex.active = False
+
         # set defaults if settings not defined
         if not self.settings.get('tickers'):
             self.settings['tickers'] = [{
@@ -120,6 +127,13 @@ class Coin():
             }
             tickers.append(ticker)
             self.settings['tickers'] = tickers
+
+        plugins = []
+        for exchange in self.EXCHANGES:
+            if exchange.active:
+                plugins.append(exchange.get_code())
+
+        self.settings['plugins'] = plugins
 
         try:
             with open(SETTINGS_FILE, 'w') as handle:
@@ -174,16 +188,19 @@ class Coin():
 
         self.add_item = Gtk.MenuItem("Add Ticker")
         self.discover_item = Gtk.MenuItem("Discover Assets")
+        self.plugin_item = Gtk.MenuItem("Plugins" + u"\u2026")
         self.about_item = Gtk.MenuItem("About")
         self.quit_item = Gtk.MenuItem("Quit")
 
         self.add_item.connect("activate", self._add_ticker)
         self.discover_item.connect("activate", self._discover_assets)
+        self.plugin_item.connect("activate", self._select_plugins)
         self.about_item.connect("activate", self._about)
         self.quit_item.connect("activate", self._quit_all)
 
         menu.append(self.add_item)
         menu.append(self.discover_item)
+        menu.append(self.plugin_item)
         menu.append(self.about_item)
         menu.append(Gtk.SeparatorMenuItem())
         menu.append(self.quit_item)
@@ -224,6 +241,9 @@ class Coin():
 
     # Menu item to download any new assets from the exchanges
     def _discover_assets(self, widget):
+        if len([ex for ex in self.EXCHANGES if ex.active]) == 0:
+            return
+
         self.main_item.set_icon(self.config.get('project_root') + '/resources/loading.png')
 
         for indicator in self.instances:
@@ -231,13 +251,14 @@ class Coin():
                 indicator.asset_selection_window.destroy()
 
         for exchange in self.EXCHANGES:
-            exchange.discover_assets(self.downloader, self.update_assets)
+            if exchange.active:
+                exchange.discover_assets(self.downloader, self.update_assets)
 
     # When discovery completes, reload currencies and rebuild menus of all instances
     def update_assets(self):
         self.discoveries += 1
-        if self.discoveries < len(self.EXCHANGES):
-            return  # wait until all exchanges finish discovery
+        if self.discoveries < len([i for i in self.EXCHANGES if i.active]):
+            return  # wait until all active exchanges finish discovery
 
         self.discoveries = 0
         self._load_assets()
@@ -280,9 +301,19 @@ class Coin():
         if res == -4 or -6:  # close events
             about.destroy()
 
+    def _select_plugins(self, widget):
+        PluginSelectionWindow(self)
+
     # Menu item to remove all tickers and quits the application
     def _quit_all(self, widget):
         Gtk.main_quit()
+
+    def plugins_updated(self):
+        self._load_assets()
+        for instance in self.instances:
+            instance.start()  # will stop exchange if inactive
+
+        self.save_settings()
 
 
 coin = Coin()

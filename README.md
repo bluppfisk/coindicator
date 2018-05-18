@@ -1,4 +1,3 @@
-# Coin Price Indicator
 
 ![Coin Price logo](https://raw.github.com/nilgradisnik/coinprice-indicator/master/resources/logo_124px.png)
 

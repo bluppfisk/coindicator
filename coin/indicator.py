@@ -4,7 +4,6 @@
 import logging
 import gi
 
-from os.path import isfile
 from math import floor
 from alarm import Alarm, AlarmSettingsWindow
 from asset_selection import AssetSelectionWindow
@@ -54,14 +53,17 @@ class Indicator(object):
 
     # initialisation and start of indicator and exchanges
     def start(self):
-        icon = self.coin.config.get('project_root') + '/resources/icon_32px.png'
+        icon = self.exchange.get_icon()
         self.indicator_widget = AppIndicator.Indicator.new(
             "CoinPriceIndicator_" + str(self.unique_id),
             icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.indicator_widget.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.indicator_widget.set_ordering_index(0)
         self.indicator_widget.set_menu(self._menu())
-        self._start_exchange()
+        if self.exchange.active:
+            self._start_exchange()
+        else:
+            self._stop_exchange()
 
     # updates GUI menus with data stored in the object
     def update_gui(self):
@@ -119,20 +121,14 @@ class Indicator(object):
 
         self.volume_item.set_label('loading' + u"\u2026")
 
-        # set icon for asset if it exists
-        currency = self.exchange.asset_pair.get('base').lower()
-
-        if isfile(self.coin.config.get('project_root') + '/resources/' + currency + '.png'):
-            self.indicator_widget.set_icon(
-                self.coin.config.get('project_root') + '/resources/' + currency + '.png')
-        else:
-            self.indicator_widget.set_icon(
-                self.coin.config.get('project_root') + '/resources/unknown-coin.png')
-
         self._make_default_label(self.default_label)
 
         # start the timers and logic
         self.exchange.start()
+
+    def _stop_exchange(self):
+        GLib.idle_add(self.indicator_widget.set_label, 'stopped', 'stopped')
+        self.exchange.stop()
 
     # promotes a price value to the main label position
     def _menu_make_label(self, widget, label):
@@ -258,6 +254,7 @@ class Indicator(object):
             self.exchange = exchange(self)
 
         self.exchange.set_asset_pair(base, quote)
+        self.indicator_widget.set_icon(self.exchange.get_icon())
         self.coin.add_new_recent(self.exchange.get_asset_pair().get('pair'), self.exchange.get_code())
 
         self.coin.save_settings()
