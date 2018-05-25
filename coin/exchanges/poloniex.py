@@ -1,4 +1,4 @@
-#
+# Poloniex
 # https://poloniex.com/public?command=returnTicker
 # By Sander Van de Moortel <sander.vandemoortel@gmail.com>
 
@@ -14,8 +14,7 @@ class Poloniex(Exchange):
 
     default_label = "cur"
 
-    asset_pairs = [
-    ]
+    asset_pairs = []
 
     @classmethod
     def _get_discovery_url(cls):
@@ -28,7 +27,6 @@ class Poloniex(Exchange):
     def _parse_discovery(result):
         asset_pairs = []
         for asset in result:
-            # strange double assets in Kraken results, ignore ba
             asset_data = asset.split('_')
             base = asset_data[0]
             quote = asset_data[1]

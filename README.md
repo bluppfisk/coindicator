@@ -10,7 +10,7 @@ Coin Price Indicator is a cryptocurrency price indicator applet for Linux.
 * Additional price points in the dropdown menu
 * Audiovisual price alerts
 * Adjust the refresh rate
-* Hundreds of cryptocurrencies from the following exchanges:
+* Thousands of cryptocurrency pairs from the following exchanges:
 
 	* [Kraken](https://www.kraken.com)
 	* [Bitstamp](https://www.bitstamp.net)
@@ -20,7 +20,9 @@ Coin Price Indicator is a cryptocurrency price indicator applet for Linux.
 	* [Bittrex](https://bittrex.com)
 	* [Bitfinex](https://www.bitfinex.com/)
 	* [Bx](https://www.bx.in.th/)
+	* [Poloniex](https://poloniex.com)
 	* [HitBTC](https://hitbtc.com/)
+	* [CEX.io](https://cex.io/)
 	* Add your own (See **Extending (Plugins)** below)
 
 ![Screenshot](https://raw.githubusercontent.com/nilgradisnik/coinprice-indicator/master/resources/screenshot.png)

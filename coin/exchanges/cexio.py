@@ -1,47 +1,38 @@
-# HitBTC
-# https://github.com/hitbtc-com/hitbtc-api/blob/master/APIv1.md
+# CEX.io
+# https://cex.io/rest-api
 # By Sander Van de Moortel <sander.vandemoortel@gmail.com>
 
-from exchange import Exchange, CURRENCY
+from exchange import Exchange
 
 
-class Hitbtc(Exchange):
-    name = "HitBTC"
-    code = "hitbtc"
+class Cexio(Exchange):
+    name = "CEX.io"
+    code = "cexio"
 
-    ticker = "http://api.hitbtc.com/api/1/public/"
-    discovery = "http://api.hitbtc.com/api/1/public/symbols"
+    ticker = "https://cex.io/api/ticker"
+    discovery = "https://cex.io/api/currency_limits"
 
     default_label = "cur"
 
-    asset_pairs = [
-        {'isocode': 'XXBTZUSD', 'pair': 'BTCUSDT', 'name': 'BTC to USD', 'currency': CURRENCY['usd']}
-    ]
+    asset_pairs = []
 
     @classmethod
     def _get_discovery_url(cls):
         return cls.discovery
 
     def _get_ticker_url(self):
-        return self.ticker + self.pair + '/ticker'
+        return self.ticker + '/' + self.pair  # base/quote
 
     @staticmethod
     def _parse_discovery(result):
         asset_pairs = []
-        assets = result.get('symbols')
-        for asset in assets:
-            base = asset.get('commodity')
-            quote = asset.get('currency')
-
-            names = {'IOTA': 'IOT', 'MAN': 'MANA'}
-            if base in names:
-                base = names[base]
-
-            if quote in names:
-                quote = names[quote]
+        data = result.get('data')
+        for asset in data.get('pairs'):
+            base = asset.get('symbol1')
+            quote = asset.get('symbol2')
 
             asset_pair = {
-                'pair': asset.get('symbol'),
+                'pair': base + '/' + quote,
                 'base': base,
                 'quote': quote,
                 'name': base + ' to ' + quote,
