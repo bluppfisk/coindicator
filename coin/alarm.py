@@ -84,6 +84,9 @@ class AlarmSettingsWindow(Gtk.Window):
         self.connect('key-release-event', self._on_key_release)
 
         self.grid = Gtk.Grid()
+        self.grid.set_column_homogeneous(True)
+        self.grid.set_row_homogeneous(True)
+
         label = Gtk.Label("Alert if the active price is")
 
         hbox = Gtk.Box(spacing=2)
@@ -109,7 +112,7 @@ class AlarmSettingsWindow(Gtk.Window):
         hbox.pack_start(label, False, False, 0)
         hbox.pack_start(radio_over, False, False, 0)
         hbox.pack_start(radio_under, False, False, 0)
-        hbox.pack_start(entry_price, False, False, 0)
+        hbox.pack_start(entry_price, True, True, 0)
 
         # Set and Cancel buttons
         buttonbox = Gtk.Box(spacing=2)
@@ -126,8 +129,8 @@ class AlarmSettingsWindow(Gtk.Window):
         buttonbox.pack_start(button_cancel, True, True, 0)
 
         # Display in content area
-        self.grid.attach(hbox, 0, 0, 200, 100)
-        self.grid.attach(buttonbox, 0, 100, 200, 100)
+        self.grid.attach(hbox, 0, 0, 50, 50)
+        self.grid.attach(buttonbox, 0, 50, 50, 50)
         self.add(self.grid)
 
         self.set_accept_focus(True)
