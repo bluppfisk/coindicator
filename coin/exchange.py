@@ -17,7 +17,8 @@ CURRENCY = {
     'gbp': '£',
     'eth': 'Ξ',
     'cad': '$',
-    'jpy': '¥'
+    'jpy': '¥',
+    'cny': '元'
 }
 
 CATEGORY = {

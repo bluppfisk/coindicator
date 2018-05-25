@@ -240,7 +240,8 @@ class Coin():
 
     # Menu item to download any new assets from the exchanges
     def _discover_assets(self, widget):
-        if len([ex for ex in self.EXCHANGES if ex.active]) == 0:
+        # Don't do anything if there are no active exchanges with discovery
+        if len([ex for ex in self.EXCHANGES if ex.active and ex.discovery]) == 0:
             return
 
         self.main_item.set_icon(self.config.get('project_root') + '/resources/loading.png')
@@ -250,14 +251,14 @@ class Coin():
                 indicator.asset_selection_window.destroy()
 
         for exchange in self.EXCHANGES:
-            if exchange.active:
+            if exchange.active and exchange.discovery:
                 exchange.discover_assets(self.downloader, self.update_assets)
 
     # When discovery completes, reload currencies and rebuild menus of all instances
     def update_assets(self):
         self.discoveries += 1
-        if self.discoveries < len([i for i in self.EXCHANGES if i.active]):
-            return  # wait until all active exchanges finish discovery
+        if self.discoveries < len([ex for ex in self.EXCHANGES if ex.active and ex.discovery]):
+            return  # wait until all active exchanges with discovery finish discovery
 
         self.discoveries = 0
         self._load_assets()
