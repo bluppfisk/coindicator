@@ -19,7 +19,7 @@ Coin Price Indicator is a cryptocurrency price indicator applet for Linux.
 	* [Binance](https://www.binance.com)
 	* [Bittrex](https://bittrex.com)
 	* [Bitfinex](https://www.bitfinex.com/)
-	* [Bx](https://www.bx.in.th/)
+	* [Bx.in.th](https://www.bx.in.th/)
 	* [Poloniex](https://poloniex.com)
 	* [HitBTC](https://hitbtc.com/)
 	* [CEX.io](https://cex.io/)
