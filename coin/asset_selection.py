@@ -91,7 +91,7 @@ class AssetSelectionWindow(Gtk.Window):
         buttonbox.pack_start(button_set, True, True, 0)
         buttonbox.pack_start(button_cancel, True, True, 0)
 
-        grid.attach(buttonbox, 100, 425, 400, 50)
+        grid.attach(buttonbox, 100, 425, 600, 50)
 
         self._select_currents()
         self.show_all()
