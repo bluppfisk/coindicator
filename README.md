@@ -7,6 +7,7 @@ Coin Price Indicator is a cryptocurrency price indicator applet for Linux.
 ## Features
 
 * Multiple price tickers in the status bar
+* Automatic trade pair discovery on supported exchanges
 * Additional price points in the dropdown menu
 * Audiovisual price alerts
 * Adjust the refresh rate
@@ -24,7 +25,7 @@ Coin Price Indicator is a cryptocurrency price indicator applet for Linux.
 	* [HitBTC](https://hitbtc.com/)
 	* [CEX.io](https://cex.io/)
 	* [OKCoin](https://www.okcoin.cn/)
-	* Add your own (See **Extending (Plugins)** below)
+	* Easy to add your own (See **Extending (Plugins)** below)
 
 ![Screenshot](https://raw.githubusercontent.com/nilgradisnik/coinprice-indicator/master/resources/screenshot.png)
 
@@ -63,7 +64,7 @@ This software was tested and found working on the following configurations:
 
 For GNOME 3 set-ups, you will need to install LibAppIndicator support (see point 3 below).
 
-1. Before reporting bugs or issues, please try removing **user.conf** first and then the **.conf** files in the **/exchanges/** folder. Then run the application and choose **Discover Assets** from the piggy menu first.
+1. Before reporting bugs or issues, please try removing **user.conf** first and then the **.conf** files in the **/exchanges/data/** folder. Then run the application and choose **Discover Assets** from the piggy menu first.
 
 2. If you're getting a `SyntaxError: Missing parentheses in call to 'print'.`, you may be using a Python2 library in there somewhere. Look through the error to identify which package it is. If it is `gi`, you can install the correct version with `sudo apt install python3-gi`. Additionally, you may have to uninstall the python2 gi library `pip3 uninstall gi` for it to work.
 
