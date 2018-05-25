@@ -217,6 +217,7 @@ class Coin():
         indicator = Indicator(self, self.unique_id, exchange, asset_pair, refresh, default_label)
         self.instances.append(indicator)
         indicator.start()
+        return indicator
 
     # adds many tickers
     def _add_many_indicators(self, tickers):
@@ -225,7 +226,8 @@ class Coin():
 
     # Menu item to add a ticker
     def _add_ticker(self, widget):
-        self._add_indicator(self.settings.get('tickers')[len(self.settings.get('tickers')) - 1])
+        i = self._add_indicator(self.settings.get('tickers')[len(self.settings.get('tickers')) - 1])
+        i._settings(None)
         self.save_settings()
 
     # Remove ticker
