@@ -98,10 +98,9 @@ class Coin():
         if isfile(SETTINGS_FILE):
             self.settings = yaml.load(open(SETTINGS_FILE, 'r'))
 
-        if 'plugins' in self.settings:
-            for ex in self.EXCHANGES:
-                if ex.get_code() not in self.settings.get('plugins'):
-                    ex.active = False
+        for plugin in self.settings.get('plugins', {}):
+            for code, active in plugin.items():
+                self.find_exchange_by_code(code).active = active
 
         # set defaults if settings not defined
         if not self.settings.get('tickers'):
@@ -130,8 +129,8 @@ class Coin():
 
         plugins = []
         for exchange in self.EXCHANGES:
-            if exchange.active:
-                plugins.append(exchange.get_code())
+            plugin = {exchange.get_code(): exchange.active}
+            plugins.append(plugin)
 
         self.settings['plugins'] = plugins
 
