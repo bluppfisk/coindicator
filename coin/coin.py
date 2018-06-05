@@ -16,7 +16,7 @@ import notify2
 from os.path import abspath, dirname, isfile, basename
 from indicator import Indicator
 from plugin_selection import PluginSelectionWindow
-from async_downloader import AsyncDownloadService
+from downloader import AsyncDownloadService
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import Gtk, GdkPixbuf
 

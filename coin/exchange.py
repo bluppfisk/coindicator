@@ -7,7 +7,7 @@ import pickle
 from os.path import isfile
 from gi.repository import GLib
 from error import Error
-from async_downloader import DownloadCommand
+from downloader import DownloadCommand
 
 CURRENCY = {
     'usd': '$',

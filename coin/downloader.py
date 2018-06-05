@@ -1,6 +1,6 @@
 # Classes to handle asynchronous downloads
 
-import requests
+from requests import get, exceptions
 from threading import Thread
 
 
@@ -36,6 +36,6 @@ class AsyncDownloadService():
         }
 
         try:
-            requests.get(command.url, **kwargs)
-        except requests.exceptions.RequestException:
+            get(command.url, **kwargs)
+        except exceptions.RequestException:
             command.error("Connection error")
