@@ -355,10 +355,11 @@ class WSExchange(Exchange):
     def start(self):
         self.subscription = self.get_subscription(self, self.asset_pair.get('pair'), self.indicator.update_gui)
         self.api_client.subscribe(self.subscription)
+        return self
 
     def stop(self):
         self.api_client.unsubscribe(self.subscription)
-        self.subscription = None
+        return self
 
     def _handle_result(self, response):
         if response.get('type') == "ticker" and response.get('product_id') == self.asset_pair.get('pair'):

@@ -10,14 +10,14 @@ from threading import Thread
 class WSClient():
     subscriptions = []
 
+    def find_subscription_by_url(self, url):
+        return next((s for s in self.subscriptions if s.url == url), None)
+
     def create_or_find_connection(self, url):
-        try:
-            return next(
-                (s.ws for s in self.subscriptions if s.url == url),
-                websocket.create_connection(url)
-            )
-        except Exception as e:
-            print(e)
+        sub = self.find_subscription_by_url(url)
+        if sub:
+            return sub.ws
+        return websocket.create_connection(url)
 
     def find_thread(self, url):
         return next(s.thread for s in self.subscriptions if s.url == url)
@@ -57,9 +57,15 @@ class WSClient():
                 data = ws.recv()
                 if bool(data):
                     [s.listener._handle_result(json.loads(data)) for s in self.subscriptions if s.ws == ws]
+                else:
+                    [self.subscribe(s) for s in self.subscriptions if s.ws == ws]
+
             except websocket.WebSocketConnectionClosedException as e:
                 # resubscribe if connection dropped
-                [self.subscribe(s) for s in self.subscriptions if s.ws == ws]
+                for s in self.subscriptions:
+                    s.ws = None
+                    self.subscribe(s)
+
                 print(e)
 
 

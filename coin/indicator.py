@@ -109,6 +109,11 @@ class Indicator(object):
 
     # (re)starts the exchange logic and its timer
     def _start_exchange(self):
+        if self.exchange.client_type == "ws":  # hide for websocket clients
+            self.refresh_menu.hide()
+        else:
+            self.refresh_menu.show_all()
+
         state_string = self.exchange.get_name()[0:8] \
             + ":\t" + self.exchange.asset_pair.get('base') \
             + " - " + self.exchange.asset_pair.get('quote')
