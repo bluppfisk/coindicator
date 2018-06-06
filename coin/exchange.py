@@ -51,6 +51,7 @@ class WSSubscription():
         self.unsub_msg = unsub_msg
         self.callback = callback
         self.thread = None
+        self.ws = None
         self.active = True
 
 

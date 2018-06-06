@@ -15,16 +15,13 @@ class WSClient():
 
     def create_or_find_connection(self, url):
         sub = self.find_subscription_by_url(url)
-        if sub:
+        if sub and sub.ws:
             return sub.ws
+
         return websocket.create_connection(url)
 
     def find_thread(self, url):
         return next(s.thread for s in self.subscriptions if s.url == url)
-
-    def stop(self):
-        for s in self.subscriptions:
-            self.unsubscribe(s)
 
     def subscribe(self, subscription):
         ws = self.create_or_find_connection(subscription.url)
@@ -51,6 +48,10 @@ class WSClient():
 
         self.subscriptions.remove(subscription)
 
+    def resubscribe(self, subscription):
+        subscription.ws = None
+        self.subscribe(s)
+
     def _listen(self, ws):
         while len([s for s in self.subscriptions if s.ws == ws]) > 0:
             try:
@@ -58,15 +59,15 @@ class WSClient():
                 if bool(data):
                     [s.listener._handle_result(json.loads(data)) for s in self.subscriptions if s.ws == ws]
                 else:
-                    [self.subscribe(s) for s in self.subscriptions if s.ws == ws]
+                    print(data)
+                    for s in self.subscriptions:
+                        self.resubscribe(s)
 
             except websocket.WebSocketConnectionClosedException as e:
                 # resubscribe if connection dropped
-                for s in self.subscriptions:
-                    s.ws = None
-                    self.subscribe(s)
-
                 print(e)
+                for s in self.subscriptions:
+                    self.resubscribe(s)
 
 
 class AsyncDownloadService():
