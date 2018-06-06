@@ -7,10 +7,11 @@ Coin Price Indicator is a cryptocurrency price indicator applet for Linux.
 ## Features
 
 * Multiple price tickers in the status bar
+* Websocket support minimises bandwidth usage on supported exchanges
 * Automatic trade pair discovery on supported exchanges
 * Additional price points in the dropdown menu
 * Audiovisual price alerts
-* Adjust the refresh rate
+* Adjust the refresh rate for REST APIs
 * Thousands of cryptocurrency pairs from the following exchanges:
 
 	* [Kraken](https://www.kraken.com)

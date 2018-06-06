@@ -16,7 +16,7 @@ import notify2
 from os.path import abspath, dirname, isfile, basename
 from indicator import Indicator
 from plugin_selection import PluginSelectionWindow
-from downloader import AsyncDownloadService
+from api_client import AsyncDownloadService, WSClient
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import Gtk, GdkPixbuf
 
@@ -35,7 +35,8 @@ class Coin():
     config['project_root'] = PROJECT_ROOT
 
     def __init__(self):
-        self.downloader = AsyncDownloadService()
+        self.ws_client = WSClient()
+        self.rest_client = AsyncDownloadService()
         self.unique_id = 0
 
         self._load_exchanges()
@@ -47,6 +48,11 @@ class Coin():
         self.discoveries = 0
         self._add_many_indicators(self.settings.get('tickers'))
         self._start_gui()
+
+    def get_api_client(self, client_type):
+        if client_type == "ws":
+            return self.ws_client
+        return self.rest_client
 
     # Load exchange 'plug-ins' from exchanges dir
     def _load_exchanges(self):
@@ -170,7 +176,7 @@ class Coin():
         self.main_item.set_menu(self._menu())
 
     def _start_gui(self):
-        signal.signal(signal.SIGINT, Gtk.main_quit)  # ctrl+c exit
+        signal.signal(signal.SIGINT, self._quit_all)  # ctrl+c exit
         DBusGMainLoop(set_as_default=True)
         bus = dbus.SystemBus()
         bus.add_signal_receiver(
@@ -232,13 +238,13 @@ class Coin():
 
     # Remove ticker
     def remove_ticker(self, indicator):
-        if len(self.instances) == 1:  # is it the last ticker?
+        indicator.stop()
+        del indicator.indicator_widget
+        self.instances.remove(indicator)
+        self.save_settings()
+
+        if len(self.instances) == 0:  # was that the last ticker?
             Gtk.main_quit()  # then quit entirely
-        else:  # otherwise just remove this one
-            indicator.exchange.stop()
-            del indicator.indicator_widget
-            self.instances.remove(indicator)
-            self.save_settings()
 
     # Menu item to download any new assets from the exchanges
     def _discover_assets(self, widget):
@@ -254,7 +260,7 @@ class Coin():
 
         for exchange in self.EXCHANGES:
             if exchange.active and exchange.discovery:
-                exchange.discover_assets(self.downloader, self.update_assets)
+                exchange.discover_assets(self.api_client, self.update_assets)
 
     # When discovery completes, reload currencies and rebuild menus of all instances
     def update_assets(self):
@@ -307,7 +313,9 @@ class Coin():
         PluginSelectionWindow(self)
 
     # Menu item to remove all tickers and quits the application
-    def _quit_all(self, widget):
+    def _quit_all(self, *args):
+        for instance in self.instances:
+            instance.stop()
         Gtk.main_quit()
 
     def plugins_updated(self):

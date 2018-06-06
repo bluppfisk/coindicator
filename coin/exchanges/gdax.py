@@ -2,15 +2,17 @@
 # https://api.gdax.com/
 # By Sander Van de Moortel <sander.vandemoortel@gmail.com>
 
-from exchange import Exchange, CURRENCY
+from exchange import WSExchange, WSSubscription, CURRENCY
 
 
-class Gdax(Exchange):
+class Gdax(WSExchange):
     name = "Gdax"
     code = "gdax"
+    client_type = "ws"
 
     ticker = "https://api.gdax.com/products/"
     discovery = "https://api.gdax.com/products/"
+    websocket_url = "wss://ws-feed.gdax.com"
 
     default_label = "cur"
 
@@ -53,17 +55,38 @@ class Gdax(Exchange):
 
         return asset_pairs
 
+    @classmethod
+    def get_subscription(cls, listener, pair, callback):
+        sub_msg = {
+            "type": "subscribe",
+            "product_ids": [pair],
+            "channels": ["ticker"]
+        }
+
+        unsub_msg = {**sub_msg, "type": "unsubscribe"}  # copy and modify
+
+        return WSSubscription(
+            listener=listener,
+            url=cls.websocket_url,
+            pair=pair,
+            sub_msg=sub_msg,
+            unsub_msg=unsub_msg,
+            callback=callback
+        )
+
     def _parse_ticker(self, asset):
         cur = asset.get('price')
-        bid = asset.get('bid')
-        ask = asset.get('ask')
-        vol = asset.get('volume')
+        bid = asset.get('best_bid')
+        high = asset.get('high_24h')
+        low = asset.get('low_24h')
+        ask = asset.get('best_ask')
+        vol = asset.get('volume_24h')
 
         return {
             'cur': cur,
             'bid': bid,
-            'high': None,
-            'low': None,
+            'high': high,
+            'low': low,
             'ask': ask,
             'vol': vol
         }

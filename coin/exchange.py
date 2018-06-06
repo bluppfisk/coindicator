@@ -7,7 +7,6 @@ import pickle
 from os.path import isfile
 from gi.repository import GLib
 from error import Error
-from downloader import DownloadCommand
 
 CURRENCY = {
     'usd': '$',
@@ -32,12 +31,36 @@ CATEGORY = {
 }
 
 
+class DownloadCommand():
+    def __init__(self, url, callback):
+        self.callback = callback
+        self.timeout = 5
+        self.timestamp = None
+        self.error = None
+        self.url = url
+        self.response = None
+        self.pair = None
+
+
+class WSSubscription():
+    def __init__(self, listener, url, pair, sub_msg, unsub_msg, callback):
+        self.listener = listener
+        self.url = url
+        self.pair = pair
+        self.sub_msg = sub_msg
+        self.unsub_msg = unsub_msg
+        self.callback = callback
+        self.thread = None
+        self.active = True
+
+
 class Exchange(object):
     active = True
+    client_type = "rest"
 
     def __init__(self, indicator=None):
         self.indicator = indicator
-        self.downloader = indicator.coin.downloader
+        self.api_client = indicator.coin.get_api_client(self.client_type)
         self.timeout_id = None
         self.error = Error(self)
         self.started = False
@@ -181,10 +204,10 @@ class Exchange(object):
     # through the instance-specific method _get_discovery_url()
     #
     @classmethod
-    def discover_assets(cls, downloader, callback):
+    def discover_assets(cls, api_client, callback):
         command = DownloadCommand(cls._get_discovery_url(), callback)
         command.error = cls._handle_discovery_error
-        downloader.execute(command, cls._handle_discovery_result)
+        api_client.execute(command, cls._handle_discovery_result)
 
     ##
     # Deals with the result from the discovery HTTP request
@@ -254,7 +277,7 @@ class Exchange(object):
         command.timestamp = timestamp
         command.error = self._handle_error
         command.validation = self.asset_pair
-        self.downloader.execute(command, self._handle_result)
+        self.api_client.execute(command, self._handle_result)
 
         logging.info('Request with TS: ' + str(timestamp))
         if not self.error.is_ok():
@@ -326,3 +349,23 @@ class Exchange(object):
             i = -1
 
         return ('{0:.' + str(i + 2) + 'f}').format(number)
+
+
+class WSExchange(Exchange):
+    def start(self):
+        self.subscription = self.get_subscription(self, self.asset_pair.get('pair'), self.indicator.update_gui)
+        self.api_client.subscribe(self.subscription)
+
+    def stop(self):
+        self.api_client.unsubscribe(self.subscription)
+        self.subscription = None
+
+    def _handle_result(self, response):
+        if response.get('type') == "ticker" and response.get('product_id') == self.asset_pair.get('pair'):
+            results = self._parse_ticker(response)
+
+            for item in CATEGORY:
+                if results.get(item):
+                    self.indicator.prices[item] = self._decimal_auto(results.get(item))
+
+            GLib.idle_add(self.subscription.callback)

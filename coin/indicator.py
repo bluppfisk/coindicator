@@ -65,6 +65,9 @@ class Indicator(object):
         else:
             self._stop_exchange()
 
+    def stop(self):
+        self._stop_exchange()
+
     # updates GUI menus with data stored in the object
     def update_gui(self):
         logging.debug('Updating GUI, last response was: ' + str(self.latest_response))
@@ -256,6 +259,11 @@ class Indicator(object):
         self.exchange.set_asset_pair(base, quote)
         self.indicator_widget.set_icon(self.exchange.get_icon())
         self.coin.add_new_recent(self.exchange.get_asset_pair().get('pair'), self.exchange.get_code())
+
+        if self.exchange.client_type == "ws":  # hide for websocket clients
+            self.refresh_menu.hide()
+        else:
+            self.refresh_menu.show_all()
 
         self.coin.save_settings()
         self._start_exchange()

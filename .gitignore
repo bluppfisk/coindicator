@@ -6,3 +6,4 @@ user.conf
 *.conf_
 build/
 __pycache__
+user.conf.bak
