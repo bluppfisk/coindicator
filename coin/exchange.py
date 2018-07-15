@@ -54,6 +54,9 @@ class WSSubscription():
         self.ws = None
         self.active = True
 
+    def __repr__(self):
+        return "WS Subscription to " + self.url + " for pair " + self.pair
+
 
 class Exchange(object):
     active = True
@@ -363,6 +366,7 @@ class WSExchange(Exchange):
         return self
 
     def _handle_result(self, response):
+        print(response)
         if response.get('type') == "ticker" and response.get('product_id') == self.asset_pair.get('pair'):
             results = self._parse_ticker(response)
 

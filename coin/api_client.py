@@ -1,73 +1,97 @@
 # Classes to handle asynchronous downloads
 
-import websocket
+# import websocket
+import websockets
+import asyncio
 import json
 
 from requests import get, exceptions
 from threading import Thread
+from time import sleep
 
 
 class WSClient():
-    subscriptions = []
+    subscriptions = set()
+    connections = {}
+    started = False
 
-    def find_subscription_by_url(self, url):
-        return next((s for s in self.subscriptions if s.url == url), None)
+    def __init__(self):
+        self.loop = asyncio.get_event_loop()
 
-    def create_or_find_connection(self, url):
-        sub = self.find_subscription_by_url(url)
-        if sub and sub.ws:
-            return sub.ws
+    def start(self):
+        self.started = True
+        while True:
+            self.loop.run_until_complete(self.handle())
 
-        return websocket.create_connection(url)
+    async def handle(self):
+        while len(self.connections) > 0:
+            print("{} connections".format(len(self.connections)))
+            futures = [self.listen(self.connections[ws]) for ws in self.connections]
+            done, pending = await asyncio.wait(futures)
 
-    def find_thread(self, url):
-        return next(s.thread for s in self.subscriptions if s.url == url)
+            try:
+                data, ws = done.pop().result()
+            except Exception as e:
+                print("OTHER EXCEPTION", e)
+
+            for task in pending:
+                task.cancel()
+
+    async def listen(self, ws):
+        try:
+            async for data in ws:
+                data = json.loads(data)
+                [s.listener._handle_result(data) for s in self.subscriptions if s.ws == ws]
+        except Exception as e:
+            print('LISTENING ERROR; RESTARTING SOCKET', e)
+            await asyncio.sleep(2)
+            self.restart_socket(ws)
 
     def subscribe(self, subscription):
-        ws = self.create_or_find_connection(subscription.url)
+        task = self.loop.create_task(self._subscribe(subscription))
+        asyncio.gather(task)
 
-        try:
-            Thread(target=ws.send, kwargs={"payload": json.dumps(subscription.sub_msg)}).start()
-        except Exception as e:
-            print(e)
-
-        subscription.ws = ws
-        self.subscriptions.append(subscription)
-
-        # start listening
-        subscription.thread = self.find_thread(subscription.url) or Thread(target=self._listen, kwargs={"ws": ws})
-        if not subscription.thread.isAlive():
-            subscription.thread.start()
+        if not self.started:
+            asyncio.ensure_future(self.start())
 
     def unsubscribe(self, subscription):
-        if len([s for s in self.subscriptions if s.pair == subscription.pair]) == 1:
-            try:
-                Thread(target=subscription.ws.send, kwargs={"payload": json.dumps(subscription.unsub_msg)}).start()
-            except Exception as e:
-                print(e)
+        task = self.loop.create_task(self._unsubscribe(subscription))
+        asyncio.gather(task)
 
-        self.subscriptions.remove(subscription)
+    async def _subscribe(self, subscription):
+        try:
+            ws = self.connections.get(subscription.url, await websockets.connect(subscription.url))
+            print(dir(ws))
+            await ws.send(json.dumps(subscription.sub_msg))
 
-    def resubscribe(self, subscription):
-        subscription.ws = None
-        self.subscribe(s)
+            subscription.ws = ws
+            self.connections[subscription.url] = ws
+            self.subscriptions.add(subscription)
+        except websockets.ConnectionClosed as e:
+            print("DROPPED", e)
+            await asyncio.sleep(2)
+            self.subscribe(subscription)
+        except ConnectionRefusedError as e:
+            print("NO CONNECTION", e)
+            await asyncio.sleep(2)
+            self.subscribe(subscription)
+        except Exception as e:
+            print("OTHER EXCEPTION", e)
 
-    def _listen(self, ws):
-        while len([s for s in self.subscriptions if s.ws == ws]) > 0:
-            try:
-                data = ws.recv()
-                if bool(data):
-                    [s.listener._handle_result(json.loads(data)) for s in self.subscriptions if s.ws == ws]
-                else:
-                    print(data)
-                    for s in self.subscriptions:
-                        self.resubscribe(s)
+    async def _unsubscribe(self, subscription):
+        try:
+            ws = self.connections.get(subscription.url, websockets.connect(subscription.url))
+            await websockets.send(json.dumps(subscription.unsub_msg))
+            self.subscriptions.remove(subscription)
+        except Exception as e:
+            print("COULD NOT UNSUBSCRIBE", e)
 
-            except websocket.WebSocketConnectionClosedException as e:
-                # resubscribe if connection dropped
-                print(e)
-                for s in self.subscriptions:
-                    self.resubscribe(s)
+    def restart_socket(self, ws):
+        for s in self.subscriptions:
+            if s.ws == ws and not s.ws.connected:
+                print(s)
+                del self.connections[s.url]
+                self.subscribe(s)
 
 
 class AsyncDownloadService():
@@ -88,6 +112,7 @@ class AsyncDownloadService():
     def download(command, callback):
         kwargs = {
             'timeout': command.timeout,
+            'headers': {'Accept-Encoding': 'gzip, deflate'},
             'hooks': {'response': callback}
         }
 

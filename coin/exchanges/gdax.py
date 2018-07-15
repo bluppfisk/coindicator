@@ -12,7 +12,8 @@ class Gdax(WSExchange):
 
     ticker = "https://api.gdax.com/products/"
     discovery = "https://api.gdax.com/products/"
-    websocket_url = "wss://ws-feed.gdax.com"
+    # websocket_url = "wss://ws-feed.gdax.com"
+    websocket_url = "ws://localhost:8765"
 
     default_label = "cur"
 
