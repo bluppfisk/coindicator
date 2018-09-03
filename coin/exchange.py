@@ -18,7 +18,8 @@ CURRENCY = {
     'eth': 'Ξ',
     'cad': '$',
     'jpy': '¥',
-    'cny': '元'
+    'cny': '元',
+    'inr': '₹'
 }
 
 CATEGORY = {
