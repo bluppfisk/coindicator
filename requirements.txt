@@ -12,3 +12,4 @@ ruamel.yaml==0.15.64
 urllib3==1.23
 vext==0.7.0
 vext.gi==0.7.0
+websockets==6.0
