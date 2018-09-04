@@ -7,6 +7,8 @@ from gi.repository import GLib
 MAX_ERRORS = 5  # maximum number of errors before chilling
 REFRESH_INTERVAL = 60  # chill refresh frequency in seconds
 
+logging.basicConfig(level=logging.ERROR)
+
 
 class Error:
     def __init__(self, exchange):

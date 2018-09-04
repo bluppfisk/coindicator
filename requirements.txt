@@ -1,0 +1,14 @@
+certifi==2018.8.24
+chardet==3.0.4
+dbus-python==1.2.8
+idna==2.7
+notify2==0.3.1
+pycairo==1.17.1
+pygame==1.9.4
+PyYAML==3.13
+requests==2.19.1
+ruamel.base==1.0.0
+ruamel.yaml==0.15.64
+urllib3==1.23
+vext==0.7.0
+vext.gi==0.7.0

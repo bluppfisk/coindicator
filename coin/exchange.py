@@ -17,7 +17,8 @@ CURRENCY = {
     'eth': 'Ξ',
     'cad': '$',
     'jpy': '¥',
-    'cny': '元'
+    'cny': '元',
+    'inr': '₹'
 }
 
 CATEGORY = {
@@ -27,7 +28,8 @@ CATEGORY = {
     'low': 'Low',
     'ask': 'Ask',
     'vol': 'Vol',
-    'first': 'First'
+    'first': 'First',
+    'avg': 'Avg'
 }
 
 
@@ -88,9 +90,6 @@ class Exchange(object):
     def _parse_ticker(self, data):
         pass
 
-    ##
-    # Getters and setters follow
-    #
     @classmethod
     def get_name(cls):
         return cls.name
@@ -115,7 +114,8 @@ class Exchange(object):
     def get_icon(self):
         # set icon for asset if it exists
         asset = self.asset_pair.get('base').lower()
-        asset_dir = self.indicator.coin.config.get('project_root') + '/resources/'
+        asset_dir = "{}/resources/".format(
+            self.indicator.coin.config.get('project_root'))
 
         if isfile(asset_dir + asset + '.png'):
             return asset_dir + asset + '.png'
@@ -123,7 +123,9 @@ class Exchange(object):
         return asset_dir + 'unknown-coin.png'
 
     def get_volume_currency(self):
-        return self.asset_pair.get('volumecurrency', self.asset_pair.get('base'))
+        return self.asset_pair.get(
+            'volumecurrency',
+            self.asset_pair.get('base'))
 
     def set_asset_pair(self, base, quote):
         for ap in self.get_asset_pairs():
@@ -177,6 +179,10 @@ class Exchange(object):
 
         return asset_pairs
 
+    @classmethod
+    def get_datafile(cls):
+        return "./coin/exchanges/data/{}.conf".format(cls.get_code())
+
     ##
     # Loads asset pairs from the config files or,
     # failing that, from the hard-coded lines
@@ -184,7 +190,7 @@ class Exchange(object):
     @classmethod
     def get_asset_pairs(cls):
         try:
-            with open('./coin/exchanges/data/' + cls.get_code() + '.conf', 'rb') as handle:
+            with open(cls.get_datafile(), 'rb') as handle:
                 asset_pairs = pickle.loads(handle.read())
                 return asset_pairs
 
@@ -198,7 +204,7 @@ class Exchange(object):
     @classmethod
     def store_asset_pairs(cls, asset_pairs):
         try:
-            with open('./coin/exchanges/data/' + cls.get_code() + '.conf', 'wb') as handle:
+            with open(cls.get_datafile(), 'wb') as handle:
                 pickle.dump(asset_pairs, handle)
         except IOError:
             logging.error('Could not write to config file')

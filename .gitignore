@@ -1,5 +1,5 @@
 *.pyc
-node_modules
+node_modules/
 dist/
 Coin_Price_Indicator.egg-info
 user.conf
@@ -7,3 +7,9 @@ user.conf
 build/
 __pycache__
 user.conf.bak
+lib/
+share/
+bin/
+gi.vext
+include/
+pip-selfcheck.json

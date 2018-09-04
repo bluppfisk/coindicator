@@ -26,7 +26,8 @@ Coin Price Indicator is a cryptocurrency price indicator applet for Linux.
 	* [HitBTC](https://hitbtc.com/)
 	* [CEX.io](https://cex.io/)
 	* [OKCoin](https://www.okcoin.cn/)
-	* Easy to add your own (See **Extending (Plugins)** below)
+	* [Unocoin](https://www.unocoin.com/)
+	* Add your own easily (See **Extending (Plugins)** below)
 
 ![Screenshot](https://raw.githubusercontent.com/nilgradisnik/coinprice-indicator/master/resources/screenshot.png)
 
@@ -38,13 +39,13 @@ Clone the repository and install python dependencies by running the following co
 ```
  git clone https://github.com/nilgradisnik/coinprice-indicator.git
  cd coinprice-indicator
- make install
+ ./install.sh
 ```
 
 ## Running
 
-* Type `make` or `coin/coin.py &` to start the app
-* Alternatively, type `python3 coin/coin.py &` to start the app
+* Run `./run.sh` to activate the virtual environment and start the app.
+* Alternatively, activate it yourself with `source bin/activate` and then run `coin/coin.py &` or `python3 coin/coin.py &` to start the app
 
 ## Configuring
 
