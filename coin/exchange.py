@@ -29,7 +29,8 @@ CATEGORY = {
     'low': 'Low',
     'ask': 'Ask',
     'vol': 'Vol',
-    'first': 'First'
+    'first': 'First',
+    'avg': 'Avg'
 }
 
 

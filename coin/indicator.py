@@ -32,15 +32,16 @@ CATEGORIES = [
     ('bid', 'Bid'),
     ('ask', 'Ask'),
     ('high', 'High'),
-    ('low', 'Low')
+    ('low', 'Low'),
+    ('avg', 'Avg')
 ]
 
 
 class Indicator(object):
     def __init__(self, coin, unique_id, exchange, asset_pair, refresh, default_label):
-        self.coin = coin  # reference to main object
+        self.coin = coin  # reference to main program
         self.unique_id = unique_id
-        self.alarm = Alarm(self)  # alarm
+        self.alarm = Alarm(self)
         self.exchange = self.coin.find_exchange_by_code(exchange)(self)
         self.exchange.set_asset_pair_from_code(asset_pair)
         self.refresh_frequency = refresh
@@ -259,6 +260,8 @@ class Indicator(object):
 
         self.coin.save_settings()
         self._start_exchange()
+        self.prices = {}  # labels and prices may be different
+        self.default_label = self.exchange.default_label
 
     def _remove(self, widget):
         self.coin.remove_ticker(self)
