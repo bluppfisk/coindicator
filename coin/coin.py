@@ -21,8 +21,7 @@ from downloader import AsyncDownloadService
 
 from os.path import abspath, dirname, isfile, basename
 from dbus.mainloop.glib import DBusGMainLoop
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk  # hate that this throws a PEP8 violation but whatever
+from gi.repository import Gtk
 
 try:
     from gi.repository import AppIndicator3 as AppIndicator
