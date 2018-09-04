@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Coin Price indicator
+# Coin Price Indicator
 #
 # Nil Gradisnik <nil.gradisnik@gmail.com>
 # Sander Van de Moortel <sander.vandemoortel@gmail.com>
@@ -12,13 +12,17 @@ import glob
 import dbus
 import importlib
 import notify2
+import gi
 
-from os.path import abspath, dirname, isfile, basename
 from indicator import Indicator
+from about import AboutWindow
 from plugin_selection import PluginSelectionWindow
 from downloader import AsyncDownloadService
+
+from os.path import abspath, dirname, isfile, basename
 from dbus.mainloop.glib import DBusGMainLoop
-from gi.repository import Gtk, GdkPixbuf
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk  # hate that this throws a PEP8 violation but whatever
 
 try:
     from gi.repository import AppIndicator3 as AppIndicator
@@ -160,11 +164,16 @@ class Coin():
 
     # Start the main indicator icon and its menu
     def _start_main(self):
-        print(self.config.get('app').get('name') + ' v' + self.config.get('app').get('version') + " running!")
+        print("{} v{} running!".format(
+            self.config.get('app').get('name'),
+            self.config.get('app').get('version')))
 
-        self.icon = self.config.get('project_root') + '/resources/icon_32px.png'
+        self.icon = "{}/resources/icon_32px.png".format(
+            self.config.get('project_root'))
         self.main_item = AppIndicator.Indicator.new(
-            self.config.get('app').get('name'), self.icon, AppIndicator.IndicatorCategory.APPLICATION_STATUS)
+            self.config.get('app').get('name'),
+            self.icon,
+            AppIndicator.IndicatorCategory.APPLICATION_STATUS)
         self.main_item.set_status(AppIndicator.IndicatorStatus.ACTIVE)
         self.main_item.set_ordering_index(0)
         self.main_item.set_menu(self._menu())
@@ -214,7 +223,13 @@ class Coin():
         asset_pair = settings.get('asset_pair')
         default_label = settings.get('default_label')
         self.unique_id += 1
-        indicator = Indicator(self, self.unique_id, exchange, asset_pair, refresh, default_label)
+        indicator = Indicator(
+            self,
+            self.unique_id,
+            exchange,
+            asset_pair,
+            refresh,
+            default_label)
         self.instances.append(indicator)
         indicator.start()
         return indicator
@@ -266,7 +281,10 @@ class Coin():
         self._load_assets()
 
         if notify2.init(self.config.get('app').get('name')):
-            n = notify2.Notification(self.config.get('app').get('name'), "Finished discovering new assets", self.icon)
+            n = notify2.Notification(
+                self.config.get('app').get('name'),
+                "Finished discovering new assets",
+                self.icon)
             n.set_urgency(1)
             n.timeout = 2000
             n.show()
@@ -278,30 +296,6 @@ class Coin():
         if not sleeping:
             for instance in self.instances:
                 instance.exchange.stop().start()
-
-    # Shows an About dialog
-    def _about(self, widget):
-        logo_124px = GdkPixbuf.Pixbuf.new_from_file(self.config.get('project_root') + '/resources/icon_32px.png')
-        about = Gtk.AboutDialog()
-        about.set_program_name(self.config.get('app').get('name'))
-        about.set_comments(self.config.get('app').get('description'))
-        about.set_version(self.config.get('app').get('version'))
-        about.set_website(self.config.get('app').get('url'))
-        authors = []
-        for author in self.config.get('authors'):
-            authors.append(author.get('name') + ' <' + author.get('email') + '>')
-        about.set_authors(authors)
-        contributors = []
-        for contributor in self.config.get('contributors'):
-            contributors.append(contributor.get('name') + ' <' + contributor.get('email') + '>')
-        about.add_credit_section('Exchange plugins', contributors)
-        about.set_artists([self.config.get('artist').get('name') + ' <' + self.config.get('artist').get('email') + '>'])
-        about.set_license_type(Gtk.License.MIT_X11)
-        about.set_logo(logo_124px)
-        about.set_keep_above(True)
-        res = about.run()
-        if res == -4 or -6:  # close events
-            about.destroy()
 
     def _select_plugins(self, widget):
         PluginSelectionWindow(self)
@@ -316,6 +310,9 @@ class Coin():
             instance.start()  # will stop exchange if inactive
 
         self.save_settings()
+
+    def _about(self, widget):
+        AboutWindow(self.config).show()
 
 
 coin = Coin()

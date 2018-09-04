@@ -256,7 +256,9 @@ class Indicator(object):
 
         self.exchange.set_asset_pair(base, quote)
         self.indicator_widget.set_icon(self.exchange.get_icon())
-        self.coin.add_new_recent(self.exchange.get_asset_pair().get('pair'), self.exchange.get_code())
+        self.coin.add_new_recent(
+            self.exchange.get_asset_pair().get('pair'),
+            self.exchange.get_code())
 
         self.coin.save_settings()
         self._start_exchange()
