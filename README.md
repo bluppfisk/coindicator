@@ -25,7 +25,8 @@ Coin Price Indicator is a cryptocurrency price indicator applet for Linux.
 	* [HitBTC](https://hitbtc.com/)
 	* [CEX.io](https://cex.io/)
 	* [OKCoin](https://www.okcoin.cn/)
-	* Easy to add your own (See **Extending (Plugins)** below)
+	* [Unocoin](https://www.unocoin.com/)
+	* Add your own easily (See **Extending (Plugins)** below)
 
 ![Screenshot](https://raw.githubusercontent.com/nilgradisnik/coinprice-indicator/master/resources/screenshot.png)
 
