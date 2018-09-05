@@ -37,7 +37,7 @@ CATEGORIES = [
 ]
 
 
-class Indicator(object):
+class Indicator():
     def __init__(self, coin, unique_id, exchange, asset_pair, refresh, default_label):
         self.coin = coin  # reference to main program
         self.unique_id = unique_id
@@ -84,7 +84,7 @@ class Indicator(object):
         self.indicator_widget.set_label(label, label)
 
         for item, name in CATEGORIES:
-            price_menu_item = self.price_menu_items.get(item)  # get menu item
+            price_menu_item = self.price_menu_items.get(item)
 
             # assigns prices to the corresponding menu items
             # if such a price value is returned from the exchange

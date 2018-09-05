@@ -363,12 +363,22 @@ class Exchange(object):
 
 class WSExchange(Exchange):
     def start(self):
-        self.subscription = self.get_subscription(self, self.asset_pair.get('pair'), self.indicator.update_gui)
-        self.api_client.subscribe(self.subscription)
+        self.started = True
+        self.subscription = self.get_subscription(
+            self,
+            self.asset_pair.get('pair'),
+            self.indicator.update_gui)
+        if not self.api_client.started:
+            self.api_client.start()
+        self.api_client.subscribe(self.subscription, self._handle_result)
+
         return self
 
     def stop(self):
         self.api_client.unsubscribe(self.subscription)
+        self.started = False
+        self.indicator.alarm.deactivate()
+
         return self
 
     def _handle_result(self, response):
@@ -380,4 +390,4 @@ class WSExchange(Exchange):
                 if results.get(item):
                     self.indicator.prices[item] = self._decimal_auto(results.get(item))
 
-            GLib.idle_add(self.subscription.callback)
+            self.subscription.callback()

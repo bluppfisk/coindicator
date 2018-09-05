@@ -235,6 +235,7 @@ class Coin():
             default_label)
         self.instances.append(indicator)
         indicator.start()
+
         return indicator
 
     # adds many tickers
@@ -307,6 +308,9 @@ class Coin():
     def _quit_all(self, *args):
         for instance in self.instances:
             instance.stop()
+
+        self.ws_client.stop()
+
         Gtk.main_quit()
 
     def plugins_updated(self):
