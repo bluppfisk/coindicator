@@ -12,3 +12,5 @@ bin/
 gi.vext
 include/
 pip-selfcheck.json
+.vscode/settings.json
+.gitignore
