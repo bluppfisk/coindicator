@@ -5,7 +5,7 @@ idna==2.7
 notify2==0.3.1
 pycairo==1.17.1
 pygame==1.9.4
-PyYAML==3.13
+PyYAML>=4.2b1
 requests==2.20.0
 ruamel.base==1.0.0
 ruamel.yaml==0.15.64

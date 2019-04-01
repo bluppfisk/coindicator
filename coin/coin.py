@@ -34,7 +34,7 @@ SETTINGS_FILE = PROJECT_ROOT + '/user.conf'
 
 
 class Coin():
-    config = yaml.load(open(PROJECT_ROOT + '/config.yaml', 'r'))
+    config = yaml.load(open(PROJECT_ROOT + '/config.yaml', 'r'), Loader=yaml.SafeLoader)
     config['project_root'] = PROJECT_ROOT
 
     def __init__(self):
@@ -99,7 +99,7 @@ class Coin():
         self.settings = {}
         # load from file
         if isfile(SETTINGS_FILE):
-            self.settings = yaml.load(open(SETTINGS_FILE, 'r'))
+            self.settings = yaml.load(open(SETTINGS_FILE, 'r'), Loader=yaml.SafeLoader)
 
         for plugin in self.settings.get('plugins', {}):
             for code, active in plugin.items():
