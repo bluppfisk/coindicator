@@ -15,14 +15,54 @@ class Kraken(Exchange):
     default_label = "cur"
 
     asset_pairs = [
-        {'isocode': 'XXBTZUSD', 'pair': 'XXBTZUSD', 'name': 'BTC to USD', 'currency': CURRENCY['usd']},
-        {'isocode': 'XXBTZEUR', 'pair': 'XXBTZEUR', 'name': 'BTC to EUR', 'currency': CURRENCY['eur']},
-        {'isocode': 'XXLTZUSD', 'pair': 'XLTCZUSD', 'name': 'LTC to USD', 'currency': CURRENCY['usd']},
-        {'isocode': 'XXLTZEUR', 'pair': 'XLTCZEUR', 'name': 'LTC to EUR', 'currency': CURRENCY['eur']},
-        {'isocode': 'XXETZUSD', 'pair': 'XETHZUSD', 'name': 'ETH to USD', 'currency': CURRENCY['usd']},
-        {'isocode': 'XXETZEUR', 'pair': 'XETHZEUR', 'name': 'ETH to EUR', 'currency': CURRENCY['eur']},
-        {'isocode': 'XXBCZEUR', 'pair': 'BCHEUR', 'name': 'BCH to EUR', 'currency': CURRENCY['eur']},
-        {'isocode': 'XXRPZEUR', 'pair': 'XXRPZEUR', 'name': 'XRP to EUR', 'currency': CURRENCY['eur']}
+        {
+            "isocode": "XXBTZUSD",
+            "pair": "XXBTZUSD",
+            "name": "BTC to USD",
+            "currency": CURRENCY["usd"],
+        },
+        {
+            "isocode": "XXBTZEUR",
+            "pair": "XXBTZEUR",
+            "name": "BTC to EUR",
+            "currency": CURRENCY["eur"],
+        },
+        {
+            "isocode": "XXLTZUSD",
+            "pair": "XLTCZUSD",
+            "name": "LTC to USD",
+            "currency": CURRENCY["usd"],
+        },
+        {
+            "isocode": "XXLTZEUR",
+            "pair": "XLTCZEUR",
+            "name": "LTC to EUR",
+            "currency": CURRENCY["eur"],
+        },
+        {
+            "isocode": "XXETZUSD",
+            "pair": "XETHZUSD",
+            "name": "ETH to USD",
+            "currency": CURRENCY["usd"],
+        },
+        {
+            "isocode": "XXETZEUR",
+            "pair": "XETHZEUR",
+            "name": "ETH to EUR",
+            "currency": CURRENCY["eur"],
+        },
+        {
+            "isocode": "XXBCZEUR",
+            "pair": "BCHEUR",
+            "name": "BCH to EUR",
+            "currency": CURRENCY["eur"],
+        },
+        {
+            "isocode": "XXRPZEUR",
+            "pair": "XXRPZEUR",
+            "name": "XRP to EUR",
+            "currency": CURRENCY["eur"],
+        },
     ]
 
     @classmethod
@@ -30,22 +70,25 @@ class Kraken(Exchange):
         return cls.discovery
 
     def _get_ticker_url(self):
-        return self.ticker + '?pair=' + self.pair
+        return self.ticker + "?pair=" + self.pair
 
     @staticmethod
     def _parse_discovery(result):
         asset_pairs = []
-        assets = result.get('result')
+        assets = result.get("result")
         for asset in assets:
             # strange double assets in Kraken results, ignore ba
             if asset[-2:] == ".d":
                 continue
 
             asset_data = assets.get(asset)
-            base = asset_data.get('base')[-3:]
-            quote = asset_data.get('quote')[-3:]
+            # new kraken api data contains a 'wsname' property
+            # which names assets a lot more consistently
+            names = asset_data.get("wsname").split("/")
+            base = names[0]
+            quote = names[1]
 
-            kraken_names = {'XBT': 'BTC', 'XZC': 'ZEC'}
+            kraken_names = {"XBT": "BTC", "XZC": "ZEC"}
             if base in kraken_names:
                 base = kraken_names[base]
 
@@ -53,12 +96,12 @@ class Kraken(Exchange):
                 quote = kraken_names[quote]
 
             asset_pair = {
-                'pair': asset,
-                'base': base,
-                'quote': quote,
-                'name': base + ' to ' + quote,
-                'currency': quote.lower(),
-                'volumecurrency': base
+                "pair": asset,
+                "base": base,
+                "quote": quote,
+                "name": base + " to " + quote,
+                "currency": quote.lower(),
+                "volumecurrency": base,
             }
 
             asset_pairs.append(asset_pair)
@@ -66,20 +109,13 @@ class Kraken(Exchange):
         return asset_pairs
 
     def _parse_ticker(self, asset):
-        asset = asset.get('result').get(self.pair)
+        asset = asset.get("result").get(self.pair)
 
-        cur = asset.get('c')[0]
-        bid = asset.get('b')[0]
-        high = asset.get('h')[1]
-        low = asset.get('l')[1]
-        ask = asset.get('a')[0]
-        vol = asset.get('v')[1]
+        cur = asset.get("c")[0]
+        bid = asset.get("b")[0]
+        high = asset.get("h")[1]
+        low = asset.get("l")[1]
+        ask = asset.get("a")[0]
+        vol = asset.get("v")[1]
 
-        return {
-            'cur': cur,
-            'bid': bid,
-            'high': high,
-            'low': low,
-            'ask': ask,
-            'vol': vol
-        }
+        return {"cur": cur, "bid": bid, "high": high, "low": low, "ask": ask, "vol": vol}
