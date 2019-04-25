@@ -193,11 +193,11 @@ class Coin():
     def _menu(self):
         menu = Gtk.Menu()
 
-        self.add_item = Gtk.MenuItem("Add Ticker")
-        self.discover_item = Gtk.MenuItem("Discover Assets")
-        self.plugin_item = Gtk.MenuItem("Plugins" + u"\u2026")
-        self.about_item = Gtk.MenuItem("About")
-        self.quit_item = Gtk.MenuItem("Quit")
+        self.add_item = Gtk.MenuItem.new_with_label("Add Ticker")
+        self.discover_item = Gtk.MenuItem.new_with_label("Discover Assets")
+        self.plugin_item = Gtk.MenuItem.new_with_label("Plugins" + u"\u2026")
+        self.about_item = Gtk.MenuItem.new_with_label("About")
+        self.quit_item = Gtk.MenuItem.new_with_label("Quit")
 
         self.add_item.connect("activate", self._add_ticker)
         self.discover_item.connect("activate", self._discover_assets)
