@@ -5,6 +5,10 @@
 # Sander Van de Moortel <sander.vandemoortel@gmail.com>
 #
 
+import sys
+
+sys.path.insert(0, "/usr/lib/python3/dist-packages")
+
 import signal
 import yaml
 import logging
