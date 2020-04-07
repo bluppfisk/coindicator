@@ -62,8 +62,10 @@ This software was tested and found working on the following configurations:
 * Ubuntu Linux 16.04 (Xenial Xurus) with Unity 7
 * Ubuntu Linux 17.10 (Artful Aardvark) with GNOME 3
 * Ubuntu Linux 18.04 (Bionic Beaver) with GNOME 3
+* Ubuntu Linux 19.04 (Disco Dingo) with GNOME 3
+* Ubuntu Linux 19.10 (Eoan Ermine) with GNOME 3
 
-For GNOME 3 set-ups, you will need to install LibAppIndicator support (see point 3 below).
+For GNOME 3 set-ups, you may need to install LibAppIndicator support (see point 3 below).
 
 1. Before reporting bugs or issues, please try removing **user.conf** first and then the **.conf** files in the **/exchanges/data/** folder. Then run the application and choose **Discover Assets** from the piggy menu first.
 
