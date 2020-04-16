@@ -5,6 +5,7 @@
 # Sander Van de Moortel <sander.vandemoortel@gmail.com>
 #
 
+
 import signal
 import yaml
 import logging
@@ -250,7 +251,7 @@ class Coin():
             Gtk.main_quit()  # then quit entirely
         else:  # otherwise just remove this one
             indicator.exchange.stop()
-            del indicator.indicator_widget
+            indicator.indicator_widget.set_status(AppIndicator.IndicatorStatus.PASSIVE)
             self.instances.remove(indicator)
             self.save_settings()
 
