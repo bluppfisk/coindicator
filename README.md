@@ -60,10 +60,11 @@ Have a peek at the existing plug-ins (e.g. **kraken.py**) for an example and don
 
 This software was tested and found working on the following configurations:
 * Ubuntu Linux 16.04 (Xenial Xurus) with Unity 7
-* Ubuntu Linux 17.10 (Artful Aardvark) with GNOME 3
-* Ubuntu Linux 18.04 (Bionic Beaver) with GNOME 3
-* Ubuntu Linux 19.04 (Disco Dingo) with GNOME 3
-* Ubuntu Linux 19.10 (Eoan Ermine) with GNOME 3
+* Ubuntu Linux 17.10 (Artful Aardvark) with GNOME 3 and Unity 7
+* Ubuntu Linux 18.04 (Bionic Beaver) with GNOME 3 and Unity 7
+* Ubuntu Linux 19.04 (Disco Dingo) with GNOME 3 and Unity 7
+* Ubuntu Linux 19.10 (Eoan Ermine) with GNOME 3 and Unity 7
+* Ubuntu Linux 20.04 (Focal Fossa) with GNOME 3
 
 For GNOME 3 set-ups, you may need to install LibAppIndicator support (see point 3 below).
 
