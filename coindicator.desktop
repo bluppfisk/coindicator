@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Coindicator
+GenericName=Cryptocoin price ticker
+Comment=Keep track of the cryptocoin prices on various exchanges
+Terminal=false
+Type=Application
+Categories=Utility;Network;
+Keywords=crypto;coin;ticker;price;exchange;
+StartupNotify=false
