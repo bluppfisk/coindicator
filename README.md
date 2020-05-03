@@ -20,7 +20,7 @@ Coin Price Indicator is a cryptocurrency price indicator applet for Linux.
 	* [Binance](https://www.binance.com)
 	* [Bittrex](https://bittrex.com)
 	* [Bitfinex](https://www.bitfinex.com/)
-	* [Bx.in.th](https://www.bx.in.th/)
+	* [Bx.in.th](https://www.bx.in.th/)  -- **Seems defunct**
 	* [Poloniex](https://poloniex.com)
 	* [HitBTC](https://hitbtc.com/)
 	* [CEX.io](https://cex.io/)
@@ -36,15 +36,16 @@ You will need Git and Python 3.5 or higher.
 Clone the repository and install python dependencies by running the following commands:
 
 ```
- git clone https://github.com/nilgradisnik/coinprice-indicator.git
+ git clone https://github.com/bluppfisk/coinprice-indicator.git
  cd coinprice-indicator
  ./install.sh
 ```
 
 ## Running
 
-* Run `./run.sh` to activate the virtual environment and start the app.
-* Alternatively, activate it yourself with `source bin/activate` and then run `coin/coin.py &` or `python3 coin/coin.py &` to start the app
+* A launcher icon "Coindicator" should be installed that can be used to start the app
+* Alternatively, run `./run.sh` to activate the virtual environment and start the app
+* You can also run the program manually with `source bin/activate` and then run `coin/coin.py &` or `python3 coin/coin.py &` to start the app
 
 ## Configuring
 
@@ -66,18 +67,9 @@ This software was tested and found working on the following configurations:
 * Ubuntu Linux 19.10 (Eoan Ermine) with GNOME 3 and Unity 7
 * Ubuntu Linux 20.04 (Focal Fossa) with GNOME 3
 
-For GNOME 3 set-ups, you may need to install LibAppIndicator support (see point 3 below).
+For other systems, you may need to install LibAppIndicator support.
 
-1. Before reporting bugs or issues, please try removing **user.conf** first and then the **.conf** files in the **/exchanges/data/** folder. Then run the application and choose **Discover Assets** from the piggy menu first.
-
-2. If you're getting a `SyntaxError: Missing parentheses in call to 'print'.`, you may be using a Python2 library in there somewhere. Look through the error to identify which package it is. If it is `gi`, you can install the correct version with `sudo apt install python3-gi`. Additionally, you may have to uninstall the python2 gi library `pip3 uninstall gi` for it to work.  You will also need to install the libcairo2-dev library `sudo apt-get install libcairo2-dev`
-
-3. If you're not on an Ubuntu Linux or if you're not running the Unity desktop manager, you can still get the app running (depending on the system). Here's how to do it for Ubuntu 17.10 and Ubuntu 18.04 with GNOME 3:
-
-	* After running `make install`, run `sudo apt install gir1.2-appindicator3-0.1` to install libappindicator support.
-	* On Ubuntu, install the KStatusNotifierItem/AppIndicator support shell extension for Gnome from the Ubuntu Software Installer OR
-	* On other systems, get the [KStatusNotifierItem/AppIndicator support shell extension for Gnome](https://extensions.gnome.org/extension/615/appindicator-support/) (there's a browser extension to help you; follow the instructions on the page)
-	* The Indicators should now show. If they don't, you may have to `sudo apt install gnome-tweak-tool` to manually activate the extension.
+Before reporting bugs or issues, please try removing **user.conf** first and then the **.conf** files in the **/exchanges/data/** folder. Then run the application and choose **Discover Assets** from the piggy menu first.
 
 ## Sponsorship and Funding
 
