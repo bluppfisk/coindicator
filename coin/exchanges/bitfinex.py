@@ -14,21 +14,21 @@ class Bitfinex(Exchange):
 
     default_label = "cur"
 
-    asset_pairs = [
-        {'isocode': 'XBCHZUSD', 'pair': 'tBCHUSD', 'name': 'BCH to USD', 'currency': CURRENCY['usd']},
-        {'isocode': 'XDSHZUSD', 'pair': 'tDSHUSD', 'name': 'DASH to USD', 'currency': CURRENCY['usd']},
-        {'isocode': 'XEOSZUSD', 'pair': 'tEOSUSD', 'name': 'EOS to USD', 'currency': CURRENCY['usd']},
-        {'isocode': 'XETCZUSD', 'pair': 'tETCUSD', 'name': 'ETC to USD', 'currency': CURRENCY['usd']},
-        {'isocode': 'XETHZUSD', 'pair': 'tETHUSD', 'name': 'ETH to USD', 'currency': CURRENCY['usd']},
-        {'isocode': 'XIOTZUSD', 'pair': 'tIOTUSD', 'name': 'IOT to USD', 'currency': CURRENCY['usd']},
-        {'isocode': 'XLTCZUSD', 'pair': 'tLTCUSD', 'name': 'LTC to USD', 'currency': CURRENCY['usd']},
-        {'isocode': 'XNEOZUSD', 'pair': 'tNEOUSD', 'name': 'NEO to USD', 'currency': CURRENCY['usd']},
-        {'isocode': 'XXBTZUSD', 'pair': 'tBTCUSD', 'name': 'BTC to USD', 'currency': CURRENCY['usd']},
-        {'isocode': 'XXMRZUSD', 'pair': 'tXMRUSD', 'name': 'XMR to USD', 'currency': CURRENCY['usd']},
-        {'isocode': 'XXRPZUSD', 'pair': 'tXRPUSD', 'name': 'XRP to USD', 'currency': CURRENCY['usd']},
-        {'isocode': 'XZECZUSD', 'pair': 'tZECUSD', 'name': 'ZEC to USD', 'currency': CURRENCY['usd']},
-        {'isocode': 'XZRXZUSD', 'pair': 'tZRXUSD', 'name': 'ZRX to USD', 'currency': CURRENCY['usd']}
-    ]
+    # asset_pairs = [
+    #     {'isocode': 'XBCHZUSD', 'pair': 'tBCHUSD', 'name': 'BCH to USD', 'currency': CURRENCY['usd']},
+    #     {'isocode': 'XDSHZUSD', 'pair': 'tDSHUSD', 'name': 'DASH to USD', 'currency': CURRENCY['usd']},
+    #     {'isocode': 'XEOSZUSD', 'pair': 'tEOSUSD', 'name': 'EOS to USD', 'currency': CURRENCY['usd']},
+    #     {'isocode': 'XETCZUSD', 'pair': 'tETCUSD', 'name': 'ETC to USD', 'currency': CURRENCY['usd']},
+    #     {'isocode': 'XETHZUSD', 'pair': 'tETHUSD', 'name': 'ETH to USD', 'currency': CURRENCY['usd']},
+    #     {'isocode': 'XIOTZUSD', 'pair': 'tIOTUSD', 'name': 'IOT to USD', 'currency': CURRENCY['usd']},
+    #     {'isocode': 'XLTCZUSD', 'pair': 'tLTCUSD', 'name': 'LTC to USD', 'currency': CURRENCY['usd']},
+    #     {'isocode': 'XNEOZUSD', 'pair': 'tNEOUSD', 'name': 'NEO to USD', 'currency': CURRENCY['usd']},
+    #     {'isocode': 'XXBTZUSD', 'pair': 'tBTCUSD', 'name': 'BTC to USD', 'currency': CURRENCY['usd']},
+    #     {'isocode': 'XXMRZUSD', 'pair': 'tXMRUSD', 'name': 'XMR to USD', 'currency': CURRENCY['usd']},
+    #     {'isocode': 'XXRPZUSD', 'pair': 'tXRPUSD', 'name': 'XRP to USD', 'currency': CURRENCY['usd']},
+    #     {'isocode': 'XZECZUSD', 'pair': 'tZECUSD', 'name': 'ZEC to USD', 'currency': CURRENCY['usd']},
+    #     {'isocode': 'XZRXZUSD', 'pair': 'tZRXUSD', 'name': 'ZRX to USD', 'currency': CURRENCY['usd']}
+    # ]
 
     @classmethod
     def _get_discovery_url(cls):

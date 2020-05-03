@@ -14,7 +14,7 @@ class Cexio(Exchange):
 
     default_label = "cur"
 
-    asset_pairs = []
+    # asset_pairs = []
 
     @classmethod
     def _get_discovery_url(cls):

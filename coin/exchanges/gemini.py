@@ -14,11 +14,11 @@ class Gemini(Exchange):
 
     default_label = "cur"
 
-    asset_pairs = [
-        {'isocode': 'XXBTZUSD', 'pair': 'btcusd', 'name': 'BTC to USD', 'currency': CURRENCY['usd'], 'volumelabel': 'BTC'},
-        {'isocode': 'XXETZUSD', 'pair': 'ethusd', 'name': 'ETH to USD', 'currency': CURRENCY['usd'], 'volumelabel': 'ETH'},
-        {'isocode': 'XXETZXBT', 'pair': 'ethbtc', 'name': 'ETH to BTC', 'currency': CURRENCY['btc'], 'volumelabel': 'ETH'}
-    ]
+    # asset_pairs = [
+    #     {'isocode': 'XXBTZUSD', 'pair': 'btcusd', 'name': 'BTC to USD', 'currency': CURRENCY['usd'], 'volumelabel': 'BTC'},
+    #     {'isocode': 'XXETZUSD', 'pair': 'ethusd', 'name': 'ETH to USD', 'currency': CURRENCY['usd'], 'volumelabel': 'ETH'},
+    #     {'isocode': 'XXETZXBT', 'pair': 'ethbtc', 'name': 'ETH to BTC', 'currency': CURRENCY['btc'], 'volumelabel': 'ETH'}
+    # ]
 
     @classmethod
     def _get_discovery_url(cls):

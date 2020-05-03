@@ -144,17 +144,18 @@ class Exchange(object):
     #
     @classmethod
     def normalise_assets(cls):
-        asset_pairs = cls.asset_pairs
+        # asset_pairs = cls.asset_pairs
 
-        for ap in asset_pairs:
-            if not ap.get('base'):
-                ap['base'] = ap.get('name').split(' ')[0]
-            if not ap.get('quote'):
-                ap['quote'] = ap.get('name').split(' ')[2]
-            if not ap.get('volumecurrency'):
-                ap['volumecurrency'] = ap.get('base')
+        # for ap in asset_pairs:
+        #     if not ap.get('base'):
+        #         ap['base'] = ap.get('name').split(' ')[0]
+        #     if not ap.get('quote'):
+        #         ap['quote'] = ap.get('name').split(' ')[2]
+        #     if not ap.get('volumecurrency'):
+        #         ap['volumecurrency'] = ap.get('base')
 
-        return asset_pairs
+        # return asset_pairs
+        return []
 
     @classmethod
     def get_datafile(cls):

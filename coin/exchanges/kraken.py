@@ -14,56 +14,56 @@ class Kraken(Exchange):
 
     default_label = "cur"
 
-    asset_pairs = [
-        {
-            "isocode": "XXBTZUSD",
-            "pair": "XXBTZUSD",
-            "name": "BTC to USD",
-            "currency": CURRENCY["usd"],
-        },
-        {
-            "isocode": "XXBTZEUR",
-            "pair": "XXBTZEUR",
-            "name": "BTC to EUR",
-            "currency": CURRENCY["eur"],
-        },
-        {
-            "isocode": "XXLTZUSD",
-            "pair": "XLTCZUSD",
-            "name": "LTC to USD",
-            "currency": CURRENCY["usd"],
-        },
-        {
-            "isocode": "XXLTZEUR",
-            "pair": "XLTCZEUR",
-            "name": "LTC to EUR",
-            "currency": CURRENCY["eur"],
-        },
-        {
-            "isocode": "XXETZUSD",
-            "pair": "XETHZUSD",
-            "name": "ETH to USD",
-            "currency": CURRENCY["usd"],
-        },
-        {
-            "isocode": "XXETZEUR",
-            "pair": "XETHZEUR",
-            "name": "ETH to EUR",
-            "currency": CURRENCY["eur"],
-        },
-        {
-            "isocode": "XXBCZEUR",
-            "pair": "BCHEUR",
-            "name": "BCH to EUR",
-            "currency": CURRENCY["eur"],
-        },
-        {
-            "isocode": "XXRPZEUR",
-            "pair": "XXRPZEUR",
-            "name": "XRP to EUR",
-            "currency": CURRENCY["eur"],
-        },
-    ]
+    # asset_pairs = [
+    #     {
+    #         "isocode": "XXBTZUSD",
+    #         "pair": "XXBTZUSD",
+    #         "name": "BTC to USD",
+    #         "currency": CURRENCY["usd"],
+    #     },
+    #     {
+    #         "isocode": "XXBTZEUR",
+    #         "pair": "XXBTZEUR",
+    #         "name": "BTC to EUR",
+    #         "currency": CURRENCY["eur"],
+    #     },
+    #     {
+    #         "isocode": "XXLTZUSD",
+    #         "pair": "XLTCZUSD",
+    #         "name": "LTC to USD",
+    #         "currency": CURRENCY["usd"],
+    #     },
+    #     {
+    #         "isocode": "XXLTZEUR",
+    #         "pair": "XLTCZEUR",
+    #         "name": "LTC to EUR",
+    #         "currency": CURRENCY["eur"],
+    #     },
+    #     {
+    #         "isocode": "XXETZUSD",
+    #         "pair": "XETHZUSD",
+    #         "name": "ETH to USD",
+    #         "currency": CURRENCY["usd"],
+    #     },
+    #     {
+    #         "isocode": "XXETZEUR",
+    #         "pair": "XETHZEUR",
+    #         "name": "ETH to EUR",
+    #         "currency": CURRENCY["eur"],
+    #     },
+    #     {
+    #         "isocode": "XXBCZEUR",
+    #         "pair": "BCHEUR",
+    #         "name": "BCH to EUR",
+    #         "currency": CURRENCY["eur"],
+    #     },
+    #     {
+    #         "isocode": "XXRPZEUR",
+    #         "pair": "XXRPZEUR",
+    #         "name": "XRP to EUR",
+    #         "currency": CURRENCY["eur"],
+    #     },
+    # ]
 
     @classmethod
     def _get_discovery_url(cls):

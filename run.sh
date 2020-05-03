@@ -1,3 +1,4 @@
 #!/bin/bash
-source bin/activate
-coin/coin.py &
+cd `dirname $0`
+source ./bin/activate
+./coin/coin.py &

@@ -14,11 +14,11 @@ class Okcoin(Exchange):
 
     default_label = "cur"
 
-    asset_pairs = [
-        {'pair': 'btc_cny', 'name': 'BTC to CNY', 'currency': CURRENCY['cny']},
-        {'pair': 'ltc_cny', 'name': 'LTC to CNY', 'currency': CURRENCY['cny']},
-        {'pair': 'eth_cny', 'name': 'ETH to CNY', 'currency': CURRENCY['cny']}
-    ]
+    # asset_pairs = [
+    #     {'pair': 'btc_cny', 'name': 'BTC to CNY', 'currency': CURRENCY['cny']},
+    #     {'pair': 'ltc_cny', 'name': 'LTC to CNY', 'currency': CURRENCY['cny']},
+    #     {'pair': 'eth_cny', 'name': 'ETH to CNY', 'currency': CURRENCY['cny']}
+    # ]
 
     @classmethod
     def _get_discovery_url(cls):
