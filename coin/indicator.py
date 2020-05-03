@@ -17,8 +17,6 @@ except ImportError:
     from gi.repository import AppIndicator
 
 
-logging.basicConfig(level=logging.ERROR)
-
 REFRESH_TIMES = [  # seconds
     3,
     5,
@@ -255,7 +253,10 @@ class Indicator(object):
             self.exchange = exchange(self)
 
         self.exchange.set_asset_pair(base, quote)
-        self.indicator_widget.set_icon(self.exchange.get_icon())
+        accessible_icon_string = self.exchange.get_name()[0:8] + ":" + base + " to " + quote
+
+        self.indicator_widget.set_icon_full(self.exchange.get_icon(), accessible_icon_string)
+
         self.coin.add_new_recent(
             self.exchange.get_asset_pair().get('pair'),
             self.exchange.get_code())

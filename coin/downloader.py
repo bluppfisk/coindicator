@@ -2,6 +2,7 @@
 
 from requests import get, exceptions
 from threading import Thread
+import logging
 
 
 class DownloadCommand():
@@ -37,5 +38,6 @@ class AsyncDownloadService():
 
         try:
             get(command.url, **kwargs)
-        except exceptions.RequestException:
-            command.error("Connection error")
+        except exceptions.RequestException as e:
+            command.error = "Connection error " + str(e)
+            callback(None)

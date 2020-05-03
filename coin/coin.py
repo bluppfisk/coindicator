@@ -33,6 +33,7 @@ except ImportError:
 PROJECT_ROOT = abspath(dirname(dirname(__file__)))
 SETTINGS_FILE = PROJECT_ROOT + '/user.conf'
 
+logging.basicConfig(level=logging.INFO)
 
 class Coin():
     config = yaml.load(open(PROJECT_ROOT + '/config.yaml', 'r'), Loader=yaml.SafeLoader)
@@ -80,7 +81,8 @@ class Coin():
 
         # inverse the hierarchy for easier asset selection
         bases = {}
-        for exchange in self.assets:
+        for exchange in self.assets.keys():
+            asset_pair = self.assets.get(exchange)
             for asset_pair in self.assets.get(exchange):
                 base = asset_pair.get('base')
                 quote = asset_pair.get('quote')
@@ -261,7 +263,7 @@ class Coin():
         if len([ex for ex in self.EXCHANGES if ex.active and ex.discovery]) == 0:
             return
 
-        self.main_item.set_icon(self.config.get('project_root') + '/resources/loading.png')
+        self.main_item.set_icon_full(self.config.get('project_root') + '/resources/loading.png', 'Discovering assets')
 
         for indicator in self.instances:
             if indicator.asset_selection_window:
@@ -289,7 +291,7 @@ class Coin():
             n.timeout = 2000
             n.show()
 
-        self.main_item.set_icon(self.icon)
+        self.main_item.set_icon_full(self.icon, "App icon")
 
     # Handle system resume by refreshing all tickers
     def handle_resume(self, sleeping, *args):

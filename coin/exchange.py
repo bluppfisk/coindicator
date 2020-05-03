@@ -86,7 +86,7 @@ class Exchange(object):
 
     def get_icon(self):
         # set icon for asset if it exists
-        asset = self.asset_pair.get('base').lower()
+        asset = self.asset_pair.get('base', '').lower()
         asset_dir = "{}/resources/".format(
             self.indicator.coin.config.get('project_root'))
 
@@ -120,7 +120,7 @@ class Exchange(object):
         if not self.asset_pair:
             logging.warning("User.conf specifies unavailable asset pair, trying default. \
                 Run Asset Discovery again.")
-            self.asset_pair = ap
+            self.asset_pair = {}
 
     @classmethod
     def find_asset_pair_by_code(cls, code):
@@ -128,11 +128,15 @@ class Exchange(object):
             if ap.get('pair') == code:
                 return ap
 
+        return {}
+
     @classmethod
     def find_asset_pair(cls, quote, base):
         for ap in cls.get_asset_pairs():
             if ap.get('quote') == quote and ap.get('base') == base:
                 return ap
+
+        return {}
 
     ##
     # Legacy function to make sure the hard-coded asset
@@ -189,7 +193,6 @@ class Exchange(object):
     @classmethod
     def discover_assets(cls, downloader, callback):
         command = DownloadCommand(cls._get_discovery_url(), callback)
-        command.error = cls._handle_discovery_error
         downloader.execute(command, cls._handle_discovery_result)
 
     ##
@@ -198,23 +201,30 @@ class Exchange(object):
     #
     @classmethod
     def _handle_discovery_result(cls, command):
-        data = command.response
-        if data.status_code is not 200:
-            cls._handle_discovery_error('API server returned an error: ' + str(data.status_code))
+        logging.debug("Response from {}: {}".format(command.url, command.error))
 
-        try:
-            result = data.json()
-            asset_pairs = cls._parse_discovery(result)
-            cls.normalise_assets()
-            cls.store_asset_pairs(asset_pairs)
-        except Exception as e:
-            cls._handle_discovery_error(str(e))
+        if command.error:
+            cls._handle_discovery_error('API server returned an error: ' + str(command.error))
+
+        if command.response:
+            data = command.response
+        
+            if data.status_code != 200:
+                cls._handle_discovery_error('API server returned an error: ' + str(data.status_code))
+
+            try:
+                result = data.json()
+                asset_pairs = cls._parse_discovery(result)
+                cls.normalise_assets()
+                cls.store_asset_pairs(asset_pairs)
+            except Exception as e:
+                cls._handle_discovery_error(str(e))
 
         command.callback()  # update the asset menus of all instances
 
     @classmethod
     def _handle_discovery_error(cls, msg):
-        logging.warning("Asset Discovery: " + msg)
+        logging.warn("Asset Discovery: " + msg)
 
     ##
     # Start exchange
