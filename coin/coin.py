@@ -112,7 +112,8 @@ class Coin():
 
         for plugin in self.settings.get('plugins', {}):
             for code, active in plugin.items():
-                self.find_exchange_by_code(code).active = active
+                e = self.find_exchange_by_code(code)
+                if e: e.active = active
 
         # set defaults if settings not defined
         if not self.settings.get('tickers'):
@@ -120,9 +121,6 @@ class Coin():
 
         if not self.settings.get('recent'):
             self.settings['recent'] = []
-
-        if not self.settings.get('log_level'):
-            self.settings['log_level'] = logging.WARN
 
     # saves settings for each ticker
     def save_settings(self):
