@@ -14,18 +14,6 @@ class Gdax(Exchange):
 
     default_label = "cur"
 
-    # asset_pairs = [
-    #     {'isocode': 'XXBTZUSD', 'pair': 'BTC-USD', 'name': 'BTC to USD', 'currency': CURRENCY['usd']},
-    #     {'isocode': 'XXBTZEUR', 'pair': 'BTC-EUR', 'name': 'BTC to EUR', 'currency': CURRENCY['eur']},
-    #     {'isocode': 'XXBTZGBP', 'pair': 'BTC-GBP', 'name': 'BTC to GBP', 'currency': CURRENCY['gbp']},
-    #     {'isocode': 'XXETZUSD', 'pair': 'ETH-USD', 'name': 'ETH to USD', 'currency': CURRENCY['usd']},
-    #     {'isocode': 'XXETZEUR', 'pair': 'ETH-EUR', 'name': 'ETH to EUR', 'currency': CURRENCY['eur']},
-    #     {'isocode': 'XXLTZUSD', 'pair': 'LTC-USD', 'name': 'LTC to USD', 'currency': CURRENCY['usd']},
-    #     {'isocode': 'XXLTZEUR', 'pair': 'LTC-EUR', 'name': 'LTC to EUR', 'currency': CURRENCY['eur']},
-    #     {'isocode': 'XXBCZEUR', 'pair': 'BCH-EUR', 'name': 'BCH to EUR', 'currency': CURRENCY['eur']},
-    #     {'isocode': 'XXBCZUSD', 'pair': 'BCH-USD', 'name': 'BCH to USD', 'currency': CURRENCY['usd']},
-    # ]
-
     @classmethod
     def _get_discovery_url(cls):
         return cls.discovery

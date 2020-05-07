@@ -14,10 +14,6 @@ class Bitstamp(Exchange):
 
     default_label = "cur"
 
-    # asset_pairs = [
-    #     {'isocode': 'XXBTZUSD', 'pair': 'XXBTZUSD', 'name': 'BTC to USD', 'currency': CURRENCY['usd']}
-    # ]
-
     @classmethod
     def _get_discovery_url(cls):
         return cls.discovery

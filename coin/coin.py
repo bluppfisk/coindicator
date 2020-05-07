@@ -14,6 +14,9 @@ import dbus
 import importlib
 import notify2
 import gi
+import os
+
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 from indicator import Indicator
 from about import AboutWindow
@@ -32,8 +35,8 @@ except ImportError:
 
 PROJECT_ROOT = abspath(dirname(dirname(__file__)))
 SETTINGS_FILE = PROJECT_ROOT + '/user.conf'
-
-logging.basicConfig(level=logging.INFO)
+if isfile("./LOGLEVEL"):
+    with open("LOGLEVEL", "r") as f: logging.basicConfig(level=int(f.read()))
 
 class Coin():
     config = yaml.load(open(PROJECT_ROOT + '/config.yaml', 'r'), Loader=yaml.SafeLoader)
@@ -44,14 +47,15 @@ class Coin():
         self.unique_id = 0
 
         self._load_exchanges()
-        self._load_assets()
         self._load_settings()
+        self._load_assets()
         self._start_main()
 
         self.instances = []
         self.discoveries = 0
         self._add_many_indicators(self.settings.get('tickers'))
         self._start_gui()
+
 
     # Load exchange 'plug-ins' from exchanges dir
     def _load_exchanges(self):
@@ -77,6 +81,8 @@ class Coin():
 
         for exchange in self.EXCHANGES:
             if exchange.active:
+                if not exchange.get_asset_pairs():
+                    exchange.discover_assets(self.downloader, lambda *args: None)
                 self.assets[exchange.get_code()] = exchange.get_asset_pairs()
 
         # inverse the hierarchy for easier asset selection
@@ -110,15 +116,13 @@ class Coin():
 
         # set defaults if settings not defined
         if not self.settings.get('tickers'):
-            self.settings['tickers'] = [{
-                'exchange': self.EXCHANGES[0].get_code(),
-                'asset_pair': self.assets[self.EXCHANGES[0].get_code()][0].get('pair'),
-                'refresh': 3,
-                'default_label': self.EXCHANGES[0].get_default_label()
-            }]
+            self.settings['tickers'] = []
 
         if not self.settings.get('recent'):
             self.settings['recent'] = []
+
+        if not self.settings.get('log_level'):
+            self.settings['log_level'] = logging.WARN
 
     # saves settings for each ticker
     def save_settings(self):

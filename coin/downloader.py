@@ -2,7 +2,6 @@
 
 from requests import get, exceptions
 from threading import Thread
-import logging
 
 
 class DownloadCommand():

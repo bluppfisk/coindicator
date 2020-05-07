@@ -14,8 +14,6 @@ class Unocoin(Exchange):
 
     default_label = "avg"
 
-    # asset_pairs = []
-
     @classmethod
     def _get_discovery_url(cls):
         return cls.discovery

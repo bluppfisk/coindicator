@@ -3,6 +3,7 @@
 import logging
 import time
 import pickle
+import yaml
 
 from os.path import isfile
 from gi.repository import GLib
@@ -36,6 +37,7 @@ CATEGORY = {
 
 class Exchange(object):
     active = True
+    name = "Must be overwritten"
 
     def __init__(self, indicator=None):
         self.indicator = indicator
@@ -49,11 +51,11 @@ class Exchange(object):
     # Abstract methods to be overwritten by the child classes
     #
     @classmethod
-    def _get_discovery_url():
+    def _get_discovery_url(cls):
         pass
 
     @classmethod
-    def _parse_discovery(data):
+    def _parse_discovery(cls, data):
         pass
 
     def _get_ticker_url(self):
@@ -138,28 +140,9 @@ class Exchange(object):
 
         return {}
 
-    ##
-    # Legacy function to make sure the hard-coded asset
-    # configuration is consistent with the new format
-    #
-    @classmethod
-    def normalise_assets(cls):
-        # asset_pairs = cls.asset_pairs
-
-        # for ap in asset_pairs:
-        #     if not ap.get('base'):
-        #         ap['base'] = ap.get('name').split(' ')[0]
-        #     if not ap.get('quote'):
-        #         ap['quote'] = ap.get('name').split(' ')[2]
-        #     if not ap.get('volumecurrency'):
-        #         ap['volumecurrency'] = ap.get('base')
-
-        # return asset_pairs
-        return []
-
     @classmethod
     def get_datafile(cls):
-        return "./coin/exchanges/data/{}.conf".format(cls.get_code())
+        return "./coin/data/{}.cache".format(cls.get_code())
 
     ##
     # Loads asset pairs from the config files or,
@@ -168,13 +151,13 @@ class Exchange(object):
     @classmethod
     def get_asset_pairs(cls):
         try:
-            with open(cls.get_datafile(), 'rb') as handle:
-                asset_pairs = pickle.loads(handle.read())
-                return asset_pairs
+            with open(cls.get_datafile(), "rb") as stream:
+                asset_pairs = pickle.load(stream)
+                return asset_pairs if asset_pairs else []
 
         except IOError:
-            # no CONF file, return predefined from config
-            return cls.normalise_assets()
+            # Faulty data file, return empty array
+            return []
 
     ##
     # Saves asset pairs to disk
@@ -182,10 +165,10 @@ class Exchange(object):
     @classmethod
     def store_asset_pairs(cls, asset_pairs):
         try:
-            with open(cls.get_datafile(), 'wb') as handle:
-                pickle.dump(asset_pairs, handle)
+            with open(cls.get_datafile(), 'wb') as stream:
+                pickle.dump(asset_pairs, stream)
         except IOError:
-            logging.error('Could not write to config file')
+            logging.error('Could not write to data file')
 
     ##
     # Discovers assets from the exchange's API url retrieved
@@ -193,8 +176,11 @@ class Exchange(object):
     #
     @classmethod
     def discover_assets(cls, downloader, callback):
-        command = DownloadCommand(cls._get_discovery_url(), callback)
-        downloader.execute(command, cls._handle_discovery_result)
+        if cls._get_discovery_url() == None:
+            cls.store_asset_pairs(cls._parse_discovery(None))
+        else:
+            command = DownloadCommand(cls._get_discovery_url(), callback)
+            downloader.execute(command, cls._handle_discovery_result)
 
     ##
     # Deals with the result from the discovery HTTP request
@@ -205,7 +191,7 @@ class Exchange(object):
         logging.debug("Response from {}: {}".format(command.url, command.error))
 
         if command.error:
-            cls._handle_discovery_error('API server returned an error: ' + str(command.error))
+            cls._handle_discovery_error(f'{cls.name}: API server returned an error: {command.error}')
 
         if command.response:
             data = command.response
@@ -216,7 +202,6 @@ class Exchange(object):
             try:
                 result = data.json()
                 asset_pairs = cls._parse_discovery(result)
-                cls.normalise_assets()
                 cls.store_asset_pairs(asset_pairs)
             except Exception as e:
                 cls._handle_discovery_error(str(e))

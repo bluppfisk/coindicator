@@ -204,10 +204,10 @@ class Indicator(object):
             return
 
         for recent in self.coin.settings['recent']:
-            exchange = self.coin.find_exchange_by_code(recent.get('exchange'))
-            asset_pair = exchange.find_asset_pair_by_code(recent.get('asset_pair'))
-            base = asset_pair.get('base')
-            quote = asset_pair.get('quote')
+            exchange = self.coin.find_exchange_by_code(recent.get('exchange', 'None'))
+            asset_pair = exchange.find_asset_pair_by_code(recent.get('asset_pair', 'None'))
+            base = asset_pair.get('base', 'None')
+            quote = asset_pair.get('quote', 'None')
             tabs = "\t" * (floor(abs((len(exchange.get_name()) - 8)) / 4) + 1)  # 1 tab for every 4 chars less than 8
             recent_string = exchange.get_name()[0:8] + ":" + tabs + base + " - " + quote
             recent_item = Gtk.MenuItem(recent_string)

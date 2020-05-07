@@ -14,22 +14,20 @@ class Okcoin(Exchange):
 
     default_label = "cur"
 
-    # asset_pairs = [
-    #     {'pair': 'btc_cny', 'name': 'BTC to CNY', 'currency': CURRENCY['cny']},
-    #     {'pair': 'ltc_cny', 'name': 'LTC to CNY', 'currency': CURRENCY['cny']},
-    #     {'pair': 'eth_cny', 'name': 'ETH to CNY', 'currency': CURRENCY['cny']}
-    # ]
-
     @classmethod
     def _get_discovery_url(cls):
-        return
+        return None
 
     def _get_ticker_url(self):
         return self.ticker + '?symbol=' + self.pair  # base/quote
 
     @staticmethod
     def _parse_discovery(result):
-        return
+        return [
+            {'pair': 'btc_cny', 'name': 'BTC to CNY', 'currency': CURRENCY['cny']},
+            {'pair': 'ltc_cny', 'name': 'LTC to CNY', 'currency': CURRENCY['cny']},
+            {'pair': 'eth_cny', 'name': 'ETH to CNY', 'currency': CURRENCY['cny']}
+        ]
 
     def _parse_ticker(self, asset):
         asset = asset.get('ticker')
