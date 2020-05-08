@@ -38,6 +38,8 @@ CATEGORY = {
 class Exchange(object):
     active = True
     name = "Must be overwritten"
+    code = "Must be overwritten"
+    default_label = "Must be overwritten"
 
     def __init__(self, indicator=None):
         self.indicator = indicator
@@ -270,6 +272,9 @@ class Exchange(object):
 
     # def _handle_result(self, data, validation, timestamp):
     def _handle_result(self, command):
+        if not command.response:
+            logging.info("No response from API server")
+            return
         data = command.response
         # Check to see if the returning response is still valid
         # (user may have changed exchanges before the request finished)

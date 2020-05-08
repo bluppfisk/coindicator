@@ -21,7 +21,7 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 from indicator import Indicator
 from about import AboutWindow
 from plugin_selection import PluginSelectionWindow
-from downloader import AsyncDownloadService
+from downloader import DownloadService, AsyncDownloadService
 
 from os.path import abspath, dirname, isfile, basename
 from dbus.mainloop.glib import DBusGMainLoop
@@ -45,10 +45,11 @@ class Coin():
     def __init__(self):
         self.downloader = AsyncDownloadService()
         self.unique_id = 0
+        self.assets = {}
 
         self._load_exchanges()
-        self._load_settings()
         self._load_assets()
+        self._load_settings()
         self._start_main()
 
         self.instances = []
@@ -82,7 +83,7 @@ class Coin():
         for exchange in self.EXCHANGES:
             if exchange.active:
                 if not exchange.get_asset_pairs():
-                    exchange.discover_assets(self.downloader, lambda *args: None)
+                    exchange.discover_assets(DownloadService(), lambda *args: None)
                 self.assets[exchange.get_code()] = exchange.get_asset_pairs()
 
         # inverse the hierarchy for easier asset selection
@@ -117,7 +118,14 @@ class Coin():
 
         # set defaults if settings not defined
         if not self.settings.get('tickers'):
-            self.settings['tickers'] = []
+
+            # TODO work without defining a default 
+            self.settings['tickers'] = [{
+                'exchange': self.EXCHANGES[0].get_code(),
+                'asset_pair': self.assets[self.EXCHANGES[0].get_code()][0].get('pair'),
+                'refresh': 3,
+                'default_label': self.EXCHANGES[0].get_default_label()
+            }]
 
         if not self.settings.get('recent'):
             self.settings['recent'] = []

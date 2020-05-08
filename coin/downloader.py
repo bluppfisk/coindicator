@@ -40,3 +40,12 @@ class AsyncDownloadService():
         except exceptions.RequestException as e:
             command.error = "Connection error " + str(e)
             callback(None)
+
+class DownloadService():
+    def execute(self, command, response_handler):
+        try:
+            command.response = get(command.url, timeout=command.timeout)
+            response_handler(command)
+        except exceptions.RequestException as e:
+            command.error = "Connection error " + str(e)
+            response_handler(None)
