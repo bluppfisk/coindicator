@@ -15,13 +15,13 @@ import importlib
 import notify2
 import gi
 import os
-
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
-
 from indicator import Indicator
 from about import AboutWindow
 from plugin_selection import PluginSelectionWindow
 from downloader import DownloadService, AsyncDownloadService
+
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
+
 
 from os.path import abspath, dirname, isfile, basename
 from dbus.mainloop.glib import DBusGMainLoop
@@ -32,11 +32,11 @@ try:
 except ImportError:
     from gi.repository import AppIndicator
 
-
 PROJECT_ROOT = abspath(dirname(dirname(__file__)))
 SETTINGS_FILE = PROJECT_ROOT + '/user.conf'
 if isfile("./LOGLEVEL"):
     with open("LOGLEVEL", "r") as f: logging.basicConfig(level=int(f.read()))
+
 
 class Coin():
     config = yaml.load(open(PROJECT_ROOT + '/config.yaml', 'r'), Loader=yaml.SafeLoader)
@@ -56,7 +56,6 @@ class Coin():
         self.discoveries = 0
         self._add_many_indicators(self.settings.get('tickers'))
         self._start_gui()
-
 
     # Load exchange 'plug-ins' from exchanges dir
     def _load_exchanges(self):
@@ -118,8 +117,7 @@ class Coin():
 
         # set defaults if settings not defined
         if not self.settings.get('tickers'):
-
-            # TODO work without defining a default 
+            # TODO work without defining a default
             self.settings['tickers'] = [{
                 'exchange': self.EXCHANGES[0].get_code(),
                 'asset_pair': self.assets[self.EXCHANGES[0].get_code()][0].get('pair'),

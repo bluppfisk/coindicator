@@ -91,7 +91,7 @@ class Exchange(object):
     def get_icon(self):
         # set icon for asset if it exists
         asset = self.asset_pair.get('base', '').lower()
-        asset_dir = "{}/resources/".format(
+        asset_dir = "{}/resources/coin-icons/".format(
             self.indicator.coin.config.get('project_root'))
 
         if isfile(asset_dir + asset + '.png'):
