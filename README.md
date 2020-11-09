@@ -65,7 +65,7 @@ This software was tested and found working on the following configurations:
 * Ubuntu Linux 19.04 (Disco Dingo) with GNOME 3 and Unity 7
 * Ubuntu Linux 19.10 (Eoan Ermine) with GNOME 3 and Unity 7
 * Ubuntu Linux 20.04 (Focal Fossa) with GNOME 3
-* Ubuntu Linux 20.20 (Groovy Gorilla) with GNOME 3
+* Ubuntu Linux 20.10 (Groovy Gorilla) with GNOME 3
 
 For other systems, you may need to install LibAppIndicator support.
 
