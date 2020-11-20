@@ -323,13 +323,11 @@ class Exchange(object):
     #
     def _decimal_auto(self, number):
         number = float(number)
-        if number < 10:
-            for i in range(8, 0, -1):
-                if number < 10**-i:
-                    break
-        elif number >= 100:
-            i = -2
-        elif number >= 10:
-            i = -1
+        max_decimals = self.indicator.coin.settings.get("max_decimals", 8)
+        significant_digits = self.indicator.coin.settings.get("significant_digits", 3)
 
-        return ('{0:.' + str(i + 2) + 'f}').format(number)
+        for decimals in range(0, max_decimals):
+            if number * (10 ** decimals) >= 10 ** (significant_digits - 1):
+                break
+
+        return ('{0:.' + str(decimals) + 'f}').format(number)
