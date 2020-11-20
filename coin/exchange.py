@@ -326,7 +326,7 @@ class Exchange(object):
         max_decimals = self.indicator.coin.settings.get("max_decimals", 8)
         significant_digits = self.indicator.coin.settings.get("significant_digits", 3)
 
-        for decimals in range(0, max_decimals):
+        for decimals in range(0, max_decimals + 1):
             if number * (10 ** decimals) >= 10 ** (significant_digits - 1):
                 break
 

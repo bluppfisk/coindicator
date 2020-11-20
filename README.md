@@ -48,7 +48,10 @@ Clone the repository and install python dependencies by running the following co
 
 ## Configuring
 
-Use the GUI to add and remove indicators (find the piggy icon), to pick assets, to set refresh frequency and to set alarms. Alternatively, edit the user.conf YAML file in the project root.
+Use the GUI to add and remove indicators (find the piggy icon), to pick assets, to set refresh frequency and to set alarms. Alternatively, edit the **user.conf** YAML file in the project root.
+
+`max_decimals`: default 8. Lower if you want fewer decimals (takes priority over `significant_digits`)
+`significant_digits`: default 3. Set to higher if you want more significant digits.
 
 ## Extending (Plug-ins)
 
