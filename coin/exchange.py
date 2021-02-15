@@ -96,6 +96,10 @@ class Exchange(object):
 
         if isfile(asset_dir + asset + '.png'):
             return asset_dir + asset + '.png'
+        else:
+            fetched = self.indicator.coin.coingecko_coin_api(asset_dir, asset)
+            if fetched != None:
+                return fetched
 
         return asset_dir + 'unknown-coin.png'
 

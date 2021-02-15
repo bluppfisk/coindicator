@@ -15,10 +15,12 @@ import importlib
 import notify2
 import gi
 import os
+import shutil
 from indicator import Indicator
 from about import AboutWindow
 from plugin_selection import PluginSelectionWindow
-from downloader import DownloadService, AsyncDownloadService
+from requests import get
+from downloader import DownloadCommand, DownloadService, AsyncDownloadService
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
@@ -46,7 +48,9 @@ class Coin():
         self.downloader = AsyncDownloadService()
         self.unique_id = 0
         self.assets = {}
+        self.coingecko_list = []
 
+        self._load_coingecko_list()
         self._load_exchanges()
         self._load_assets()
         self._load_settings()
@@ -75,6 +79,45 @@ class Coin():
             if exchange.get_code() == code.lower():
                 return exchange
 
+    def _load_coingecko_list(self):
+        command = DownloadCommand('https://api.coingecko.com/api/v3/coins/list', lambda *args: None)
+        DownloadService().execute(command, self.handle_coingecko_data)
+
+    def handle_coingecko_data(self, command):
+        data = command.response       
+        if data.status_code == 200:
+            self.coingecko_list = data.json()
+        else:
+            logging.warn("CoinGecko API: " + data.status_code + " " + command.error)
+
+    # Fetch icon from CoinGecko
+    def coingecko_coin_api(self, icons_root, asset):
+        img_file = icons_root + asset + '.png'
+        for coin in self.coingecko_list:
+            if asset == coin.get('symbol'):
+                command = DownloadCommand('https://api.coingecko.com/api/v3/coins/' + coin.get('id')
+                    , {'icons_root': icons_root, 'symbol': asset })
+                DownloadService().execute(command, self.handle_coingecko_icon)
+                if os.path.isfile(img_file):
+                    return img_file
+        return None
+
+    def handle_coingecko_icon(self, command):
+        icons_root = command.callback['icons_root']
+        symbol = command.callback['symbol']
+        img_file = icons_root + symbol + '.png'
+
+        data = command.response
+        img_url = data.json().get('image').get('small')
+        img = get(img_url, stream = True)
+
+        if img.status_code == 200:
+
+            with open(img_file, "wb") as f:
+                img.raw.decode_content = True
+                shutil.copyfileobj(img.raw, f)
+        else:
+            logging.error('Could not write icon file')
     # Creates a structure of available assets (from_currency > to_currency > exchange)
     def _load_assets(self):
         self.assets = {}
