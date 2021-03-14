@@ -3,7 +3,6 @@
 import logging
 import time
 import pickle
-import yaml
 
 from os.path import isfile
 from gi.repository import GLib
