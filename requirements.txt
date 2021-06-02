@@ -4,5 +4,5 @@ idna==2.7
 notify2==0.3.1
 PyYAML>=4.2b1
 requests==2.20.0
-urllib3==1.24.2
+urllib3==1.26.5
 websockets==6.0
