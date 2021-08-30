@@ -9,7 +9,7 @@ class Hitbtc(Exchange):
     name = "HitBTC"
     code = "hitbtc"
 
-    ticker = "http://api.hitbtc.com/api/1/public/"
+    ticker = "https://api.hitbtc.com/api/1/public/"
     discovery = "http://api.hitbtc.com/api/1/public/symbols"
 
     default_label = "cur"

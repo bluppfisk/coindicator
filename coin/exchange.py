@@ -196,13 +196,18 @@ class Exchange(object):
         logging.debug("Response from {}: {}".format(command.url, command.error))
 
         if command.error:
-            cls._handle_discovery_error(f'{cls.name}: API server returned an error: {command.error}')
+            cls._handle_discovery_error(f'{cls.name}: API server {command.url} returned an error: {command.error}')
 
         if command.response:
             data = command.response
+
+            if data.status_code in [301,302]:
+                # hooks will be called even when requests is following a redirect
+                # but we don't want to print any error messages here
+                return
         
             if data.status_code != 200:
-                cls._handle_discovery_error('API server returned an error: ' + str(data.status_code))
+                cls._handle_discovery_error(f'API server {command.url} returned an error: {str(data.status_code)}')
 
             try:
                 result = data.json()
