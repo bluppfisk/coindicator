@@ -26,6 +26,7 @@ Coin Price Indicator is a cryptocurrency price indicator applet for Linux.
 	* [OKCoin](https://www.okcoin.cn/)
 	* [Unocoin](https://www.unocoin.com/)
 	* [MXC](https://www.mxc.com/)
+	* [Wazirx](https://wazirx.com/)
 	* Add your own easily (See **Extending (Plugins)** below)
 
 ![Screenshot](https://raw.githubusercontent.com/nilgradisnik/coinprice-indicator/master/resources/screenshot.png)
