@@ -30,8 +30,8 @@ class Wazirx(Exchange):
 
             asset_pair = {
                 'pair': base+quote,
-                'base': base,
-                'quote': quote,
+                'base': base.upper(),
+                'quote': quote.upper(),
                 'name': base + ' to ' + quote,
                 'currency': quote.lower(),
                 'volumecurrency': base
