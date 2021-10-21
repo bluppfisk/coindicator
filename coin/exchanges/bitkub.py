@@ -3,7 +3,6 @@
 # By Theppasith N. <tutorgaming@gmail.com>
 
 from exchange import Exchange, CURRENCY
-from os.path import isfile
 
 class Bitkub(Exchange):
     name = "Bitkub"
