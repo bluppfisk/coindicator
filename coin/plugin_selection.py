@@ -48,9 +48,26 @@ class PluginSelectionWindow(Gtk.Window):
         sw.add(self.view_plugins)
         grid.attach(sw, 0, 0, 100, 220)
 
-        buttonbox = Gtk.Box(spacing=2)
+        # Add Select All and Select None
+        selectbox = Gtk.Box(spacing=2)
+        selectbox.set_homogeneous(True)
 
-        button_set = Gtk.Button('Select')
+        button_sel_all = Gtk.Button('All')
+        button_sel_all.connect("clicked", self._select_all)
+
+        button_sel_none = Gtk.Button('Clear')
+        button_sel_none.connect("clicked", self._select_none)
+
+        selectbox.pack_start(button_sel_all, True, True, 0)
+        selectbox.pack_start(button_sel_none, True, True, 0)
+
+        grid.attach(selectbox, 0, 245, 100, 30)
+
+        # Confirmation box
+        buttonbox = Gtk.Box(spacing=2)
+        buttonbox.set_homogeneous(True)
+
+        button_set = Gtk.Button('Apply')
         button_set.connect("clicked", self._select_plugins)
         button_set.set_can_default(True)
         button_set.get_style_context().add_class(Gtk.STYLE_CLASS_SUGGESTED_ACTION)
@@ -61,7 +78,7 @@ class PluginSelectionWindow(Gtk.Window):
         buttonbox.pack_start(button_set, True, True, 0)
         buttonbox.pack_start(button_cancel, True, True, 0)
 
-        grid.attach(buttonbox, 0, 245, 100, 50)
+        grid.attach(buttonbox, 0, 275, 100, 50)
 
         self.show_all()
         self.present()
@@ -76,6 +93,14 @@ class PluginSelectionWindow(Gtk.Window):
 
         self.parent.plugins_updated()
         self._close()
+
+    def _select_all(self, widget=None):
+        for item in self.plugin_store:
+            item[0] = True
+
+    def _select_none(self, widget=None):
+        for item in self.plugin_store:
+            item[0] = False
 
     def _on_key_release(self, widget, ev, data=None):
         if ev.keyval == Gdk.KEY_Escape:
