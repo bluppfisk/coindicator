@@ -7,5 +7,3 @@ Type=Application
 Categories=Utility;Network;
 Keywords=crypto;coin;ticker;price;exchange;
 StartupNotify=false
-Exec=/home/sander/code/coinprice-indicator/run.sh
-Icon=/home/sander/code/coinprice-indicator/resources/logo_248px.png
