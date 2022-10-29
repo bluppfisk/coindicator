@@ -11,3 +11,4 @@ bin
 lib64
 pyvenv.cfg
 LOGLEVEL
+*.cache

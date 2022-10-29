@@ -6,3 +6,4 @@ PyYAML>=4.2b1
 requests~=2.20
 urllib3~=1.26.5
 websockets==9.1
+pygame==2.1.2
