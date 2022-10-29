@@ -1,21 +1,13 @@
-# -*- coding: utf-8 -*-
+from setuptools import setup
 
-import yaml
-
-from setuptools import setup, find_packages
-
-config = yaml.load(open('config.yaml', 'r'))
-readme = open('README.md', 'r')
-license = open('LICENSE', 'r')
-
-setup(
-    name=config['app']['name'].replace(" ","-"),
-    version=config['app']['version'],
-    description=config['app']['description'],
-    long_description=readme.read(),
-    author=config['authors'][0]['name'],
-    author_email=config['authors'][0]['email'],
-    url=config['app']['url'],
-    license=license.read(),
-    packages=find_packages(exclude=('tests', 'docs'))
-)
+if __name__ == "__main__":
+    try:
+        setup(use_scm_version={"version_scheme": "no-guess-dev"})
+    except:  # noqa
+        print(
+            "\n\nAn error occurred while building the project, "
+            "please ensure you have the most updated version of setuptools, "
+            "setuptools_scm and wheel with:\n"
+            "   pip install -U setuptools setuptools_scm wheel\n\n"
+        )
+        raise
