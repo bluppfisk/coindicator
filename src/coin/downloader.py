@@ -46,4 +46,3 @@ class DownloadService:
             response_handler(command)
         except exceptions.RequestException as e:
             command.error = "Connection error " + str(e)
-            response_handler(None)
