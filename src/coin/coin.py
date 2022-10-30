@@ -76,19 +76,13 @@ class Coin:
         ]
         plugins.sort()
 
-        self.EXCHANGES = []
+        self.exchanges = {}
         for plugin in plugins:
             class_name = plugin.capitalize()
-            class_ = getattr(
+            exchange_class = getattr(
                 importlib.import_module("coin.exchanges." + plugin), class_name
             )
-            self.EXCHANGES.append(class_)
-
-    # Find an exchange
-    def find_exchange_by_code(self, code):
-        for exchange in self.EXCHANGES:
-            if exchange.code == code.lower():
-                return exchange
+            self.exchanges[exchange_class.code] = exchange_class
 
     def _load_coingecko_list(self):
         command = DownloadCommand(
@@ -138,7 +132,7 @@ class Coin:
     def _load_assets(self):
         self.assets = {}
 
-        for exchange in self.EXCHANGES:
+        for exchange in self.exchanges.values():
             if exchange.active:
                 if not exchange.asset_pairs:
                     exchange.discover_assets(DownloadService(), lambda *args: None)
@@ -158,7 +152,7 @@ class Coin:
                 if quote not in bases[base]:
                     bases[base][quote] = []
 
-                bases[base][quote].append(self.find_exchange_by_code(exchange))
+                bases[base][quote].append(self.exchanges[exchange])
 
         self.bases = bases
 
@@ -166,7 +160,7 @@ class Coin:
     def _load_settings(self):
         for plugin in self.config["settings"].get("plugins", {}):
             for code, active in plugin.items():
-                e = self.find_exchange_by_code(code)
+                e = self.exchanges[code]
                 if e:
                     e.active = active
 
@@ -175,10 +169,10 @@ class Coin:
             # TODO work without defining a default
             self.config["settings"]["tickers"] = [
                 {
-                    "exchange": self.EXCHANGES[0].code,
-                    "asset_pair": self.assets[self.EXCHANGES[0].code][0].get("pair"),
+                    "exchange": self.exchanges[0].code,
+                    "asset_pair": self.assets[self.exchanges[0].code][0].get("pair"),
                     "refresh": 3,
-                    "default_label": self.EXCHANGES[0].default_label,
+                    "default_label": self.exchanges[0].default_label,
                 }
             ]
 
@@ -199,7 +193,7 @@ class Coin:
             self.config["settings"]["tickers"] = tickers
 
         plugins = []
-        for exchange in self.EXCHANGES:
+        for exchange in self.exchanges.values():
             plugin = {exchange.code: exchange.active}
             plugins.append(plugin)
 
@@ -329,7 +323,7 @@ class Coin:
     # Menu item to download any new assets from the exchanges
     def _discover_assets(self, _widget):
         # Don't do anything if there are no active exchanges with discovery
-        if len([ex for ex in self.EXCHANGES if ex.active and ex.discovery]) == 0:
+        if len([ex for ex in self.exchanges if ex.active and ex.discovery]) == 0:
             return
 
         self.main_item.set_icon_full(
@@ -341,7 +335,7 @@ class Coin:
             if indicator.asset_selection_window:
                 indicator.asset_selection_window.destroy()
 
-        for exchange in self.EXCHANGES:
+        for exchange in self.exchanges.values():
             if exchange.active and exchange.discovery:
                 exchange.discover_assets(self.downloader, self.update_assets)
 
@@ -349,7 +343,7 @@ class Coin:
     def update_assets(self):
         self.discoveries += 1
         if self.discoveries < len(
-            [ex for ex in self.EXCHANGES if ex.active and ex.discovery]
+            [ex for ex in self.exchanges.values() if ex.active and ex.discovery]
         ):
             return  # wait until all active exchanges with discovery finish discovery
 

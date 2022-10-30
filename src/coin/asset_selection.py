@@ -157,7 +157,7 @@ class AssetSelectionWindow(Gtk.Window):
         self._close(widget)
 
     def _update_indicator(self, widget, *args):
-        exchange = self.parent.coin.find_exchange_by_code(self.current_exchange)
+        exchange = self.parent.coin.exchanges[self.current_exchange]
         self.parent.change_assets(self.current_base, self.current_quote, exchange)
 
     def _on_key_release(self, widget, ev, data=None):

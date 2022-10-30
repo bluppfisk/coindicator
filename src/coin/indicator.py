@@ -35,7 +35,7 @@ class Indicator(object):
         self.coin = coin  # reference to main program
         self.unique_id = unique_id
         self.alarm = Alarm(self)
-        self.exchange = self.coin.find_exchange_by_code(exchange)(self)
+        self.exchange = self.coin.exchanges[exchange](self)
         self.exchange.set_asset_pair_from_code(asset_pair)
         self.refresh_frequency = refresh
         self.default_label = default_label
@@ -213,7 +213,7 @@ class Indicator(object):
             return
 
         for recent in self.config["settings"].get("recent"):
-            exchange = self.coin.find_exchange_by_code(recent.get("exchange", "None"))
+            exchange = self.coin.exchanges[recent.get("exchange")]
             asset_pair = exchange.find_asset_pair_by_code(
                 recent.get("asset_pair", "None")
             )
