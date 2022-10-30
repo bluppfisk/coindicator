@@ -47,12 +47,12 @@ class Indicator(object):
     # initialisation and start of indicator and exchanges
     def start(self):
         self.indicator_widget = AppIndicator.Indicator.new(
-            "CoinPriceIndicator_" + str(self.unique_id),
+            "Coindicator_" + str(self.unique_id),
             str(self.exchange.icon),
             AppIndicator.IndicatorCategory.APPLICATION_STATUS,
         )
         self.indicator_widget.set_status(AppIndicator.IndicatorStatus.ACTIVE)
-        # self.indicator_widget.set_ordering_index(0)
+        self.indicator_widget.set_ordering_index(0)
         self.indicator_widget.set_menu(self._menu())
         if self.exchange.active:
             self._start_exchange()
