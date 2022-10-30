@@ -6,6 +6,8 @@ from math import floor
 
 from gi.repository import GLib, Gtk
 
+from uuid import uuid1
+
 from coin.alarm import Alarm, AlarmSettingsWindow
 from coin.config import Config
 from coin.asset_selection import AssetSelectionWindow
@@ -29,10 +31,9 @@ CATEGORIES = [
 
 
 class Indicator(object):
-    def __init__(self, coin, unique_id, exchange, asset_pair, refresh, default_label):
+    def __init__(self, coin, exchange, asset_pair, refresh, default_label):
         self.config = Config()
         self.coin = coin  # reference to main program
-        self.unique_id = unique_id
         self.alarm = Alarm(self)
         self.exchange = self.coin.exchanges[exchange](self)
         self.exchange.set_asset_pair_from_code(asset_pair)
@@ -47,7 +48,7 @@ class Indicator(object):
     # initialisation and start of indicator and exchanges
     def start(self):
         self.indicator_widget = AppIndicator.Indicator.new(
-            "Coindicator_" + str(self.unique_id),
+            "Coindicator_" + str(uuid1()),
             str(self.exchange.icon),
             AppIndicator.IndicatorCategory.APPLICATION_STATUS,
         )

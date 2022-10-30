@@ -52,7 +52,6 @@ class Coin:
     def __init__(self, config: Config):
         self.config = config
         self.downloader = AsyncDownloadService()
-        self.unique_id = 0
         self.assets = {}
         self.coingecko_client = CoinGeckoClient()
         self.coingecko_client.load_list()
@@ -244,10 +243,7 @@ class Coin:
         refresh = settings.get("refresh")
         asset_pair = settings.get("asset_pair")
         default_label = settings.get("default_label")
-        self.unique_id += 1
-        indicator = Indicator(
-            self, self.unique_id, exchange, asset_pair, refresh, default_label
-        )
+        indicator = Indicator(self, exchange, asset_pair, refresh, default_label)
         self.instances.append(indicator)
         indicator.start()
         return indicator
