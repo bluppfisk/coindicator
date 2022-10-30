@@ -2,7 +2,7 @@
 # https://bittrex.com/Home/Api
 # By "Sir Paul" <wizzard94@github.com>
 
-from coin.exchange import CURRENCY, Exchange
+from coin.exchange import Exchange
 
 
 class Bittrex(Exchange):
