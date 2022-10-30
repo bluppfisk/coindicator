@@ -2,7 +2,7 @@
 # https://poloniex.com/public?command=returnTicker
 # By Sander Van de Moortel <sander.vandemoortel@gmail.com>
 
-from exchange import Exchange
+from coin.exchange import Exchange
 
 
 class Poloniex(Exchange):

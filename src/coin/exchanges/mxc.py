@@ -2,7 +2,7 @@
 # https://mxcdevelop.github.io/APIDoc/
 # By Giorgos Karapiperidis <gkarapiperidis@gmail.com>
 
-from exchange import Exchange
+from coin.exchange import Exchange
 
 
 class Mxc(Exchange):

@@ -2,7 +2,7 @@
 # https://cex.io/rest-api
 # By Sander Van de Moortel <sander.vandemoortel@gmail.com>
 
-from exchange import Exchange
+from coin.exchange import Exchange
 
 
 class Cexio(Exchange):

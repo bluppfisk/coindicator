@@ -5,9 +5,10 @@ import pickle
 import time
 from os.path import isfile
 
-from downloader import DownloadCommand
-from error import Error
 from gi.repository import GLib
+
+from .downloader import DownloadCommand
+from .error import Error
 
 CURRENCY = {
     "usd": "$",
@@ -153,7 +154,10 @@ class Exchange(object):
 
     @classmethod
     def get_datafile(cls):
-        return "./coin/data/{}.cache".format(cls.get_code())
+        from coin.config import Config
+
+        config = Config()
+        return config.get("project_root") / f"data/{cls.get_code()}.cache"
 
     ##
     # Loads asset pairs from the config files or,
@@ -179,7 +183,7 @@ class Exchange(object):
             with open(cls.get_datafile(), "wb") as stream:
                 pickle.dump(asset_pairs, stream)
         except IOError:
-            logging.error("Could not write to data file")
+            logging.error("Could not write to data file %s" % cls.get_datafile())
 
     ##
     # Discovers assets from the exchange's API url retrieved
@@ -278,7 +282,7 @@ class Exchange(object):
         command.validation = self.asset_pair
         self.downloader.execute(command, self._handle_result)
 
-        logging.info("Request with TS: " + str(timestamp))
+        logging.debug("Request with TS: " + str(timestamp))
         if not self.error.is_ok():
             self.timeout_id = None
 
@@ -291,24 +295,24 @@ class Exchange(object):
     # def _handle_result(self, data, validation, timestamp):
     def _handle_result(self, command):
         if not command.response:
-            logging.info("No response from API server")
+            logging.warning("No response from API server")
             return
         data = command.response
         # Check to see if the returning response is still valid
         # (user may have changed exchanges before the request finished)
         if not self.started:
-            logging.info("Discarding packet for inactive exchange")
+            logging.warning("Discarding packet for inactive exchange")
             return
 
         if command.validation is not self.asset_pair:  # we've already moved on.
-            logging.info("Discarding packet for wrong asset pair or exchange")
+            logging.warning("Discarding packet for wrong asset pair or exchange")
             return
 
         # also check if a newer response hasn't already been returned
         if (
             command.timestamp < self.indicator.latest_response
         ):  # this is an older request
-            logging.info("Discarding outdated packet")
+            logging.warning("Discarding outdated packet")
             return
 
         if data.status_code != 200:
@@ -325,7 +329,7 @@ class Exchange(object):
 
         results = self._parse_ticker(asset)
         self.indicator.latest_response = command.timestamp
-        logging.info(
+        logging.debug(
             "Response comes in with timestamp "
             + str(command.timestamp)
             + ", last response at "

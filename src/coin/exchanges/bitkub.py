@@ -2,7 +2,7 @@
 # https://github.com/bitkub/bitkub-official-api-docs/blob/master/restful-api.md
 # By Theppasith N. <tutorgaming@gmail.com>
 
-from exchange import CURRENCY, Exchange
+from coin.exchange import CURRENCY, Exchange
 
 
 class Bitkub(Exchange):

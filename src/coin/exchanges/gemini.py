@@ -2,7 +2,7 @@
 # https://docs.gemini.com/rest-api/
 # By Rick Ramstetter <rick@anteaterllc.com>
 
-from exchange import CURRENCY, Exchange
+from coin.exchange import CURRENCY, Exchange
 
 
 class Gemini(Exchange):

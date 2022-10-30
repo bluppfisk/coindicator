@@ -2,7 +2,7 @@
 # https://www.bitstamp.net/api/
 # By Nil Gradisnik <nil.gradisnik@gmail.com>
 
-from exchange import CURRENCY, Exchange
+from coin.exchange import CURRENCY, Exchange
 
 
 class Bitstamp(Exchange):

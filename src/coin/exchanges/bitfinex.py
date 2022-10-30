@@ -2,7 +2,7 @@
 # https://bitfinex.readme.io/v2/docs
 # By Alessio Carrafa <ruzzico@gmail.com>
 
-from exchange import CURRENCY, Exchange
+from coin.exchange import CURRENCY, Exchange
 
 
 class Bitfinex(Exchange):

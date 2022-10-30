@@ -2,7 +2,7 @@
 # https://github.com/hitbtc-com/hitbtc-api/blob/master/APIv1.md
 # By Sander Van de Moortel <sander.vandemoortel@gmail.com>
 
-from exchange import CURRENCY, Exchange
+from coin.exchange import CURRENCY, Exchange
 
 
 class Hitbtc(Exchange):

@@ -2,7 +2,7 @@
 # https://api.wazirx.com/api/v2/tickers
 # By Rishabh Rawat <rishabhrawat.rishu@gmail.com>
 
-from exchange import CURRENCY, Exchange
+from coin.exchange import CURRENCY, Exchange
 
 
 class Wazirx(Exchange):

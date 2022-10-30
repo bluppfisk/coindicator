@@ -5,46 +5,58 @@
 # Sander Van de Moortel <sander.vandemoortel@gmail.com>
 #
 
-
-import glob
-import importlib
-import logging
 import os
-import shutil
-import signal
 
-import dbus
 import gi
-import notify2
-import yaml
-from about import AboutWindow
-from downloader import AsyncDownloadService, DownloadCommand, DownloadService
-from indicator import Indicator
-from plugin_selection import PluginSelectionWindow
-from requests import get
 
+gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "3.0")
+gi.require_version("GdkPixbuf", "2.0")
+gi.require_version("AppIndicator3", "0.1")
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 
+import importlib
+import logging
+import shutil
+import signal
+from pathlib import Path
 
-from os.path import abspath, basename, dirname, isfile
-
+import dbus
+import notify2
+import yaml
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import Gtk
+from requests import get
+
+from coin.about import AboutWindow
+from coin.downloader import AsyncDownloadService, DownloadCommand, DownloadService
+from coin.indicator import Indicator
+from coin.plugin_selection import PluginSelectionWindow
 
 try:
     from gi.repository import AppIndicator3 as AppIndicator
 except ImportError:
     from gi.repository import AppIndicator
 
-PROJECT_ROOT = abspath(dirname(dirname(__file__)))
-SETTINGS_FILE = PROJECT_ROOT + "/user.conf"
-if isfile("./LOGLEVEL"):
-    with open("LOGLEVEL", "r") as f:
-        logging.basicConfig(level=int(f.read()))
+from .config import Config
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+SETTINGS_FILE = PROJECT_ROOT / "user.conf"
+
+log_level = getattr(logging, os.environ.get("COIN_LOGLEVEL", "ERROR"))
+logging.basicConfig(
+    datefmt="%H:%M:%S",
+    level=log_level,
+    format="[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s",
+)
 
 
 class Coin:
-    config = yaml.load(open(PROJECT_ROOT + "/config.yaml", "r"), Loader=yaml.SafeLoader)
+    config_data = yaml.load(
+        open(PROJECT_ROOT / "config.yaml", "r"), Loader=yaml.SafeLoader
+    )
+    config = Config(config_data)
+
     config["project_root"] = PROJECT_ROOT
 
     def __init__(self):
@@ -66,18 +78,19 @@ class Coin:
 
     # Load exchange 'plug-ins' from exchanges dir
     def _load_exchanges(self):
-        dirfiles = glob.glob(dirname(__file__) + "/exchanges/*.py")
+        dirfiles = (Path(__file__).parent / "exchanges").glob("*.py")
+        Path(__file__).name
         plugins = [
-            basename(f)[:-3]
-            for f in dirfiles
-            if isfile(f) and not f.endswith("__init__.py")
+            f.name[:-3] for f in dirfiles if f.exists() and f.name != "__init__.py"
         ]
         plugins.sort()
 
         self.EXCHANGES = []
         for plugin in plugins:
             class_name = plugin.capitalize()
-            class_ = getattr(importlib.import_module("exchanges." + plugin), class_name)
+            class_ = getattr(
+                importlib.import_module("coin.exchanges." + plugin), class_name
+            )
             self.EXCHANGES.append(class_)
 
     # Find an exchange
@@ -109,7 +122,7 @@ class Coin:
                     {"icons_root": icons_root, "symbol": asset},
                 )
                 DownloadService().execute(command, self.handle_coingecko_icon)
-                if os.path.isfile(img_file):
+                if Path(img_file).exists():
                     return img_file
         return None
 
@@ -128,7 +141,7 @@ class Coin:
                 img.raw.decode_content = True
                 shutil.copyfileobj(img.raw, f)
         else:
-            logging.error("Could not write icon file")
+            logging.error("Could not write icon file %s" % img_file)
 
     # Creates a structure of available assets (from_currency > to_currency > exchange)
     def _load_assets(self):
@@ -162,7 +175,7 @@ class Coin:
     def _load_settings(self):
         self.settings = {}
         # load from file
-        if isfile(SETTINGS_FILE):
+        if Path(SETTINGS_FILE).exists():
             self.settings = yaml.load(open(SETTINGS_FILE, "r"), Loader=yaml.SafeLoader)
 
         for plugin in self.settings.get("plugins", {}):
@@ -234,8 +247,9 @@ class Coin:
 
     # Start the main indicator icon and its menu
     def _start_main(self):
-        print(
-            "{} v{} running!".format(
+        logging.info(
+            "%s v%s running!"
+            % (
                 self.config.get("app").get("name"),
                 self.config.get("app").get("version"),
             )

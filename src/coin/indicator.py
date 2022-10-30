@@ -5,11 +5,10 @@ import logging
 from math import floor
 
 import gi
-from alarm import Alarm, AlarmSettingsWindow
-from asset_selection import AssetSelectionWindow
 from gi.repository import GLib, Gtk
 
-gi.require_version("AppIndicator3", "0.1")
+from coin.alarm import Alarm, AlarmSettingsWindow
+from coin.asset_selection import AssetSelectionWindow
 
 try:
     from gi.repository import AppIndicator3 as AppIndicator
@@ -112,7 +111,7 @@ class Indicator(object):
             + " - "
             + self.exchange.asset_pair.get("quote")
         )
-        logging.info(
+        logging.debug(
             "Loading " + state_string + " (" + str(self.refresh_frequency) + "s)"
         )
 

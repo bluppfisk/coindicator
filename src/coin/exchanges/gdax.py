@@ -2,7 +2,7 @@
 # https://api.gdax.com/
 # By Sander Van de Moortel <sander.vandemoortel@gmail.com>
 
-from exchange import CURRENCY, Exchange
+from coin.exchange import CURRENCY, Exchange
 
 
 class Gdax(Exchange):

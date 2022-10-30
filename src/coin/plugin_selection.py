@@ -1,11 +1,9 @@
 # Plugin selection window
 
 import gi
-from exchange import Exchange
-
-gi.require_version("Gtk", "3.0")
-gi.require_version("Gdk", "3.0")
 from gi.repository import Gdk, Gtk
+
+from .exchange import Exchange
 
 
 class PluginSelectionWindow(Gtk.Window):
