@@ -4,6 +4,8 @@
 
 Coindicator is a cryptocurrency price indicator applet for Linux.
 
+[![PyPI version](https://badge.fury.io/py/coindicator.svg)](https://badge.fury.io/py/coindicator)
+
 ## Features
 
 * Multiple price tickers in the status bar
@@ -30,8 +32,10 @@ Coindicator is a cryptocurrency price indicator applet for Linux.
 
 ## Installing
 
-You will need Git and Python 3.5 or higher.
-Clone the repository and install python dependencies by running the following commands:
+You will need Git and Python 3.5 or higher, as well as some system dependencies.
+
+For your convenience, I've included a small install script that will install (or upgrade)
+coindicator and its dependencies, as well as create a desktop icon.
 
 ```bash
  git clone https://github.com/bluppfisk/coindicator.git
@@ -47,7 +51,7 @@ User data has moved to your home folder. To keep your settings, move the user.co
 
 * A launcher icon "Coindicator" should be installed that can be used to start the app
 * Alternatively, run `./run.sh` to activate the virtual environment and start the app
-* You can also run the program manually with `source bin/activate` and then run `coin/coin.py &` or `python3 coin/coin.py &` to start the app
+* You can also run the program manually with `source env/bin/activate` and then run `src/coin/coin.py &` or `python3 src/coin/coin.py &` to start the app
 
 ## Configuring
 
