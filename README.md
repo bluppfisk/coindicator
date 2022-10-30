@@ -1,8 +1,8 @@
-# Coin Price Indicator
+# Coindicator
 
-![Coin Price logo](https://raw.github.com/nilgradisnik/coinprice-indicator/master/resources/logo_124px.png)
+![Coin Price logo](src/resources/logo_124px.png)
 
-Coin Price Indicator is a cryptocurrency price indicator applet for Linux.
+Coindicator is a cryptocurrency price indicator applet for Linux.
 
 ## Features
 
@@ -25,7 +25,6 @@ Coin Price Indicator is a cryptocurrency price indicator applet for Linux.
 	* [CEX.io](https://cex.io/)
 	* [OKCoin](https://www.okcoin.cn/)
 	* [Unocoin](https://www.unocoin.com/)
-	* [MXC](https://www.mxc.com/)
 	* [Wazirx](https://wazirx.com/)
 	* Add your own easily (See **Extending (Plugins)** below)
 
@@ -36,11 +35,15 @@ Coin Price Indicator is a cryptocurrency price indicator applet for Linux.
 You will need Git and Python 3.5 or higher.
 Clone the repository and install python dependencies by running the following commands:
 
-```
+```bash
  git clone https://github.com/bluppfisk/coinprice-indicator.git
  cd coinprice-indicator
  ./install.sh
 ```
+
+## Upgrading from 1.x
+
+User data has moved to your home folder. To keep your settings, move the user.conf file to: **~/.config/coindicator/**.
 
 ## Running
 
@@ -78,7 +81,7 @@ Before reporting bugs or issues, please try removing **user.conf** first and the
 
 ## Sponsorship and Funding
 
-![Gitcoin logo](resources/gitcoin.png)
+![Gitcoin logo](img/gitcoin.png)
 
 This project has been funded in the past by generous maecenas @ghettodev through [Gitcoin](https://gitcoin.co/), a platform that directs the attention of bounty hunters (coders) to open issues and feature requests on Github.
 

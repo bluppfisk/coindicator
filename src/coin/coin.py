@@ -348,7 +348,7 @@ class Coin:
 
 def main():
     project_root = Path(__file__).parent
-    user_data_dir = Path(os.environ["HOME"]) / ".config/coinprice-indicator"
+    user_data_dir = Path(os.environ["HOME"]) / ".config/coindicator"
     user_data_dir.mkdir(exist_ok=True)
 
     config_file = project_root / "config.yaml"

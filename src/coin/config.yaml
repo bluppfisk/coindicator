@@ -3,7 +3,7 @@
 app:
   name: Coin Price Indicator
   description: A cryptocurrency price ticker applet for Ubuntu
-  url: https://github.com/nilgradisnik/coinprice-indicator
+  url: https://github.com/bluppfisk/coindicator
   version: "1.9.9"
 
 authors:
