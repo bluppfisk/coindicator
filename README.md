@@ -72,10 +72,14 @@ This software was tested and found working on the following configurations:
 * Ubuntu Linux 19.10 (Eoan Ermine) with GNOME 3 and Unity 7
 * Ubuntu Linux 20.04 (Focal Fossa) with GNOME 3
 * Ubuntu Linux 20.10 (Groovy Gorilla) with GNOME 3
+* Ubuntu Linux 21.04 (Hirsute Hippo) with GNOME 3
+* Ubuntu Linux 21.10 (Impish Indri) with GNOME 3
+* Ubuntu Linux 22.04 (Jammy Jellyfish) with GNOME 3
+* Ubuntu Linux 22.10 (Kinetic Kudu) with GNOME 3
 
 For other systems, you may need to install LibAppIndicator support.
 
-Before reporting bugs or issues, please try removing **user.conf** first and then the **.conf** files in the **/exchanges/data/** folder. Then run the application and choose **Discover Assets** from the piggy menu first.
+Before reporting bugs or issues, please try removing **~/.config/coindicator/user.conf** first and then the files in **~/.config/coindicator/cache/**.
 
 ## Sponsorship and Funding
 

@@ -5,6 +5,7 @@
 # Sander Van de Moortel <sander.vandemoortel@gmail.com>
 #
 
+from functools import cache
 import os
 
 import gi
@@ -347,6 +348,12 @@ def main():
     user_data_dir = Path(os.environ["HOME"]) / ".config/coindicator"
     user_data_dir.mkdir(exist_ok=True)
 
+    icon_dir = user_data_dir / "coin-icons"
+    icon_dir.mkdir(exist_ok=True)
+
+    cache_dir = user_data_dir / "cache"
+    cache_dir.mkdir(exist_ok=True)
+
     config_file = project_root / "config.yaml"
     config_data = yaml.load(config_file.open(), Loader=yaml.SafeLoader)
 
@@ -358,6 +365,9 @@ def main():
     config = Config(config_data)
     config["project_root"] = project_root
     config["user_data_dir"] = user_data_dir
+    config["icon_dir"] = icon_dir
+    config["cache_dir"] = cache_dir
+
     config["user_settings_file"] = user_settings_file
     config["settings"] = settings
 

@@ -51,7 +51,7 @@ class CoinGeckoClient:
             )
             return
 
-        img_file = self.config["user_data_dir"] / f"coin-icons/{asset}.png"
+        img_file = self.config["icon_dir"] / f"{asset}.png"
         with open(img_file, "wb") as f:
             img.raw.decode_content = True
             shutil.copyfileobj(img.raw, f)

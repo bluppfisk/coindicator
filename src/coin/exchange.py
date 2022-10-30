@@ -84,7 +84,7 @@ class Exchange(abc.ABC):
     def icon(self) -> str:
         # set icon for asset if it exists
         asset = self.asset_pair.get("base", "").lower()
-        asset_dir = Config()["user_data_dir"] / "coin-icons/"
+        asset_dir = Config()["icon_dir"]
         if (asset_dir / f"{asset}.png").exists():
             return asset_dir / f"{asset}.png"
         else:
@@ -93,14 +93,6 @@ class Exchange(abc.ABC):
                 return fetched
 
         return asset_dir / "unknown-coin.png"
-
-    def get_icon_and_update(self, callback):
-        asset = self.asset_pair.get("base", "").lower()
-        asset_dir = Config()["user_data_dir"] / "coin-icons/"
-        if (asset_dir / f"{asset}.png").exists():
-            callback(asset_dir / f"{asset}.png")
-        else:
-            CoinGeckoClient().get_icon(asset, callback)
 
     @property
     def volume_currency(self):
@@ -155,7 +147,7 @@ class Exchange(abc.ABC):
     @property
     def datafile(cls):
         config = Config()
-        return config["user_data_dir"] / f"data/{cls.code}.cache"
+        return config["user_data_dir"] / f"cache/{cls.code}.cache"
 
     ##
     # Loads asset pairs from the config files or,
