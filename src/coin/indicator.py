@@ -213,7 +213,9 @@ class Indicator(object):
             return
 
         for recent in self.config["settings"].get("recent"):
-            exchange = self.coin.exchanges[recent.get("exchange")]
+            exchange = self.coin.exchanges.get(recent.get("exchange"))
+            if exchange is None:
+                continue
             asset_pair = exchange.find_asset_pair_by_code(
                 recent.get("asset_pair", "None")
             )

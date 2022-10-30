@@ -114,9 +114,9 @@ class Coin:
     def _load_settings(self):
         for plugin in self.config["settings"].get("plugins", {}):
             for code, active in plugin.items():
-                e = self.exchanges[code]
-                if e:
-                    e.active = active
+                exchange = self.exchanges.get(code)
+                if exchange is not None:
+                    exchange.active = active
 
         # set defaults if settings not defined
         if not self.config["settings"].get("tickers"):
