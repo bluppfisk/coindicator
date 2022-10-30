@@ -24,7 +24,6 @@ Coindicator is a cryptocurrency price indicator applet for Linux.
 	* [CEX.io](https://cex.io/)
 	* [OKCoin](https://www.okcoin.cn/)
 	* [Unocoin](https://www.unocoin.com/)
-	* [Wazirx](https://wazirx.com/)
 	* Add your own easily (See **Extending (Plugins)** below)
 
 ![Screenshot](https://raw.githubusercontent.com/nilgradisnik/coinprice-indicator/master/resources/screenshot.png)

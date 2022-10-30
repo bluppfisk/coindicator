@@ -4,7 +4,6 @@
 import logging
 from math import floor
 
-import gi
 from gi.repository import GLib, Gtk
 
 from coin.alarm import Alarm, AlarmSettingsWindow
@@ -47,14 +46,13 @@ class Indicator(object):
 
     # initialisation and start of indicator and exchanges
     def start(self):
-        icon = self.exchange.icon
         self.indicator_widget = AppIndicator.Indicator.new(
             "CoinPriceIndicator_" + str(self.unique_id),
-            str(icon),
+            str(self.exchange.icon),
             AppIndicator.IndicatorCategory.APPLICATION_STATUS,
         )
         self.indicator_widget.set_status(AppIndicator.IndicatorStatus.ACTIVE)
-        self.indicator_widget.set_ordering_index(0)
+        # self.indicator_widget.set_ordering_index(0)
         self.indicator_widget.set_menu(self._menu())
         if self.exchange.active:
             self._start_exchange()
@@ -232,7 +230,7 @@ class Indicator(object):
         recent_menu.show_all()
         return recent_menu
 
-    def _recent_change(self, widget, base, quote, exchange):
+    def _recent_change(self, _widget, base, quote, exchange):
         self.change_assets(base, quote, exchange)
 
     def rebuild_recents_menu(self):
@@ -284,15 +282,15 @@ class Indicator(object):
         self.prices = {}  # labels and prices may be different
         self.default_label = self.exchange.default_label
 
-    def _remove(self, widget):
+    def _remove(self, _widget):
         self.coin.remove_ticker(self)
 
-    def _alarm_settings(self, widget):
+    def _alarm_settings(self, _widget):
         self.alarm_settings_window = AlarmSettingsWindow(
             self, self.prices.get(self.default_label)
         )
 
-    def _settings(self, widget):
+    def _settings(self, _widget):
         for indicator in self.coin.instances:
             if indicator.asset_selection_window:
                 indicator.asset_selection_window.destroy()

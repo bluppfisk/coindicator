@@ -328,11 +328,11 @@ class Coin:
             for instance in self.instances:
                 instance.exchange.stop().start()
 
-    def _select_plugins(self, widget):
+    def _select_plugins(self, _widget):
         PluginSelectionWindow(self)
 
     # Menu item to remove all tickers and quits the application
-    def _quit_all(self, widget):
+    def _quit_all(self, _widget):
         Gtk.main_quit()
 
     def plugins_updated(self):
@@ -342,7 +342,7 @@ class Coin:
 
         self.save_settings()
 
-    def _about(self, widget):
+    def _about(self, _widget):
         AboutWindow(self.config).show()
 
 
