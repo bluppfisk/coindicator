@@ -15,7 +15,6 @@ Coindicator is a cryptocurrency price indicator applet for Linux.
 
 	* [Kraken](https://www.kraken.com)
 	* [Bitstamp](https://www.bitstamp.net)
-	* [Gdax](https://www.gdax.com)
 	* [Gemini](https://www.gemini.com)
 	* [Binance](https://www.binance.com)
 	* [Bittrex](https://bittrex.com)
