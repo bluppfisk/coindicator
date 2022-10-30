@@ -5,7 +5,6 @@
 # Sander Van de Moortel <sander.vandemoortel@gmail.com>
 #
 
-from functools import cache
 import os
 
 import gi
