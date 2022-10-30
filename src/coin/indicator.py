@@ -209,10 +209,10 @@ class Indicator(object):
     def _menu_recents(self):
         recent_menu = Gtk.Menu()
 
-        if len(self.config["recent"]) == 0:
+        if len(self.config["settings"].get("recent")) == 0:
             return
 
-        for recent in self.config["recent"]:
+        for recent in self.config["settings"].get("recent"):
             exchange = self.coin.find_exchange_by_code(recent.get("exchange", "None"))
             asset_pair = exchange.find_asset_pair_by_code(
                 recent.get("asset_pair", "None")
@@ -295,12 +295,3 @@ class Indicator(object):
                 indicator.asset_selection_window.destroy()
 
         self.asset_selection_window = AssetSelectionWindow(self)
-
-    # def convert_to_fiat(self, crypto, fiat):
-    #     for exchange in self.coin.EXCHANGES:
-    #         ap = exchange.find_asset_pair(crypto, fiat)
-    #         if ap:
-    #             break
-
-    #     self.fiat_converter = exchange(self).set_asset_pair(crypto, fiat)
-    #     self.fiat_converter.start(15)
