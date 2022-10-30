@@ -4,8 +4,7 @@ import gi
 import notify2
 import pygame
 
-gi.require_version("Gtk", "3.0")
-gi.require_version("Gdk", "3.0")
+from coin.config import Config
 
 from gi.repository import Gdk, GdkPixbuf, Gtk
 from gi.repository.Gdk import Color
@@ -18,6 +17,7 @@ class Alarm(object):
         self.ceil = ceil
         self.floor = floor
         self.active = False
+        self.config = Config()
 
     def set_ceil(self, price):
         self.ceil = price
@@ -75,7 +75,7 @@ class Alarm(object):
                 )
                 pygame.mixer.music.play()
             logo = GdkPixbuf.Pixbuf.new_from_file(
-                self.config["project_root"] / "resources/icon_32px.png"
+                str(self.config["project_root"] / "resources/icon_32px.png")
             )
 
             n = notify2.Notification(title, message)

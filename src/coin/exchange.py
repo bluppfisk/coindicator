@@ -5,6 +5,7 @@ import pickle
 import time
 
 from gi.repository import GLib
+from coin.coingecko_client import CoinGeckoClient
 
 from coin.config import Config
 from coin.downloader import DownloadCommand
@@ -87,7 +88,7 @@ class Exchange(abc.ABC):
         if (asset_dir / f"{asset}.png").exists():
             return asset_dir / f"{asset}.png"
         else:
-            fetched = self.indicator.coin.coingecko_coin_api(asset_dir, asset)
+            fetched = CoinGeckoClient().coingecko_coin_api(asset_dir, asset)
             if fetched is not None:
                 return fetched
 
