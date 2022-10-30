@@ -266,6 +266,7 @@ class Indicator(object):
             self.exchange = exchange(self)
 
         self.exchange.set_asset_pair(base, quote)
+
         accessible_icon_string = self.exchange.name[0:8] + ":" + base + " to " + quote
 
         self.indicator_widget.set_icon_full(

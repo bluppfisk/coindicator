@@ -88,11 +88,19 @@ class Exchange(abc.ABC):
         if (asset_dir / f"{asset}.png").exists():
             return asset_dir / f"{asset}.png"
         else:
-            fetched = CoinGeckoClient().coingecko_coin_api(asset_dir, asset)
+            fetched = CoinGeckoClient().get_icon(asset)
             if fetched is not None:
                 return fetched
 
         return asset_dir / "unknown-coin.png"
+
+    def get_icon_and_update(self, callback):
+        asset = self.asset_pair.get("base", "").lower()
+        asset_dir = Config()["user_data_dir"] / "coin-icons/"
+        if (asset_dir / f"{asset}.png").exists():
+            callback(asset_dir / f"{asset}.png")
+        else:
+            CoinGeckoClient().get_icon(asset, callback)
 
     @property
     def volume_currency(self):
@@ -323,10 +331,8 @@ class Exchange(abc.ABC):
         results = self._parse_ticker(asset)
         self.indicator.latest_response = command.timestamp
         logging.debug(
-            "Response comes in with timestamp "
-            + str(command.timestamp)
-            + ", last response at "
-            + str(self.indicator.latest_response)
+            "Response comes in with timestamp %s, last response at %s"
+            % (str(command.timestamp), str(self.indicator.latest_response))
         )
 
         for item in CATEGORY:

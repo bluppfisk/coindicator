@@ -22,7 +22,7 @@ class PluginSelectionWindow(Gtk.Window):
         self.add(grid)
 
         self.plugin_store = Gtk.ListStore(bool, str, object)
-        for item in self.parent.exchanges:
+        for item in self.parent.exchanges.values():
             self.plugin_store.append([item.active, item.name, item])
 
         self.plugin_store.set_sort_column_id(1, Gtk.SortType.ASCENDING)

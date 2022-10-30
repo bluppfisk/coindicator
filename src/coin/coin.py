@@ -55,7 +55,7 @@ class Coin:
         self.unique_id = 0
         self.assets = {}
         self.coingecko_client = CoinGeckoClient()
-        self.coingecko_client._load_coingecko_list()
+        self.coingecko_client.load_list()
         self._load_exchanges()
         self._load_assets()
         self._load_settings()
@@ -120,13 +120,16 @@ class Coin:
 
         # set defaults if settings not defined
         if not self.config["settings"].get("tickers"):
+            first_exchange = next(iter(self.exchanges.values()))
+            first_code = first_exchange.code
+
             # TODO work without defining a default
             self.config["settings"]["tickers"] = [
                 {
-                    "exchange": self.exchanges[0].code,
-                    "asset_pair": self.assets[self.exchanges[0].code][0].get("pair"),
+                    "exchange": first_code,
+                    "asset_pair": self.assets[first_code][0].get("pair"),
                     "refresh": 3,
-                    "default_label": self.exchanges[0].default_label,
+                    "default_label": first_exchange.default_label,
                 }
             ]
 
@@ -277,7 +280,10 @@ class Coin:
     # Menu item to download any new assets from the exchanges
     def _discover_assets(self, _widget):
         # Don't do anything if there are no active exchanges with discovery
-        if len([ex for ex in self.exchanges if ex.active and ex.discovery]) == 0:
+        if (
+            len([ex for ex in self.exchanges.values() if ex.active and ex.discovery])
+            == 0
+        ):
             return
 
         self.main_item.set_icon_full(

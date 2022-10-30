@@ -6,8 +6,10 @@ from requests import exceptions, get
 
 
 class DownloadCommand:
-    def __init__(self, url, callback):
+    def __init__(self, url, callback, *args, **kwargs):
         self.callback = callback
+        self.args = args
+        self.kwargs = kwargs
         self.timeout = 5
         self.timestamp = None
         self.error = None
