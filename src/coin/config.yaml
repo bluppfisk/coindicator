@@ -1,0 +1,39 @@
+# Coin Price configuration
+
+app:
+  name: Coin Price Indicator
+  description: A cryptocurrency price ticker applet for Ubuntu
+  url: https://github.com/nilgradisnik/coinprice-indicator
+  version: "1.9.9"
+
+authors:
+  - name: Nil Gradisnik
+    email: nil.gradisnik@gmail.com
+  - name: Sander Van de Moortel
+    email: sander.vandemoortel@gmail.com
+
+contributors:
+  - name: Nil Gradisnik
+    email: nil.gradisnik@gmail.com
+  - name: Sander Van de Moortel
+    email: sander.vandemoortel@gmail.com
+  - name: Rick Ramstetter
+    email: rick@anteaterllc.com
+  - name: Sir Paul
+    email: wizzard94@github.com
+  - name: Eliezer Aquino
+    email: eliezer.aquino@gmail.com
+  - name: Thepassith N.
+    email: tutorgaming@gmail.com
+  - name: Alessio Carrafa
+    email: ruzzico@gmail.com
+  - name: Lari Taskula
+    email: lari@taskula.fi
+  - name: Giorgos Karapiperidis
+    email: georgekarapi@yahoo.gr
+  - name: Rishabh Rawat
+    email: rishabhrawat.rishu@gmail.com
+
+artist:
+  name: Alicen Maniscalco
+  email: alicenfm@gmail.com
