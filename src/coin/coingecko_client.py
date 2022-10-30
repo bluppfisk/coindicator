@@ -1,8 +1,9 @@
 import logging
 import shutil
 
-from coin.config import Config
 import requests
+
+from coin.config import Config
 
 
 class CoinGeckoClient:
