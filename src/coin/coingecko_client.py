@@ -1,8 +1,6 @@
 import logging
 import shutil
-from pathlib import Path
 
-from coin.downloader import AsyncDownloadService, DownloadCommand, DownloadService
 from coin.config import Config
 import requests
 
