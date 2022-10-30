@@ -53,11 +53,13 @@ class Exchange(abc.ABC):
     ##
     # Abstract methods to be overwritten by the child classes
     #
-    @abc.abstractclassmethod
+    @classmethod
+    @abc.abstractmethod
     def _get_discovery_url(cls):
         pass
 
-    @abc.abstractclassmethod
+    @classmethod
+    @abc.abstractmethod
     def _parse_discovery(cls, data):
         pass
 
