@@ -1,8 +1,10 @@
-# Coin Price Indicator
+# Coindicator
 
-![Coin Price logo](https://raw.github.com/nilgradisnik/coinprice-indicator/master/resources/logo_124px.png)
+![Coin Price logo](src/coin/resources/logo_124px.png)
 
-Coin Price Indicator is a cryptocurrency price indicator applet for Linux.
+Coindicator is a cryptocurrency price indicator applet for Linux.
+
+[![PyPI version](https://badge.fury.io/py/coindicator.svg)](https://badge.fury.io/py/coindicator)
 
 ## Features
 
@@ -15,7 +17,6 @@ Coin Price Indicator is a cryptocurrency price indicator applet for Linux.
 
 	* [Kraken](https://www.kraken.com)
 	* [Bitstamp](https://www.bitstamp.net)
-	* [Gdax](https://www.gdax.com)
 	* [Gemini](https://www.gemini.com)
 	* [Binance](https://www.binance.com)
 	* [Bittrex](https://bittrex.com)
@@ -25,28 +26,32 @@ Coin Price Indicator is a cryptocurrency price indicator applet for Linux.
 	* [CEX.io](https://cex.io/)
 	* [OKCoin](https://www.okcoin.cn/)
 	* [Unocoin](https://www.unocoin.com/)
-	* [MXC](https://www.mxc.com/)
-	* [Wazirx](https://wazirx.com/)
 	* Add your own easily (See **Extending (Plugins)** below)
 
-![Screenshot](https://raw.githubusercontent.com/nilgradisnik/coinprice-indicator/master/resources/screenshot.png)
+![Screenshot](img/screenshot.png)
 
 ## Installing
 
-You will need Git and Python 3.5 or higher.
-Clone the repository and install python dependencies by running the following commands:
+You will need Git and Python 3.5 or higher, as well as some system dependencies.
 
-```
- git clone https://github.com/bluppfisk/coinprice-indicator.git
- cd coinprice-indicator
+For your convenience, I've included a small install script that will install (or upgrade)
+coindicator and its dependencies, as well as create a desktop icon.
+
+```bash
+ git clone https://github.com/bluppfisk/coindicator.git
+ cd coindicator
  ./install.sh
 ```
+
+## Upgrading from 1.x
+
+User data has moved to your home folder. To keep your settings, move the user.conf file to: **~/.config/coindicator/**.
 
 ## Running
 
 * A launcher icon "Coindicator" should be installed that can be used to start the app
 * Alternatively, run `./run.sh` to activate the virtual environment and start the app
-* You can also run the program manually with `source bin/activate` and then run `coin/coin.py &` or `python3 coin/coin.py &` to start the app
+* You can also run the program manually with `source env/bin/activate` and then run `src/coin/coin.py &` or `python3 src/coin/coin.py &` to start the app
 
 ## Configuring
 
@@ -71,14 +76,18 @@ This software was tested and found working on the following configurations:
 * Ubuntu Linux 19.10 (Eoan Ermine) with GNOME 3 and Unity 7
 * Ubuntu Linux 20.04 (Focal Fossa) with GNOME 3
 * Ubuntu Linux 20.10 (Groovy Gorilla) with GNOME 3
+* Ubuntu Linux 21.04 (Hirsute Hippo) with GNOME 3
+* Ubuntu Linux 21.10 (Impish Indri) with GNOME 3
+* Ubuntu Linux 22.04 (Jammy Jellyfish) with GNOME 3
+* Ubuntu Linux 22.10 (Kinetic Kudu) with GNOME 3
 
 For other systems, you may need to install LibAppIndicator support.
 
-Before reporting bugs or issues, please try removing **user.conf** first and then the **.conf** files in the **/exchanges/data/** folder. Then run the application and choose **Discover Assets** from the piggy menu first.
+Before reporting bugs or issues, please try removing **~/.config/coindicator/user.conf** first and then the files in **~/.config/coindicator/cache/**.
 
 ## Sponsorship and Funding
 
-![Gitcoin logo](resources/gitcoin.png)
+![Gitcoin logo](img/gitcoin.png)
 
 This project has been funded in the past by generous maecenas @ghettodev through [Gitcoin](https://gitcoin.co/), a platform that directs the attention of bounty hunters (coders) to open issues and feature requests on Github.
 
