@@ -9,7 +9,7 @@ class Singleton(type):
 
 
 class Config(metaclass=Singleton):
-    def __init__(self, config: dict):
+    def __init__(self, config: dict = None):
         self._config = config
 
     def __getitem__(self, item_name):
