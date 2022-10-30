@@ -1,6 +1,6 @@
 # Coindicator
 
-![Coin Price logo](src/resources/logo_124px.png)
+![Coin Price logo](src/coin/resources/logo_124px.png)
 
 Coindicator is a cryptocurrency price indicator applet for Linux.
 
