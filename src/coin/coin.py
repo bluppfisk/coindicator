@@ -40,9 +40,6 @@ except ImportError:
 
 from .config import Config
 
-home_dir = os.environ.get("HOME")
-SETTINGS_FILE = Path(home_dir) / ".config/coinprice-indicator.conf"
-
 log_level = getattr(logging, os.environ.get("COIN_LOGLEVEL", "ERROR"))
 logging.basicConfig(
     datefmt="%H:%M:%S",
@@ -68,7 +65,7 @@ class Coin:
 
         self.instances = []
         self.discoveries = 0
-        self._add_many_indicators(self.settings.get("tickers"))
+        self._add_many_indicators(self.config.get("tickers"))
         self._start_gui()
 
     # Load exchange 'plug-ins' from exchanges dir
@@ -167,21 +164,16 @@ class Coin:
 
     # load instances
     def _load_settings(self):
-        self.settings = {}
-        # load from file
-        if Path(SETTINGS_FILE).exists():
-            self.settings = yaml.load(open(SETTINGS_FILE, "r"), Loader=yaml.SafeLoader)
-
-        for plugin in self.settings.get("plugins", {}):
+        for plugin in self.config.get("plugins", {}):
             for code, active in plugin.items():
                 e = self.find_exchange_by_code(code)
                 if e:
                     e.active = active
 
         # set defaults if settings not defined
-        if not self.settings.get("tickers"):
+        if not self.config.get("tickers"):
             # TODO work without defining a default
-            self.settings["tickers"] = [
+            self.config["tickers"] = [
                 {
                     "exchange": self.EXCHANGES[0].code,
                     "asset_pair": self.assets[self.EXCHANGES[0].code][0].get("pair"),
@@ -190,8 +182,8 @@ class Coin:
                 }
             ]
 
-        if not self.settings.get("recent"):
-            self.settings["recent"] = []
+        if not self.config.get("recent"):
+            self.config["recent"] = []
 
     # saves settings for each ticker
     def save_settings(self):
@@ -204,35 +196,35 @@ class Coin:
                 "default_label": instance.default_label,
             }
             tickers.append(ticker)
-            self.settings["tickers"] = tickers
+            self.config.settings["tickers"] = tickers
 
         plugins = []
         for exchange in self.EXCHANGES:
             plugin = {exchange.code: exchange.active}
             plugins.append(plugin)
 
-        self.settings["plugins"] = plugins
+        self.config.settings["plugins"] = plugins
 
         try:
-            with open(SETTINGS_FILE, "w") as handle:
-                yaml.dump(self.settings, handle, default_flow_style=False)
+            with open(self.config["user_settings_file"], "w") as handle:
+                yaml.dump(self.config.user_settings, handle, default_flow_style=False)
         except IOError:
             logging.error("Settings file not writable")
 
     # Add a new base to the recents settings, and push the last one off the edge
     def add_new_recent(self, asset_pair, exchange_code):
-        for recent in self.settings["recent"]:
+        for recent in self.config["recent"]:
             if (
                 recent.get("asset_pair") == asset_pair
                 and recent.get("exchange") == exchange_code
             ):
-                self.settings["recent"].remove(recent)
+                self.config["recent"].remove(recent)
 
-        self.settings["recent"] = self.settings["recent"][0:4]
+        self.config["recent"] = self.config["recent"][0:4]
 
         new_recent = {"asset_pair": asset_pair, "exchange": exchange_code}
 
-        self.settings["recent"].insert(0, new_recent)
+        self.config["recent"].insert(0, new_recent)
 
         for instance in self.instances:
             instance.rebuild_recents_menu()
@@ -317,7 +309,7 @@ class Coin:
     # Menu item to add a ticker
     def _add_ticker(self, widget):
         i = self._add_indicator(
-            self.settings.get("tickers")[len(self.settings.get("tickers")) - 1]
+            self.config.get("tickers")[len(self.config.get("tickers")) - 1]
         )
         i._settings(widget)
         self.save_settings()
@@ -408,6 +400,14 @@ def main():
     user_data_dir.mkdir(exist_ok=True)
     config["user_data_dir"] = user_data_dir
     config["project_root"] = project_root
+    settings_file = user_data_dir / "user.conf"
+    config["user_settings_file"] = settings_file
+
+    if not settings_file.exists():
+        settings_file.touch()
+
+    settings = yaml.load(settings_file.open(), Loader=yaml.SafeLoader)
+    config.update(settings)
 
     Coin(config)
 

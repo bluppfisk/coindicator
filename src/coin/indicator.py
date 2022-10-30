@@ -8,6 +8,7 @@ import gi
 from gi.repository import GLib, Gtk
 
 from coin.alarm import Alarm, AlarmSettingsWindow
+from coin.config import Config
 from coin.asset_selection import AssetSelectionWindow
 
 try:
@@ -30,6 +31,7 @@ CATEGORIES = [
 
 class Indicator(object):
     def __init__(self, coin, unique_id, exchange, asset_pair, refresh, default_label):
+        self.config = Config()
         self.coin = coin  # reference to main program
         self.unique_id = unique_id
         self.alarm = Alarm(self)
@@ -174,9 +176,9 @@ class Indicator(object):
         menu.append(Gtk.SeparatorMenuItem())
 
         # settings menu
-        self.settings_menu = Gtk.MenuItem("Change Asset" + "\u2026")
-        self.settings_menu.connect("activate", self._settings)
-        menu.append(self.settings_menu)
+        self.config_menu = Gtk.MenuItem("Change Asset" + "\u2026")
+        self.config_menu.connect("activate", self._settings)
+        menu.append(self.config_menu)
 
         # recents menu
         self.recents_menu = Gtk.MenuItem("Recents")
@@ -207,10 +209,10 @@ class Indicator(object):
     def _menu_recents(self):
         recent_menu = Gtk.Menu()
 
-        if len(self.coin.settings["recent"]) == 0:
+        if len(self.config["recent"]) == 0:
             return
 
-        for recent in self.coin.settings["recent"]:
+        for recent in self.config["recent"]:
             exchange = self.coin.find_exchange_by_code(recent.get("exchange", "None"))
             asset_pair = exchange.find_asset_pair_by_code(
                 recent.get("asset_pair", "None")

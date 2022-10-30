@@ -48,6 +48,7 @@ class Exchange(abc.ABC):
         self.error = Error(self)
         self.started = False
         self.asset_pair = {}
+        self.config = Config()
 
     ##
     # Abstract methods to be overwritten by the child classes
@@ -339,8 +340,8 @@ class Exchange(abc.ABC):
     #
     def _decimal_auto(self, number):
         number = float(number)
-        max_decimals = self.indicator.coin.settings.get("max_decimals", 8)
-        significant_digits = self.indicator.coin.settings.get("significant_digits", 3)
+        max_decimals = self.config.get("max_decimals", 8)
+        significant_digits = self.config.get("significant_digits", 3)
 
         for decimals in range(0, max_decimals + 1):
             if number * (10**decimals) >= 10 ** (significant_digits - 1):
