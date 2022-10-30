@@ -40,8 +40,8 @@ except ImportError:
 
 from .config import Config
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-SETTINGS_FILE = PROJECT_ROOT / "user.conf"
+home_dir = os.environ.get("HOME")
+SETTINGS_FILE = Path(home_dir) / ".config/coinprice-indicator.conf"
 
 log_level = getattr(logging, os.environ.get("COIN_LOGLEVEL", "ERROR"))
 logging.basicConfig(
@@ -49,17 +49,12 @@ logging.basicConfig(
     level=log_level,
     format="[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s",
 )
+logging.getLogger("urllib3").setLevel(logging.INFO)
 
 
 class Coin:
-    config_data = yaml.load(
-        open(PROJECT_ROOT / "config.yaml", "r"), Loader=yaml.SafeLoader
-    )
-    config = Config(config_data)
-
-    config["project_root"] = PROJECT_ROOT
-
-    def __init__(self):
+    def __init__(self, config: Config):
+        self.config = config
         self.downloader = AsyncDownloadService()
         self.unique_id = 0
         self.assets = {}
@@ -79,7 +74,6 @@ class Coin:
     # Load exchange 'plug-ins' from exchanges dir
     def _load_exchanges(self):
         dirfiles = (Path(__file__).parent / "exchanges").glob("*.py")
-        Path(__file__).name
         plugins = [
             f.name[:-3] for f in dirfiles if f.exists() and f.name != "__init__.py"
         ]
@@ -96,7 +90,7 @@ class Coin:
     # Find an exchange
     def find_exchange_by_code(self, code):
         for exchange in self.EXCHANGES:
-            if exchange.get_code() == code.lower():
+            if exchange.code == code.lower():
                 return exchange
 
     def _load_coingecko_list(self):
@@ -110,11 +104,11 @@ class Coin:
         if data.status_code == 200:
             self.coingecko_list = data.json()
         else:
-            logging.warn("CoinGecko API: " + data.status_code + " " + command.error)
+            logging.warn("CoinGecko API: %d %s" % (data.status_code, command.error))
 
     # Fetch icon from CoinGecko
     def coingecko_coin_api(self, icons_root, asset):
-        img_file = icons_root + asset + ".png"
+        img_file = icons_root / f"{asset}.png"
         for coin in self.coingecko_list:
             if asset == coin.get("symbol"):
                 command = DownloadCommand(
@@ -149,9 +143,9 @@ class Coin:
 
         for exchange in self.EXCHANGES:
             if exchange.active:
-                if not exchange.get_asset_pairs():
+                if not exchange.asset_pairs:
                     exchange.discover_assets(DownloadService(), lambda *args: None)
-                self.assets[exchange.get_code()] = exchange.get_asset_pairs()
+                self.assets[exchange.code] = exchange.asset_pairs
 
         # inverse the hierarchy for easier asset selection
         bases = {}
@@ -189,12 +183,10 @@ class Coin:
             # TODO work without defining a default
             self.settings["tickers"] = [
                 {
-                    "exchange": self.EXCHANGES[0].get_code(),
-                    "asset_pair": self.assets[self.EXCHANGES[0].get_code()][0].get(
-                        "pair"
-                    ),
+                    "exchange": self.EXCHANGES[0].code,
+                    "asset_pair": self.assets[self.EXCHANGES[0].code][0].get("pair"),
                     "refresh": 3,
-                    "default_label": self.EXCHANGES[0].get_default_label(),
+                    "default_label": self.EXCHANGES[0].default_label,
                 }
             ]
 
@@ -206,7 +198,7 @@ class Coin:
         tickers = []
         for instance in self.instances:
             ticker = {
-                "exchange": instance.exchange.get_code(),
+                "exchange": instance.exchange.code,
                 "asset_pair": instance.exchange.asset_pair.get("pair"),
                 "refresh": instance.refresh_frequency,
                 "default_label": instance.default_label,
@@ -216,7 +208,7 @@ class Coin:
 
         plugins = []
         for exchange in self.EXCHANGES:
-            plugin = {exchange.get_code(): exchange.active}
+            plugin = {exchange.code: exchange.active}
             plugins.append(plugin)
 
         self.settings["plugins"] = plugins
@@ -255,10 +247,10 @@ class Coin:
             )
         )
 
-        self.icon = "{}/resources/icon_32px.png".format(self.config.get("project_root"))
+        self.icon = self.config["project_root"] / "resources/icon_32px.png"
         self.main_item = AppIndicator.Indicator.new(
             self.config.get("app").get("name"),
-            self.icon,
+            str(self.icon),
             AppIndicator.IndicatorCategory.APPLICATION_STATUS,
         )
         self.main_item.set_status(AppIndicator.IndicatorStatus.ACTIVE)
@@ -341,13 +333,13 @@ class Coin:
             self.save_settings()
 
     # Menu item to download any new assets from the exchanges
-    def _discover_assets(self, widget):
+    def _discover_assets(self, _widget):
         # Don't do anything if there are no active exchanges with discovery
         if len([ex for ex in self.EXCHANGES if ex.active and ex.discovery]) == 0:
             return
 
         self.main_item.set_icon_full(
-            self.config.get("project_root") + "/resources/loading.png",
+            str(self.config.get("project_root") / "resources/loading.png"),
             "Discovering assets",
         )
 
@@ -374,13 +366,13 @@ class Coin:
             n = notify2.Notification(
                 self.config.get("app").get("name"),
                 "Finished discovering new assets",
-                self.icon,
+                str(self.icon),
             )
             n.set_urgency(1)
             n.timeout = 2000
             n.show()
 
-        self.main_item.set_icon_full(self.icon, "App icon")
+        self.main_item.set_icon_full(str(self.icon), "App icon")
 
     # Handle system resume by refreshing all tickers
     def handle_resume(self, sleeping, *args):
@@ -407,7 +399,17 @@ class Coin:
 
 
 def main():
-    Coin()
+    project_root = Path(__file__).parent
+    config_data = yaml.load(
+        open(project_root / "config.yaml", "r"), Loader=yaml.SafeLoader
+    )
+    config = Config(config_data)
+    user_data_dir = Path(os.environ["HOME"]) / ".config/coinprice-indicator"
+    user_data_dir.mkdir(exist_ok=True)
+    config["user_data_dir"] = user_data_dir
+    config["project_root"] = project_root
+
+    Coin(config)
 
 
 if __name__ == "__main__":

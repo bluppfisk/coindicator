@@ -45,10 +45,10 @@ class Indicator(object):
 
     # initialisation and start of indicator and exchanges
     def start(self):
-        icon = self.exchange.get_icon()
+        icon = self.exchange.icon
         self.indicator_widget = AppIndicator.Indicator.new(
             "CoinPriceIndicator_" + str(self.unique_id),
-            icon,
+            str(icon),
             AppIndicator.IndicatorCategory.APPLICATION_STATUS,
         )
         self.indicator_widget.set_status(AppIndicator.IndicatorStatus.ACTIVE)
@@ -63,8 +63,8 @@ class Indicator(object):
     def update_gui(self):
         logging.debug("Updating GUI, last response was: " + str(self.latest_response))
 
-        self.symbol = self.exchange.get_symbol()
-        self.volumecurrency = self.exchange.get_volume_currency()
+        self.symbol = self.exchange.symbol
+        self.volumecurrency = self.exchange.volume_currency
 
         if self.prices.get(self.default_label):
             label = self.symbol + self.prices.get(self.default_label)
@@ -105,7 +105,7 @@ class Indicator(object):
     # (re)starts the exchange logic and its timer
     def _start_exchange(self):
         state_string = (
-            self.exchange.get_name()[0:8]
+            self.exchange.name[0:8]
             + ":\t"
             + self.exchange.asset_pair.get("base")
             + " - "
@@ -218,9 +218,9 @@ class Indicator(object):
             base = asset_pair.get("base", "None")
             quote = asset_pair.get("quote", "None")
             tabs = "\t" * (
-                floor(abs((len(exchange.get_name()) - 8)) / 4) + 1
+                floor(abs((len(exchange.name) - 8)) / 4) + 1
             )  # 1 tab for every 4 chars less than 8
-            recent_string = exchange.get_name()[0:8] + ":" + tabs + base + " - " + quote
+            recent_string = exchange.name[0:8] + ":" + tabs + base + " - " + quote
             recent_item = Gtk.MenuItem(recent_string)
             recent_item.connect("activate", self._recent_change, base, quote, exchange)
             recent_menu.append(recent_item)
@@ -264,16 +264,14 @@ class Indicator(object):
             self.exchange = exchange(self)
 
         self.exchange.set_asset_pair(base, quote)
-        accessible_icon_string = (
-            self.exchange.get_name()[0:8] + ":" + base + " to " + quote
-        )
+        accessible_icon_string = self.exchange.name[0:8] + ":" + base + " to " + quote
 
         self.indicator_widget.set_icon_full(
-            self.exchange.get_icon(), accessible_icon_string
+            str(self.exchange.icon), accessible_icon_string
         )
 
         self.coin.add_new_recent(
-            self.exchange.get_asset_pair().get("pair"), self.exchange.get_code()
+            self.exchange.asset_pair.get("pair"), self.exchange.code
         )
 
         self.coin.save_settings()

@@ -54,7 +54,7 @@ class Alarm(object):
     # translucent bubble, of which only one can be shown at the same time.
     #
     def __notify(self, price, direction, threshold):
-        exchange_name = self.parent.exchange.get_name()
+        exchange_name = self.parent.exchange.name
         asset_name = self.parent.exchange.asset_pair.get("base")
 
         title = asset_name + " price alert: " + self.parent.symbol + str(price)
@@ -71,12 +71,11 @@ class Alarm(object):
         if notify2.init(self.app_name):
             if pygame.init():
                 pygame.mixer.music.load(
-                    self.parent.coin.config.get("project_root")
-                    + "/resources/ca-ching.wav"
+                    self.config["project_root"] / "resources/ca-ching.wav"
                 )
                 pygame.mixer.music.play()
             logo = GdkPixbuf.Pixbuf.new_from_file(
-                self.parent.coin.config.get("project_root") + "/resources/icon_32px.png"
+                self.config["project_root"] / "resources/icon_32px.png"
             )
 
             n = notify2.Notification(title, message)

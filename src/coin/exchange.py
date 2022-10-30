@@ -1,14 +1,14 @@
 # Abstract class that provides functionality for the various exchange classes
-
+import abc
 import logging
 import pickle
 import time
-from os.path import isfile
 
 from gi.repository import GLib
 
-from .downloader import DownloadCommand
-from .error import Error
+from coin.config import Config
+from coin.downloader import DownloadCommand
+from coin.error import Error
 
 CURRENCY = {
     "usd": "$",
@@ -35,7 +35,7 @@ CATEGORY = {
 }
 
 
-class Exchange(object):
+class Exchange(abc.ABC):
     active = True
     name = "Must be overwritten"
     code = "Must be overwritten"
@@ -52,63 +52,50 @@ class Exchange(object):
     ##
     # Abstract methods to be overwritten by the child classes
     #
-    @classmethod
+    @abc.abstractclassmethod
     def _get_discovery_url(cls):
         pass
 
-    @classmethod
+    @abc.abstractclassmethod
     def _parse_discovery(cls, data):
         pass
 
+    @abc.abstractmethod
     def _get_ticker_url(self):
         pass
 
-    @classmethod
+    @abc.abstractmethod
     def _parse_ticker(self, data):
         pass
 
-    @classmethod
-    def get_name(cls):
-        return cls.name
-
-    @classmethod
-    def get_code(cls):
-        return cls.code
-
-    @classmethod
-    def get_default_label(cls):
-        return cls.default_label
-
-    def get_asset_pair(self):
-        return self.asset_pair
-
-    def get_currency(self):
+    @property
+    def currency(self):
         return self.asset_pair.get("quote").lower()
 
-    def get_symbol(self):
-        return CURRENCY.get(self.get_currency(), self.get_currency().upper())
+    @property
+    def symbol(self):
+        return CURRENCY.get(self.currency, self.currency.upper())
 
-    def get_icon(self):
+    @property
+    def icon(self) -> str:
         # set icon for asset if it exists
         asset = self.asset_pair.get("base", "").lower()
-        asset_dir = "{}/resources/coin-icons/".format(
-            self.indicator.coin.config.get("project_root")
-        )
-
-        if isfile(asset_dir + asset + ".png"):
-            return asset_dir + asset + ".png"
+        asset_dir = Config()["user_data_dir"] / "coin-icons/"
+        if (asset_dir / f"{asset}.png").exists():
+            return asset_dir / f"{asset}.png"
         else:
             fetched = self.indicator.coin.coingecko_coin_api(asset_dir, asset)
-            if fetched != None:
+            if fetched is not None:
                 return fetched
 
-        return asset_dir + "unknown-coin.png"
+        return asset_dir / "unknown-coin.png"
 
-    def get_volume_currency(self):
+    @property
+    def volume_currency(self):
         return self.asset_pair.get("volumecurrency", self.asset_pair.get("base"))
 
     def set_asset_pair(self, base, quote):
-        for ap in self.get_asset_pairs():
+        for ap in self.asset_pairs:
             if (
                 ap.get("base").upper() == base.upper()
                 and ap.get("quote").upper() == quote.upper()
@@ -124,7 +111,7 @@ class Exchange(object):
             self.asset_pair = ap
 
     def set_asset_pair_from_code(self, code):
-        for ap in self.get_asset_pairs():
+        for ap in self.asset_pairs:
             if ap.get("pair").upper() == code.upper():
                 self.asset_pair = ap
                 break
@@ -138,7 +125,7 @@ class Exchange(object):
 
     @classmethod
     def find_asset_pair_by_code(cls, code):
-        for ap in cls.get_asset_pairs():
+        for ap in cls.asset_pairs:
             if ap.get("pair") == code:
                 return ap
 
@@ -146,27 +133,27 @@ class Exchange(object):
 
     @classmethod
     def find_asset_pair(cls, quote, base):
-        for ap in cls.get_asset_pairs():
+        for ap in cls.asset_pairs:
             if ap.get("quote") == quote and ap.get("base") == base:
                 return ap
 
         return {}
 
     @classmethod
-    def get_datafile(cls):
-        from coin.config import Config
-
+    @property
+    def datafile(cls):
         config = Config()
-        return config.get("project_root") / f"data/{cls.get_code()}.cache"
+        return config["user_data_dir"] / f"data/{cls.code}.cache"
 
     ##
     # Loads asset pairs from the config files or,
     # failing that, from the hard-coded lines
     #
     @classmethod
-    def get_asset_pairs(cls):
+    @property
+    def asset_pairs(cls):
         try:
-            with open(cls.get_datafile(), "rb") as stream:
+            with open(cls.datafile, "rb") as stream:
                 asset_pairs = pickle.load(stream)
                 return asset_pairs if asset_pairs else []
 
@@ -180,10 +167,10 @@ class Exchange(object):
     @classmethod
     def store_asset_pairs(cls, asset_pairs):
         try:
-            with open(cls.get_datafile(), "wb") as stream:
+            with open(cls.datafile, "wb") as stream:
                 pickle.dump(asset_pairs, stream)
         except IOError:
-            logging.error("Could not write to data file %s" % cls.get_datafile())
+            logging.error("Could not write to data file %s" % cls.datafile)
 
     ##
     # Discovers assets from the exchange's API url retrieved
@@ -191,7 +178,7 @@ class Exchange(object):
     #
     @classmethod
     def discover_assets(cls, downloader, callback):
-        if cls._get_discovery_url() == None:
+        if cls._get_discovery_url() is None:
             cls.store_asset_pairs(cls._parse_discovery(None))
         else:
             command = DownloadCommand(cls._get_discovery_url(), callback)
@@ -203,11 +190,12 @@ class Exchange(object):
     #
     @classmethod
     def _handle_discovery_result(cls, command):
-        logging.debug("Response from {}: {}".format(command.url, command.error))
+        logging.debug("Response from %s: %s" % (command.url, command.error))
 
         if command.error:
             cls._handle_discovery_error(
-                f"{cls.name}: API server {command.url} returned an error: {command.error}"
+                f"{cls.name}: API server {command.url}\
+                     returned an error: {command.error}"
             )
 
         if command.response:
@@ -220,7 +208,8 @@ class Exchange(object):
 
             if data.status_code != 200:
                 cls._handle_discovery_error(
-                    f"API server {command.url} returned an error: {str(data.status_code)}"
+                    f"API server {command.url} returned \
+                        an error: {str(data.status_code)}"
                 )
 
             try:
@@ -234,7 +223,7 @@ class Exchange(object):
 
     @classmethod
     def _handle_discovery_error(cls, msg):
-        logging.warn("Asset Discovery: " + msg)
+        logging.warn("Asset Discovery: %s" % msg)
 
     ##
     # Start exchange
