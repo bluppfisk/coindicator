@@ -1,6 +1,6 @@
 #!/bin/bash
 # Install system dependencies
-sudo apt-get install python3-venv python3-gi python3-gi-cairo gir1.2-gtk-3.0 libdbus-glib-1-2 gir1.2-appindicator3-0.1 python3-pip -y
+sudo apt-get install python3-venv python3-gi python3-gi-cairo gir1.2-gtk-3.0 libdbus-glib-1-2 gir1.2-appindicator3-0.1 python3-pip patchelf -y
 
 # Install python packages
 pip3 install -U coindicator
