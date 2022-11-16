@@ -58,7 +58,7 @@ class Bittrex(Exchange):
 
     def _parse_ticker(self, asset):
         # Bittrex moved last, high, low and volume to a separate API
-        # endpoint in v3. Coinprice-indicator currently does not support
+        # endpoint in v3. Coindicator currently does not support
         # aggregating data from multiple endpoints
 
         # cur = asset.get("Last")

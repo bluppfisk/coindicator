@@ -7,7 +7,7 @@ class AboutWindow(Gtk.AboutDialog):
         self.config = config
 
         logo_124px = GdkPixbuf.Pixbuf.new_from_file(
-            self.config.get("project_root") + "/resources/icon_32px.png"
+            str(self.config.get("project_root") / "resources/icon_32px.png")
         )
         self.set_program_name(self.config.get("app").get("name"))
         self.set_comments(self.config.get("app").get("description"))

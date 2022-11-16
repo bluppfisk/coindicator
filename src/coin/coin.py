@@ -94,7 +94,6 @@ class Coin:
         # inverse the hierarchy for easier asset selection
         bases = {}
         for exchange in self.assets.keys():
-            asset_pair = self.assets.get(exchange)
             for asset_pair in self.assets.get(exchange):
                 base = asset_pair.get("base")
                 quote = asset_pair.get("quote")
