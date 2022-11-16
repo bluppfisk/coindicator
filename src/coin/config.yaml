@@ -1,10 +1,9 @@
 # Coin Price configuration
 
 app:
-  name: Coin Price Indicator
+  name: Coindicator
   description: A cryptocurrency price ticker applet for Ubuntu
   url: https://github.com/bluppfisk/coindicator
-  version: "2.0.0"
 
 authors:
   - name: Nil Gradisnik

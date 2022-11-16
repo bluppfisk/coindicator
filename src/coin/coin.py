@@ -184,7 +184,7 @@ class Coin:
             "%s v%s running!"
             % (
                 self.config.get("app").get("name"),
-                self.config.get("app").get("version"),
+                importlib.metadata.version("coindicator"),
             )
         )
 

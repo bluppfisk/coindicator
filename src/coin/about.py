@@ -1,4 +1,5 @@
 from gi.repository import GdkPixbuf, Gtk
+from importlib.metadata import version
 
 
 class AboutWindow(Gtk.AboutDialog):
@@ -11,7 +12,7 @@ class AboutWindow(Gtk.AboutDialog):
         )
         self.set_program_name(self.config.get("app").get("name"))
         self.set_comments(self.config.get("app").get("description"))
-        self.set_version(self.config.get("app").get("version"))
+        self.set_version(version("coindicator"))
         self.set_website(self.config.get("app").get("url"))
         authors = []
         for author in self.config.get("authors"):
