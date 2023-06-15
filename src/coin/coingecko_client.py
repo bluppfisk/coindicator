@@ -21,7 +21,7 @@ class CoinGeckoClient:
             ]
         else:
             logging.warning(
-                "CoinGecko API Error <%d>: %s" % (data.status_code, data.text())
+                "CoinGecko API Error <%d>: %s" % (data.status_code, data.text)
             )
 
     # Fetch icon from CoinGecko
