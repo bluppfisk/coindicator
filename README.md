@@ -66,6 +66,11 @@ Adding your own exchange plug-in is easy. Just create class file with methods fo
 
 Have a peek at the existing plug-ins (e.g. **kraken.py**) for an example and don't forget to contribute your plug-ins here on GitHub!
 
+## Building
+
+- Activate environment
+- run pip install -e .[develop] to install required tools
+
 ## Troubleshooting
 
 This software was tested and found working on the following configurations:
