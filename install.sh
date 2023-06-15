@@ -1,12 +1,35 @@
 #!/bin/bash
 # Install system dependencies
-sudo apt-get install python3-venv python3-gi python3-gi-cairo gir1.2-gtk-3.0 libdbus-glib-1-2 gir1.2-appindicator3-0.1 python3-pip patchelf -y
+if [[ $# -eq 0 ]]
+    then
+        echo "Usage: ./install.sh install_dir"
+        echo "E.g. ./install.sh /opt/coindicator"
+        exit 1
+fi
+
+args=("$@")
+
+echo Installing to ${args[0]}
+
+sudo apt-get install python3-venv python3-wheel python3-gi python3-gi-cairo gir1.2-gtk-3.0 libdbus-glib-1-2 gir1.2-appindicator3-0.1 python3-pip patchelf -y
+
+# some users report requiring libgirepository1.0-dev libdbus-1-dev, libcairo2-dev, build-essential
+# some report having to install a newer version of cmake
+
+# sudo apt purge --auto-remove cmake
+# wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
+# sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ focal main'
+# sudo apt update
+# sudo apt install cmake
 
 # Install python packages
-pip3 install -U coindicator
+sudo mkdir ${args[0]} 2>/dev/null
+sudo python3 -m venv ${args[0]}/venv
+source ${args[0]}/venv/bin/activate
+sudo -E env PATH=$PATH pip3 install coindicator
 
 # Install shortcut
-cat > coindicator.desktop << EOL
+cat > /tmp/coindicator.desktop << EOL
 
 [Desktop Entry]
 Name=Coindicator
@@ -14,12 +37,15 @@ GenericName=Cryptocoin price ticker
 Comment=Keep track of the cryptocoin prices on various exchanges
 Terminal=false
 Type=Application
-Categories=Utility;Network;
+Categories=Utility;
 Keywords=crypto;coin;ticker;price;exchange;
 StartupNotify=false
-Path=`pwd`
-Exec=coin
-Icon=`pwd`/src/coin/resources/logo_248px.png
+Path=${args[0]}/venv/bin
+Exec=coindicator
+Icon=/tmp/logo_248px.png
 EOL
 
-desktop-file-install --dir=$HOME/.local/share/applications coindicator.desktop
+cp ./src/coin/resources/logo_248px.png /tmp
+
+
+desktop-file-install --dir=$HOME/.local/share/applications /tmp/coindicator.desktop
