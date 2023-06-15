@@ -26,7 +26,7 @@ sudo apt-get install python3-venv python3-wheel python3-gi python3-gi-cairo gir1
 sudo mkdir ${args[0]} 2>/dev/null
 sudo python3 -m venv ${args[0]}/venv
 source ${args[0]}/venv/bin/activate
-sudo -E env PATH=$PATH pip3 install coindicator
+sudo -E env PATH=$PATH pip3 install -U coindicator
 
 # Install shortcut
 cat > /tmp/coindicator.desktop << EOL
