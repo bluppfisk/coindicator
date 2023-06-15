@@ -68,8 +68,10 @@ Have a peek at the existing plug-ins (e.g. **kraken.py**) for an example and don
 
 ## Building
 
-- Activate environment
-- run pip install -e .[develop] to install required tools
+- Create and activate environment
+- run `pip install -e .[develop]` to install required tools
+- run `python3 setup.py build bdist`
+- run `twine upload dist/{version}` if you want to upload to PyPi (will need credentials)
 
 ## Troubleshooting
 
