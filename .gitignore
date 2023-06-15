@@ -6,3 +6,4 @@ dist/
 *egg-info/
 coindicator.desktop
 build/
+venv/
