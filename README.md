@@ -35,12 +35,12 @@ Coindicator is a cryptocurrency price indicator applet for Linux.
 You will need Git and Python 3.5 or higher, as well as some system dependencies.
 
 For your convenience, I've included a small install script that will install (or upgrade)
-coindicator and its dependencies, as well as create a desktop icon.
+coindicator and its dependencies, as well as create a desktop icon. It will ask to elevate
+permissions to install dependencies. It takes the install location as an argument.
 
 ```bash
- git clone https://github.com/bluppfisk/coindicator.git
- cd coindicator
- ./install.sh
+ git clone https://github.com/bluppfisk/coindicator.git && cd coindicator
+ ./install.sh /opt/coindicator  # or wherever you want it installed.
 ```
 
 ## Upgrading from 1.x
@@ -49,9 +49,8 @@ User data has moved to your home folder. To keep your settings, move the user.co
 
 ## Running
 
-* A launcher icon "Coindicator" should be installed that can be used to start the app
-* Alternatively, run `./run.sh` to activate the virtual environment and start the app
-* You can also run the program manually with `source env/bin/activate` and then run `src/coin/coin.py &` or `python3 src/coin/coin.py &` to start the app
+* A launcher icon "Coindicator" should have been installed that can be used to start the app
+* Alternatively, go to the install folder, activate the environment `source venv/bin/activate` and run the app with `coindicator`. Add ` &` to run it in the background.
 
 ## Configuring
 
