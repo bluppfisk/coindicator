@@ -4,7 +4,7 @@
 #
 #    pip-compile
 #
-certifi==2018.8.24
+certifi==2022.12.7
     # via
     #   coindicator (setup.py)
     #   requests
