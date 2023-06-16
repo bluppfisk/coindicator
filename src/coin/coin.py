@@ -54,7 +54,6 @@ class Coin:
         self.downloader = AsyncDownloadService()
         self.assets = {}
         self.coingecko_client = CoinGeckoClient()
-        self.coingecko_client.load_list()
         self._load_exchanges()
         self._load_assets()
         self._load_settings()

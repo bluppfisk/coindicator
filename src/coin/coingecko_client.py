@@ -26,6 +26,9 @@ class CoinGeckoClient:
 
     # Fetch icon from CoinGecko
     def get_icon(self, asset):
+        if len(self.coingecko_list) == 0:
+            self.load_list()
+
         url = ""
         for coin in self.coingecko_list:
             if asset == coin.get("symbol"):
