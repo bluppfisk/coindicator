@@ -1,6 +1,5 @@
 # Lets the user set an alert for a certain price point
 
-import gi
 import notify2
 import pygame
 

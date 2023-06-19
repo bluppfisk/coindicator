@@ -1,9 +1,6 @@
 # Plugin selection window
 
-import gi
 from gi.repository import Gdk, Gtk
-
-from .exchange import Exchange
 
 
 class PluginSelectionWindow(Gtk.Window):
@@ -35,7 +32,6 @@ class PluginSelectionWindow(Gtk.Window):
 
         col_chk = Gtk.TreeViewColumn("", rend_checkbox, active=0)
         col_plugin = Gtk.TreeViewColumn("Plugin", rend_plugin, text=1)
-        # col_plugin.set_sort_column_id(0)
 
         self.view_plugins.append_column(col_chk)
         self.view_plugins.append_column(col_plugin)
@@ -65,20 +61,20 @@ class PluginSelectionWindow(Gtk.Window):
         self.show_all()
         self.present()
 
-    def _toggle(self, renderer, path):
+    def _toggle(self, _renderer, path):
         iter = self.plugin_store.get_iter(path)
         self.plugin_store[iter][0] = not self.plugin_store[iter][0]
 
-    def _select_plugins(self, widget=None):
+    def _select_plugins(self, _widget=None):
         for item in self.plugin_store:
             item[2].active = item[0]
 
         self.parent.plugins_updated()
         self._close()
 
-    def _on_key_release(self, widget, ev, data=None):
+    def _on_key_release(self, _widget, ev, _data=None):
         if ev.keyval == Gdk.KEY_Escape:
             self._close()
 
-    def _close(self, widget=None):
+    def _close(self, _widget=None):
         self.destroy()
