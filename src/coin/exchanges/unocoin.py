@@ -2,7 +2,7 @@
 # https://www.unocoin.com/how-it-works?info=tickerapi
 # By Sander Van de Moortel <sander.vandemoortel@gmail.com>
 
-from coin.exchange import CURRENCY, Exchange
+from coin.exchange import Exchange
 
 
 class Unocoin(Exchange):

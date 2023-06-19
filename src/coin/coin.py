@@ -20,10 +20,8 @@ import logging
 import signal
 from pathlib import Path
 
-import dbus
 import notify2
 import yaml
-from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import Gtk
 
 from coin.about import AboutWindow
@@ -199,14 +197,6 @@ class Coin:
 
     def _start_gui(self):
         signal.signal(signal.SIGINT, Gtk.main_quit)  # ctrl+c exit
-        # DBusGMainLoop(set_as_default=True)
-        # bus = dbus.SystemBus()
-        # bus.add_signal_receiver(
-        #     self.handle_resume,
-        #     None,
-        #     "org.freedesktop.login1.Manager",
-        #     "org.freedesktop.login1",
-        # )
         Gtk.main()
 
     # Program main menu

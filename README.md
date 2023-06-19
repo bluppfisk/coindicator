@@ -54,7 +54,7 @@ User data has moved to your home folder. To keep your settings, move the user.co
 
 ## Configuring
 
-Use the GUI to add and remove indicators (find the piggy icon), to pick assets, to set refresh frequency and to set alarms. Alternatively, edit the **user.conf** YAML file in the project root.
+Use the GUI to add and remove indicators (find the piggy icon), to pick assets, to set refresh frequency and to set alarms. Alternatively, edit the **~/.config/coindicator/user.conf** YAML file.
 
 `max_decimals`: default 8. Lower if you want fewer decimals (takes priority over `significant_digits`)
 `significant_digits`: default 3. Set to higher if you want more significant digits.
@@ -83,18 +83,11 @@ This software was tested and found working on the following configurations:
 * Ubuntu Linux 20.04 (Focal Fossa) with GNOME 3
 * Ubuntu Linux 20.10 (Groovy Gorilla) with GNOME 3
 * Ubuntu Linux 21.04 (Hirsute Hippo) with GNOME 3
-* Ubuntu Linux 21.10 (Impish Indri) with GNOME 3
-* Ubuntu Linux 22.04 (Jammy Jellyfish) with GNOME 3
-* Ubuntu Linux 22.10 (Kinetic Kudu) with GNOME 3
+* Ubuntu Linux 21.10 (Impish Indri) with GNOME 40
+* Ubuntu Linux 22.04 (Jammy Jellyfish) with GNOME 42
+* Ubuntu Linux 22.10 (Kinetic Kudu) with GNOME 43
+* Ubuntu Linux 23.04 (Lunar Lobster) with GNOME 44
 
 For other systems, you may need to install LibAppIndicator support.
 
-Before reporting bugs or issues, please try removing **~/.config/coindicator/user.conf** first and then the files in **~/.config/coindicator/cache/**.
-
-## Sponsorship and Funding
-
-![Gitcoin logo](img/gitcoin.png)
-
-This project has been funded in the past by generous maecenas @ghettodev through [Gitcoin](https://gitcoin.co/), a platform that directs the attention of bounty hunters (coders) to open issues and feature requests on Github.
-
-If you would like to sponsor a feature request, bug report or just donate to the project, be sure to check out [Gitcoin](https://gitcoin.co/).
+Before reporting bugs or issues, please try removing/renaming the **~/.config/coindicator** folder first.

@@ -2,7 +2,7 @@
 # https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md
 # By Lari Taskula <lari@taskula.fi>
 
-from coin.exchange import CURRENCY, Exchange
+from coin.exchange import Exchange
 
 
 class Binance(Exchange):

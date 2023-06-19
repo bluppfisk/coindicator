@@ -36,6 +36,14 @@ CATEGORY = {
 }
 
 
+class classproperty:
+    def __init__(self, func):
+        self.fget = func
+
+    def __get__(self, _instance, owner):
+        return self.fget(owner)
+
+
 class Exchange(abc.ABC):
     active = True
     name = "Must be overwritten"
@@ -143,8 +151,7 @@ class Exchange(abc.ABC):
 
         return {}
 
-    @classmethod
-    @property
+    @classproperty
     def datafile(cls):
         config = Config()
         return config["user_data_dir"] / f"cache/{cls.code}.cache"
@@ -153,8 +160,7 @@ class Exchange(abc.ABC):
     # Loads asset pairs from the config files or,
     # failing that, from the hard-coded lines
     #
-    @classmethod
-    @property
+    @classproperty
     def asset_pairs(cls):
         try:
             with open(cls.datafile, "rb") as stream:

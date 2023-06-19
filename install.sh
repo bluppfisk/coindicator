@@ -11,7 +11,7 @@ args=("$@")
 
 echo Installing to ${args[0]}
 
-sudo apt-get install python3-venv python3-setuptools-scm python3-wheel python3-gi python3-gi-cairo gir1.2-gtk-3.0 libdbus-glib-1-2 gir1.2-appindicator3-0.1 python3-pip patchelf -y
+sudo apt-get install python3-venv python3-setuptools-scm python3-wheel python3-gi python3-gi-cairo gir1.2-gtk-3.0 gir1.2-appindicator3-0.1 python3-pip patchelf -y
 
 # some users report requiring libgirepository1.0-dev libdbus-1-dev, libcairo2-dev, build-essential
 # some report having to install a newer version of cmake
