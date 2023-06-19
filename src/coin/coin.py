@@ -20,7 +20,6 @@ import logging
 import signal
 from pathlib import Path
 
-import dbus
 import notify2
 import yaml
 from dbus.mainloop.glib import DBusGMainLoop

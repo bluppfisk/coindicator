@@ -143,21 +143,19 @@ class Exchange(abc.ABC):
 
         return {}
 
-    @classmethod
     @property
-    def datafile(cls):
+    def datafile(self):
         config = Config()
-        return config["user_data_dir"] / f"cache/{cls.code}.cache"
+        return config["user_data_dir"] / f"cache/{self.code}.cache"
 
     ##
     # Loads asset pairs from the config files or,
     # failing that, from the hard-coded lines
     #
-    @classmethod
     @property
-    def asset_pairs(cls):
+    def asset_pairs(self):
         try:
-            with open(cls.datafile, "rb") as stream:
+            with open(self.datafile, "rb") as stream:
                 asset_pairs = pickle.load(stream)
                 return asset_pairs if asset_pairs else []
 
