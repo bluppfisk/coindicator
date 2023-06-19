@@ -2,7 +2,7 @@
 # https://www.kraken.com/help/api#public-market-data
 # By Nil Gradisnik <nil.gradisnik@gmail.com>
 
-from coin.exchange import CURRENCY, Exchange
+from coin.exchange import Exchange
 
 
 class Kraken(Exchange):
