@@ -306,12 +306,6 @@ class Coin:
 
         self.main_item.set_icon_full(str(self.icon), "App icon")
 
-    # Handle system resume by refreshing all tickers
-    def handle_resume(self, sleeping, *args):
-        if not sleeping:
-            for instance in self.instances:
-                instance.exchange.stop().start()
-
     def _select_plugins(self, _widget):
         PluginSelectionWindow(self)
 
