@@ -2,7 +2,7 @@
 # https://github.com/bitkub/bitkub-official-api-docs/blob/master/restful-api.md
 # By Theppasith N. <tutorgaming@gmail.com>
 
-from coin.exchange import CURRENCY, Exchange
+from coin.exchange import Exchange
 
 
 class Bitkub(Exchange):
@@ -14,9 +14,8 @@ class Bitkub(Exchange):
 
     default_label = "cur"
 
-    @classmethod
-    def _get_discovery_url(cls):
-        return cls.discovery
+    def _get_discovery_url(self):
+        return self.discovery
 
     def _get_ticker_url(self):
         return self.ticker + "?sym=" + self.pair

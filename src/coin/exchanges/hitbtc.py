@@ -2,7 +2,7 @@
 # https://github.com/hitbtc-com/hitbtc-api/blob/master/APIv1.md
 # By Sander Van de Moortel <sander.vandemoortel@gmail.com>
 
-from coin.exchange import CURRENCY, Exchange
+from coin.exchange import Exchange
 
 
 class Hitbtc(Exchange):
@@ -14,9 +14,8 @@ class Hitbtc(Exchange):
 
     default_label = "cur"
 
-    @classmethod
-    def _get_discovery_url(cls):
-        return cls.discovery
+    def _get_discovery_url(self):
+        return self.discovery
 
     def _get_ticker_url(self):
         return self.ticker + self.pair + "/ticker"

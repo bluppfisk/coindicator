@@ -14,9 +14,8 @@ class Bittrex(Exchange):
 
     default_label = "ask"
 
-    @classmethod
-    def _get_discovery_url(cls):
-        return cls.discovery
+    def _get_discovery_url(self):
+        return self.discovery
 
     def _get_ticker_url(self):
         return self.ticker.format(self.pair)

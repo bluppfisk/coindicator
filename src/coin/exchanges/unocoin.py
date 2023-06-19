@@ -2,7 +2,7 @@
 # https://www.unocoin.com/how-it-works?info=tickerapi
 # By Sander Van de Moortel <sander.vandemoortel@gmail.com>
 
-from coin.exchange import CURRENCY, Exchange
+from coin.exchange import Exchange
 
 
 class Unocoin(Exchange):
@@ -14,9 +14,8 @@ class Unocoin(Exchange):
 
     default_label = "avg"
 
-    @classmethod
-    def _get_discovery_url(cls):
-        return cls.discovery
+    def _get_discovery_url(self):
+        return self.discovery
 
     def _get_ticker_url(self):
         return self.ticker.format(self.asset_pair.get("base").lower())

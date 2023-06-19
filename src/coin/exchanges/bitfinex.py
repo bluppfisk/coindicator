@@ -2,7 +2,7 @@
 # https://bitfinex.readme.io/v2/docs
 # By Alessio Carrafa <ruzzico@gmail.com>
 
-from coin.exchange import CURRENCY, Exchange
+from coin.exchange import Exchange
 
 
 class Bitfinex(Exchange):
@@ -14,9 +14,8 @@ class Bitfinex(Exchange):
 
     default_label = "cur"
 
-    @classmethod
-    def _get_discovery_url(cls):
-        return cls.discovery
+    def _get_discovery_url(self):
+        return self.discovery
 
     def _get_ticker_url(self):
         return self.ticker + self.pair

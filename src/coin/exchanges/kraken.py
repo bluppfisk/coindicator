@@ -2,7 +2,7 @@
 # https://www.kraken.com/help/api#public-market-data
 # By Nil Gradisnik <nil.gradisnik@gmail.com>
 
-from coin.exchange import CURRENCY, Exchange
+from coin.exchange import Exchange
 
 
 class Kraken(Exchange):
@@ -14,9 +14,8 @@ class Kraken(Exchange):
 
     default_label = "cur"
 
-    @classmethod
-    def _get_discovery_url(cls):
-        return cls.discovery
+    def _get_discovery_url(self):
+        return self.discovery
 
     def _get_ticker_url(self):
         return self.ticker + "?pair=" + self.pair

@@ -54,14 +54,12 @@ class Exchange(abc.ABC):
     ##
     # Abstract methods to be overwritten by the child classes
     #
-    @classmethod
     @abc.abstractmethod
-    def _get_discovery_url(cls):
+    def _get_discovery_url(self):
         pass
 
-    @classmethod
     @abc.abstractmethod
-    def _parse_discovery(cls, data):
+    def _parse_discovery(self, data):
         pass
 
     @abc.abstractmethod
@@ -127,17 +125,15 @@ class Exchange(abc.ABC):
             )
             self.asset_pair = {}
 
-    @classmethod
-    def find_asset_pair_by_code(cls, code):
-        for ap in cls.asset_pairs:
+    def find_asset_pair_by_code(self, code):
+        for ap in self.asset_pairs:
             if ap.get("pair") == code:
                 return ap
 
         return {}
 
-    @classmethod
-    def find_asset_pair(cls, quote, base):
-        for ap in cls.asset_pairs:
+    def find_asset_pair(self, quote, base):
+        for ap in self.asset_pairs:
             if ap.get("quote") == quote and ap.get("base") == base:
                 return ap
 
@@ -166,37 +162,34 @@ class Exchange(abc.ABC):
     ##
     # Saves asset pairs to disk
     #
-    @classmethod
-    def store_asset_pairs(cls, asset_pairs):
+    def store_asset_pairs(self, asset_pairs):
         try:
-            with open(cls.datafile, "wb") as stream:
+            with open(self.datafile, "wb") as stream:
                 pickle.dump(asset_pairs, stream)
         except IOError:
-            logging.error("Could not write to data file %s" % cls.datafile)
+            logging.error("Could not write to data file %s" % self.datafile)
 
     ##
     # Discovers assets from the exchange's API url retrieved
     # through the instance-specific method _get_discovery_url()
     #
-    @classmethod
-    def discover_assets(cls, downloader, callback):
-        if cls._get_discovery_url() is None:
-            cls.store_asset_pairs(cls._parse_discovery(None))
+    def discover_assets(self, downloader, callback):
+        if self._get_discovery_url() is None:
+            self.store_asset_pairs(self._parse_discovery(None))
         else:
-            command = DownloadCommand(cls._get_discovery_url(), callback)
-            downloader.execute(command, cls._handle_discovery_result)
+            command = DownloadCommand(self._get_discovery_url(), callback)
+            downloader.execute(command, self._handle_discovery_result)
 
     ##
     # Deals with the result from the discovery HTTP request
     # Should probably be merged with _handle_result() later
     #
-    @classmethod
-    def _handle_discovery_result(cls, command):
+    def _handle_discovery_result(self, command):
         logging.debug("Response from %s: %s" % (command.url, command.error))
 
         if command.error:
-            cls._handle_discovery_error(
-                f"{cls.name}: API server {command.url}\
+            self._handle_discovery_error(
+                f"{self.name}: API server {command.url}\
                      returned an error: {command.error}"
             )
 
@@ -209,22 +202,21 @@ class Exchange(abc.ABC):
                 return
 
             if data.status_code != 200:
-                cls._handle_discovery_error(
+                self._handle_discovery_error(
                     f"API server {command.url} returned \
                         an error: {str(data.status_code)}"
                 )
 
             try:
                 result = data.json()
-                asset_pairs = cls._parse_discovery(result)
-                cls.store_asset_pairs(asset_pairs)
+                asset_pairs = self._parse_discovery(result)
+                self.store_asset_pairs(asset_pairs)
             except Exception as e:
-                cls._handle_discovery_error(str(e))
+                self._handle_discovery_error(str(e))
 
         command.callback()  # update the asset menus of all instances
 
-    @classmethod
-    def _handle_discovery_error(cls, msg):
+    def _handle_discovery_error(self, msg):
         logging.warn("Asset Discovery: %s" % msg)
 
     ##

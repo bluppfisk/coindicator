@@ -14,15 +14,14 @@ class Okcoin(Exchange):
 
     default_label = "cur"
 
-    @classmethod
-    def _get_discovery_url(cls):
+    def _get_discovery_url(self):
         return None
 
     def _get_ticker_url(self):
         return self.ticker + "?symbol=" + self.pair  # base/quote
 
     @staticmethod
-    def _parse_discovery(result):
+    def _parse_discovery(_):
         return [
             {"pair": "btc_cny", "name": "BTC to CNY", "currency": CURRENCY["cny"]},
             {"pair": "ltc_cny", "name": "LTC to CNY", "currency": CURRENCY["cny"]},

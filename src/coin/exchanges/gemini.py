@@ -2,7 +2,7 @@
 # https://docs.gemini.com/rest-api/
 # By Rick Ramstetter <rick@anteaterllc.com>
 
-from coin.exchange import CURRENCY, Exchange
+from coin.exchange import Exchange
 
 
 class Gemini(Exchange):
@@ -14,9 +14,8 @@ class Gemini(Exchange):
 
     default_label = "cur"
 
-    @classmethod
-    def _get_discovery_url(cls):
-        return cls.discovery
+    def _get_discovery_url(self):
+        return self.discovery
 
     def _get_ticker_url(self):
         return self.ticker + self.pair

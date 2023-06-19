@@ -2,7 +2,7 @@
 # https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md
 # By Lari Taskula <lari@taskula.fi>
 
-from coin.exchange import CURRENCY, Exchange
+from coin.exchange import Exchange
 
 
 class Binance(Exchange):
@@ -14,9 +14,8 @@ class Binance(Exchange):
 
     default_label = "cur"
 
-    @classmethod
-    def _get_discovery_url(cls):
-        return cls.discovery
+    def _get_discovery_url(self):
+        return self.discovery
 
     def _get_ticker_url(self):
         return self.ticker + "?symbol=" + self.pair
