@@ -1,6 +1,6 @@
 # Lets the user set an alert for a certain price point
 
-import notify2
+import desktop_notifier
 import pygame
 
 from coin.config import Config
@@ -67,20 +67,19 @@ class Alarm(object):
             + str(threshold)
         )
 
-        if notify2.init(self.app_name):
-            if pygame.init():
-                pygame.mixer.music.load(
-                    self.config["project_root"] / "resources/ca-ching.wav"
-                )
-                pygame.mixer.music.play()
-            logo = GdkPixbuf.Pixbuf.new_from_file(
-                str(self.config["project_root"] / "resources/icon_32px.png")
+        if pygame.init():
+            pygame.mixer.music.load(
+                self.config["project_root"] / "resources/ca-ching.wav"
             )
+            pygame.mixer.music.play()
 
-            n = notify2.Notification(title, message)
-            n.set_icon_from_pixbuf(logo)
-            n.set_urgency(2)  # highest
-            n.show()
+        notifier = desktop_notifier.DesktopNotifier(app_name=self.config["app"]["name"])
+        notifier.send_sync(
+            title,
+            message,
+            urgency=desktop_notifier.Urgency.Critical,
+            icon=str(self.config["project_root"] / "resources/icon_32px.png"),
+        )
 
 
 class AlarmSettingsWindow(Gtk.Window):

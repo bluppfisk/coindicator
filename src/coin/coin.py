@@ -20,7 +20,7 @@ import logging
 import signal
 from pathlib import Path
 
-import notify2
+import desktop_notifier
 import yaml
 from gi.repository import Gtk
 
@@ -294,15 +294,14 @@ class Coin:
         self.discoveries = 0
         self._load_assets()
 
-        if notify2.init(self.config.get("app").get("name")):
-            n = notify2.Notification(
-                self.config.get("app").get("name"),
-                "Finished discovering new assets",
-                str(self.icon),
-            )
-            n.set_urgency(1)
-            n.timeout = 2000
-            n.show()
+        notifier = desktop_notifier.DesktopNotifier(app_name=self.config["app"]["name"])
+        notifier.send_sync(
+            self.config.get("app").get("name"),
+            "Finished discovering new assets",
+            urgency=desktop_notifier.Urgency.Normal,
+            timeout=2000,
+            icon=self.icon,
+        )
 
         self.main_item.set_icon_full(str(self.icon), "App icon")
 
