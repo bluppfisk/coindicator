@@ -43,6 +43,7 @@ StartupNotify=false
 Path=${args[0]}/venv/bin
 Exec=coindicator
 Icon=/tmp/logo_248px.png
+X-GNOME-UsesNotifications=true
 EOL
 
 cp ./src/coin/resources/logo_248px.png /tmp
